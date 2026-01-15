@@ -16,7 +16,7 @@ app.use('/api/*', cors())
 // Verificar senha administrativa
 app.post('/api/auth/verify', async (c) => {
   const { password } = await c.req.json()
-  return c.json({ success: password === '123' })
+  return c.json({ success: password === 'top@beer10' })
 })
 
 // ============ PRODUTOS ============
@@ -192,6 +192,25 @@ app.post('/api/settings/logo', async (c) => {
   return c.json({ success: true })
 })
 
+// Buscar logo do rodapé
+app.get('/api/settings/footer-logo', async (c) => {
+  const { DB } = c.env
+  const { results } = await DB.prepare("SELECT value FROM settings WHERE key = 'footer_logo_url'").all()
+  return c.json({ footer_logo_url: results[0]?.value || null })
+})
+
+// Salvar logo do rodapé
+app.post('/api/settings/footer-logo', async (c) => {
+  const { DB } = c.env
+  const { footer_logo_url } = await c.req.json()
+  
+  await DB.prepare(
+    "INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('footer_logo_url', ?, CURRENT_TIMESTAMP)"
+  ).bind(footer_logo_url).run()
+  
+  return c.json({ success: true })
+})
+
 // ============ UPLOAD DE IMAGENS ============
 
 // Upload de imagem (base64)
@@ -333,12 +352,12 @@ app.get('/', (c) => {
             background: linear-gradient(135deg, #dc2626 0%, #991b1b 50%, #fbbf24 100%);
             border-radius: 12px;
             position: relative;
-            overflow: hidden;
-            margin-bottom: 80px;
+            overflow: visible;
+            margin-bottom: 120px;
         }
         .logo-container {
             position: absolute;
-            bottom: -50px;
+            bottom: -100px;
             left: 50%;
             transform: translateX(-50%);
             width: 200px;
@@ -351,10 +370,11 @@ app.get('/', (c) => {
             align-items: center;
             justify-content: center;
             border: 4px solid #dc2626;
+            z-index: 10;
         }
         .logo-container img {
-            max-width: 100%;
-            max-height: 100%;
+            width: 100%;
+            height: 100%;
             object-fit: contain;
         }
         .quantity-control {
@@ -398,6 +418,13 @@ app.get('/', (c) => {
             text-align: center;
             margin-top: 40px;
             border-top: 2px solid #dc2626;
+        }
+        .footer-logo {
+            width: 60px;
+            height: 40px;
+            object-fit: contain;
+            margin: 10px auto;
+            display: block;
         }
         select {
             background: rgba(255, 255, 255, 0.1);
@@ -486,6 +513,7 @@ app.get('/', (c) => {
     </div>
 
     <div class="footer">
+        <img id="footerLogoImage" class="footer-logo" style="display: none;" alt="Logo Rodapé">
         <p class="text-yellow-400 font-bold text-lg">Vsual Consultoria em Marketing</p>
         <p class="text-white mt-2">18 99667-6409</p>
     </div>
@@ -500,21 +528,30 @@ app.get('/', (c) => {
         let currentProduct = null;
         let currentCustomer = null;
         let logoUrl = null;
+        let footerLogoUrl = null;
 
         // Carregar dados iniciais
         async function loadInitialData() {
             try {
-                const [productsRes, customersRes, logoRes] = await Promise.all([
+                const [productsRes, customersRes, logoRes, footerLogoRes] = await Promise.all([
                     axios.get('/api/products'),
                     axios.get('/api/customers'),
-                    axios.get('/api/settings/logo')
+                    axios.get('/api/settings/logo'),
+                    axios.get('/api/settings/footer-logo')
                 ]);
                 products = productsRes.data;
                 customers = customersRes.data;
                 logoUrl = logoRes.data.logo_url;
+                footerLogoUrl = footerLogoRes.data.footer_logo_url;
                 
                 if (logoUrl) {
                     document.getElementById('logoImage').src = logoUrl;
+                }
+                
+                if (footerLogoUrl) {
+                    const footerImg = document.getElementById('footerLogoImage');
+                    footerImg.src = footerLogoUrl;
+                    footerImg.style.display = 'block';
                 }
                 
                 updateCartBadge();
@@ -558,19 +595,66 @@ app.get('/', (c) => {
                     <h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">Catálogo de Produtos</h2>
                     <div class="grid grid-cols-2 gap-4" id="productList">
                         \${products.map(p => \`
-                            <div class="product-card" onclick="addToCart(\${p.id})">
+                            <div class="product-card">
                                 <div style="width: 100%; height: 120px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; overflow: hidden;">
                                     \${p.image_url ? \`<img src="\${p.image_url}" style="width: 100%; height: 100%; object-fit: contain;">\` : '<i class="fas fa-beer text-4xl text-yellow-400"></i>'}
                                 </div>
                                 <h3 class="font-bold text-sm mb-1">\${p.name}</h3>
                                 <p class="text-xs text-gray-400 mb-1">\${p.brand}</p>
-                                <p class="text-yellow-400 font-bold">R$ \${parseFloat(p.price).toFixed(2)}</p>
+                                <p class="text-yellow-400 font-bold mb-2">R$ \${parseFloat(p.price).toFixed(2)}</p>
+                                <div class="quantity-control">
+                                    <button class="quantity-btn" onclick="event.stopPropagation(); addToCartWithQuantity(\${p.id}, -1)">-</button>
+                                    <span class="font-bold text-lg" id="qty-\${p.id}">0</span>
+                                    <button class="quantity-btn" onclick="event.stopPropagation(); addToCartWithQuantity(\${p.id}, 1)">+</button>
+                                </div>
                             </div>
                         \`).join('')}
                     </div>
                 </div>
             \`;
             content.innerHTML = html;
+            
+            // Atualizar quantidades exibidas
+            cart.forEach(item => {
+                const qtyEl = document.getElementById(\`qty-\${item.product_id}\`);
+                if (qtyEl) qtyEl.textContent = item.quantity;
+            });
+        }
+
+        // Adicionar ao carrinho com quantidade do catálogo
+        function addToCartWithQuantity(productId, change) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            const existingItem = cart.find(item => item.product_id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += change;
+                if (existingItem.quantity <= 0) {
+                    cart = cart.filter(item => item.product_id !== productId);
+                } else {
+                    existingItem.total_price = existingItem.quantity * existingItem.unit_price;
+                }
+            } else if (change > 0) {
+                cart.push({
+                    product_id: productId,
+                    product_name: product.name,
+                    brand: product.brand,
+                    unit_price: parseFloat(product.price),
+                    quantity: 1,
+                    total_price: parseFloat(product.price),
+                    image_url: product.image_url
+                });
+            }
+            
+            updateCartBadge();
+            
+            // Atualizar quantidade exibida
+            const qtyEl = document.getElementById(\`qty-\${productId}\`);
+            const itemInCart = cart.find(item => item.product_id === productId);
+            if (qtyEl) {
+                qtyEl.textContent = itemInCart ? itemInCart.quantity : 0;
+            }
         }
 
         // Adicionar ao carrinho
@@ -663,9 +747,14 @@ app.get('/', (c) => {
                             </select>
                         </div>
                         
-                        <button onclick="finishOrder()" class="btn-red w-full mt-6 py-4 text-lg">
-                            <i class="fas fa-check mr-2"></i> Finalizar Pedido
-                        </button>
+                        <div class="grid grid-cols-2 gap-4 mt-6">
+                            <button onclick="showCatalog()" class="btn-yellow py-4 text-lg">
+                                <i class="fas fa-shopping-basket mr-2"></i> Continuar Comprando
+                            </button>
+                            <button onclick="finishOrder()" class="btn-red py-4 text-lg">
+                                <i class="fas fa-check mr-2"></i> Finalizar Pedido
+                            </button>
+                        </div>
                     \`}
                 </div>
             \`;
@@ -790,16 +879,16 @@ app.get('/', (c) => {
                     <h3 class="text-xl font-bold mt-6 mb-4 text-yellow-400">Clientes Cadastrados</h3>
                     <div class="space-y-2">
                         \${customers.map(c => \`
-                            <div class="card flex justify-between items-center">
+                            <div class="card flex justify-between items-center" style="cursor: pointer;" onclick="editCustomer(\${c.id})">
                                 <div>
                                     <p class="font-bold">\${c.name}</p>
                                     <p class="text-sm text-gray-400">\${c.phone}</p>
                                 </div>
                                 <div class="flex gap-2">
-                                    <button onclick="editCustomer(\${c.id})" class="btn-yellow" style="padding: 8px 12px;">
+                                    <button onclick="event.stopPropagation(); editCustomer(\${c.id})" class="btn-yellow" style="padding: 8px 12px;">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button onclick="deleteCustomer(\${c.id})" class="btn-red" style="padding: 8px 12px;">
+                                    <button onclick="event.stopPropagation(); deleteCustomer(\${c.id})" class="btn-red" style="padding: 8px 12px;">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -951,7 +1040,10 @@ app.get('/', (c) => {
                             <i class="fas fa-box mr-2"></i> Gerenciar Produtos
                         </button>
                         <button onclick="showLogoUpload()" class="btn-yellow w-full py-4">
-                            <i class="fas fa-image mr-2"></i> Alterar Logo
+                            <i class="fas fa-image mr-2"></i> Alterar Logo Principal
+                        </button>
+                        <button onclick="showFooterLogoUpload()" class="btn-yellow w-full py-4">
+                            <i class="fas fa-image mr-2"></i> Alterar Logo Rodapé
                         </button>
                     </div>
                 </div>
@@ -1030,6 +1122,78 @@ app.get('/', (c) => {
                 } catch (error) {
                     console.error('Erro ao fazer upload:', error);
                     alert('Erro ao fazer upload do logo.');
+                }
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        // Mostrar upload de logo do rodapé
+        function showFooterLogoUpload() {
+            if (!isAdmin) {
+                showAdminLogin();
+                return;
+            }
+            
+            hideHome();
+            const content = document.getElementById('dynamic-content');
+            
+            const html = \`
+                <div>
+                    <button onclick="showAdminPanel()" class="btn-black mb-4">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">Alterar Logo do Rodapé</h2>
+                    
+                    <div class="card">
+                        <p class="text-sm mb-4 text-gray-400">Selecione uma imagem 60x40 pixels</p>
+                        <input type="file" id="footerLogoInput" accept="image/*" class="input-field">
+                        <button onclick="uploadFooterLogo()" class="btn-red w-full mt-4">
+                            <i class="fas fa-upload mr-2"></i> Upload Logo Rodapé
+                        </button>
+                    </div>
+                    
+                    <div class="card mt-4 text-center">
+                        <p class="mb-4 font-bold">Logo Rodapé Atual:</p>
+                        <img id="currentFooterLogo" src="\${footerLogoUrl || ''}" style="width: 60px; height: 40px; object-fit: contain; margin: 0 auto; \${footerLogoUrl ? '' : 'display: none;'}" alt="Logo Rodapé">
+                        \${!footerLogoUrl ? '<p class="text-gray-400">Nenhum logo configurado</p>' : ''}
+                    </div>
+                </div>
+            \`;
+            content.innerHTML = html;
+        }
+
+        // Upload logo do rodapé
+        async function uploadFooterLogo() {
+            const input = document.getElementById('footerLogoInput');
+            if (!input.files || !input.files[0]) {
+                alert('Por favor, selecione uma imagem!');
+                return;
+            }
+            
+            const file = input.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = async (e) => {
+                try {
+                    const base64 = e.target.result;
+                    const res = await axios.post('/api/upload', {
+                        image: base64,
+                        filename: file.name
+                    });
+                    
+                    if (res.data.success) {
+                        await axios.post('/api/settings/footer-logo', { footer_logo_url: res.data.url });
+                        footerLogoUrl = res.data.url;
+                        const footerImg = document.getElementById('footerLogoImage');
+                        footerImg.src = footerLogoUrl;
+                        footerImg.style.display = 'block';
+                        alert('Logo do rodapé atualizado com sucesso!');
+                        showFooterLogoUpload();
+                    }
+                } catch (error) {
+                    console.error('Erro ao fazer upload:', error);
+                    alert('Erro ao fazer upload do logo do rodapé.');
                 }
             };
             
