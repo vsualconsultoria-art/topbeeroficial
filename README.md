@@ -17,14 +17,15 @@ Aplicativo web mobile completo para gerenciamento de distribuidora de bebidas co
 ### 🏠 Tela Inicial
 - ✅ Banner com nome da empresa "TopBeer Distribuidora de Bebidas"
 - ✅ Upload de logo personalizado (200x200 pixels)
-- ✅ Logo posicionado na metade inferior do banner
+- ✅ **Logo inteiro visível** na frente do banner (da metade para baixo)
 - ✅ Navegação por botões (Catálogo, Carrinho, Admin, Clientes)
 
 ### 📦 Catálogo de Produtos
 - ✅ Layout responsivo com 2 produtos por linha
 - ✅ Imagens dos produtos centralizadas
 - ✅ Exibição de nome, marca e preço
-- ✅ Adicionar produtos ao carrinho com um clique
+- ✅ **Setas vermelhas para alterar quantidade** diretamente no catálogo
+- ✅ Contador de quantidade em tempo real
 
 ### 🛒 Carrinho de Compras
 - ✅ Setas vermelhas para aumentar/diminuir quantidade
@@ -33,21 +34,24 @@ Aplicativo web mobile completo para gerenciamento de distribuidora de bebidas co
 - ✅ Seleção de cliente cadastrado (multipla escolha)
 - ✅ Botão para cadastrar novo cliente direto no carrinho
 - ✅ Escolha de forma de pagamento (PIX ou À Vista)
+- ✅ **Botão "Continuar Comprando"** para voltar ao catálogo
 - ✅ Envio automático do pedido via WhatsApp
 
 ### 👥 Cadastro de Clientes
 - ✅ Campos com bordas finas: Nome, Endereço, Bairro, CEP, Cidade, Telefone
 - ✅ Botões: Novo, Gravar, Alterar, Excluir
 - ✅ Lista de clientes cadastrados
+- ✅ **Clientes clicáveis para edição rápida**
 - ✅ Edição e exclusão de clientes
 
 ### 🔐 Área Administrativa
-- ✅ Senha administrativa: **123**
+- ✅ Senha administrativa: **top@beer10**
 - ✅ Gerenciamento de produtos
 - ✅ Upload de imagens de produtos (local, não link)
 - ✅ Campos: Nome, Quantidade (oculta), Preço Unitário, Marca
 - ✅ Botões: Novo, Gravar, Alterar, Excluir
-- ✅ Upload de logo da empresa
+- ✅ Upload de logo principal da empresa
+- ✅ **Upload de logo do rodapé** (60x40 pixels)
 
 ### 💬 Integração WhatsApp
 - ✅ Envio automático de pedidos para: **18 99667-6409**
@@ -254,10 +258,11 @@ O aplicativo é totalmente responsivo e otimizado para dispositivos móveis Andr
 
 ## 📞 Rodapé
 **Vsual Consultoria em Marketing**  
-**18 99667-6409**
+**18 99667-6409**  
+**Logo Rodapé**: 60x40 pixels (configurável pelo admin)
 
 ## 🔒 Informações de Segurança
-- Senha administrativa: **123** (altere em produção!)
+- Senha administrativa: **top@beer10** (altere em produção!)
 - WhatsApp configurado: **18 99667-6409**
 - PIX configurado: **123.456.789**
 

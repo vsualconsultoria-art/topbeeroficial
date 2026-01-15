@@ -6,7 +6,7 @@
 ## 🔑 INFORMAÇÕES IMPORTANTES
 
 ### Senha Administrativa
-- **Senha:** 123
+- **Senha:** top@beer10
 
 ### WhatsApp Configurado
 - **Número:** 18 99667-6409
@@ -25,9 +25,9 @@
 4. Veja preços, marcas e imagens
 
 ### 2️⃣ Fazer Pedido
-1. No catálogo, clique no produto desejado
-2. Produto é adicionado ao carrinho
-3. Clique em **"Carrinho"** (badge mostra quantidade)
+1. No catálogo, **use as setas vermelhas** para ajustar a quantidade de cada produto
+2. Veja o contador de quantidade atualizar em tempo real
+3. Clique em **"Carrinho"** (badge mostra quantidade total)
 4. Use as **setas vermelhas** para ajustar quantidades
 5. Selecione um cliente ou clique em **"Novo Cliente"**
 6. Escolha a forma de pagamento
@@ -44,12 +44,13 @@
    - Cidade
    - Telefone
 3. Clique em **"Gravar"**
+4. **Para editar**: Clique diretamente no card do cliente na lista
 
 ## 🔐 PARA ADMINISTRADORES
 
 ### 1️⃣ Fazer Login
 1. Na tela inicial, clique em **"Admin"**
-2. Digite a senha: **123**
+2. Digite a senha: **top@beer10**
 3. Clique em **"Entrar"**
 
 ### 2️⃣ Gerenciar Produtos
@@ -72,13 +73,21 @@
 1. Na lista de produtos, clique no ícone **🗑️ (lixeira)**
 2. Confirme a exclusão
 
-### 3️⃣ Alterar Logo da Empresa
+### 3️⃣ Alterar Logos da Empresa
 
-1. No painel admin, clique em **"Alterar Logo"**
+**Logo Principal (Banner):**
+1. No painel admin, clique em **"Alterar Logo Principal"**
 2. Clique em **"Escolher arquivo"**
 3. Selecione uma imagem **200x200 pixels**
 4. Clique em **"Upload Logo"**
 5. ✅ Logo atualizado na tela inicial!
+
+**Logo Rodapé:**
+1. No painel admin, clique em **"Alterar Logo Rodapé"**
+2. Clique em **"Escolher arquivo"**
+3. Selecione uma imagem **60x40 pixels**
+4. Clique em **"Upload Logo Rodapé"**
+5. ✅ Logo do rodapé atualizado!
 
 ### 4️⃣ Gerenciar Clientes
 
@@ -101,13 +110,16 @@
 - Layout otimizado para celular
 - 2 produtos por linha no catálogo
 - Imagens centralizadas
-- Setas grandes e fáceis de clicar
+- **Setas vermelhas grandes no catálogo** para ajustar quantidade
+- Contador de quantidade em tempo real
 
 ### 🛒 Carrinho
 - Badge mostra total de itens
 - Cálculo automático de totais
 - Pode aumentar/diminuir quantidade
 - Pode remover itens
+- **Botão "Continuar Comprando"** para voltar ao catálogo
+- Clientes cadastrados aparecem em lista de seleção
 
 ### 💬 WhatsApp
 - Pedido enviado automaticamente
@@ -133,13 +145,14 @@ Procure por: `PIX - 123.456.789`
 Substitua pela chave PIX desejada
 
 ### Alterar Senha Admin
-Procure por: `password === '123'`
-Substitua `123` pela senha desejada
+Procure por: `password === 'top@beer10'`
+Substitua `top@beer10` pela senha desejada
 
 ## 📞 RODAPÉ
 Em todas as telas aparece:
 - **Vsual Consultoria em Marketing**
 - **18 99667-6409**
+- **Logo personalizado** (60x40 pixels, configurável pelo admin)
 
 ## ❓ PROBLEMAS COMUNS
 
@@ -167,10 +180,11 @@ Em todas as telas aparece:
 
 1. ✅ Aplicativo está pronto para uso!
 2. 📱 Compartilhe o link com seus clientes
-3. 🔐 Altere a senha administrativa
-4. 🎨 Personalize logo e produtos
-5. 💬 Configure seu número de WhatsApp
-6. 🌐 Deploy em produção (Cloudflare Pages)
+3. 🔐 Altere a senha administrativa (atual: **top@beer10**)
+4. 🎨 Personalize logos (principal 200x200 e rodapé 60x40)
+5. 📦 Cadastre seus produtos reais
+6. 💬 Configure seu número de WhatsApp
+7. 🌐 Deploy em produção (Cloudflare Pages)
 
 ---
 
