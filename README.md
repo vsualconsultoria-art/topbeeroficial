@@ -25,6 +25,7 @@ Aplicativo web mobile completo para gerenciamento de distribuidora de bebidas co
 - ✅ Imagens dos produtos centralizadas
 - ✅ Exibição de nome, marca e preço
 - ✅ **Setas vermelhas para alterar quantidade** diretamente no catálogo
+- ✅ **Botão "Comprar"** em cada produto
 - ✅ Contador de quantidade em tempo real
 
 ### 🛒 Carrinho de Compras
@@ -45,7 +46,7 @@ Aplicativo web mobile completo para gerenciamento de distribuidora de bebidas co
 - ✅ Edição e exclusão de clientes
 
 ### 🔐 Área Administrativa
-- ✅ Senha administrativa: **top@beer10**
+- ✅ Senha administrativa: **123**
 - ✅ Gerenciamento de produtos
 - ✅ Upload de imagens de produtos (local, não link)
 - ✅ Campos: Nome, Quantidade (oculta), Preço Unitário, Marca
@@ -262,7 +263,7 @@ O aplicativo é totalmente responsivo e otimizado para dispositivos móveis Andr
 **Logo Rodapé**: 60x40 pixels (configurável pelo admin)
 
 ## 🔒 Informações de Segurança
-- Senha administrativa: **top@beer10** (altere em produção!)
+- Senha administrativa: **123** (altere em produção!)
 - WhatsApp configurado: **18 99667-6409**
 - PIX configurado: **123.456.789**
 

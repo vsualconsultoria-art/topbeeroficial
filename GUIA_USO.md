@@ -6,7 +6,7 @@
 ## 🔑 INFORMAÇÕES IMPORTANTES
 
 ### Senha Administrativa
-- **Senha:** top@beer10
+- **Senha:** 123
 
 ### WhatsApp Configurado
 - **Número:** 18 99667-6409
@@ -27,7 +27,13 @@
 ### 2️⃣ Fazer Pedido
 1. No catálogo, **use as setas vermelhas** para ajustar a quantidade de cada produto
 2. Veja o contador de quantidade atualizar em tempo real
-3. Clique em **"Carrinho"** (badge mostra quantidade total)
+3. Clique no **botão "Comprar"** do produto desejado
+4. Será redirecionado para o carrinho automaticamente
+5. Use as setas vermelhas no carrinho para ajustar quantidades
+6. Selecione um cliente ou cadastre um novo
+7. Escolha a forma de pagamento
+8. Clique em **"Finalizar Pedido"**
+9. ✅ Pedido enviado automaticamente para WhatsApp!
 4. Use as **setas vermelhas** para ajustar quantidades
 5. Selecione um cliente ou clique em **"Novo Cliente"**
 6. Escolha a forma de pagamento
@@ -50,7 +56,7 @@
 
 ### 1️⃣ Fazer Login
 1. Na tela inicial, clique em **"Admin"**
-2. Digite a senha: **top@beer10**
+2. Digite a senha: **123**
 3. Clique em **"Entrar"**
 
 ### 2️⃣ Gerenciar Produtos
@@ -145,8 +151,8 @@ Procure por: `PIX - 123.456.789`
 Substitua pela chave PIX desejada
 
 ### Alterar Senha Admin
-Procure por: `password === 'top@beer10'`
-Substitua `top@beer10` pela senha desejada
+Procure por: `password === '123'`
+Substitua `123` pela senha desejada
 
 ## 📞 RODAPÉ
 Em todas as telas aparece:
@@ -180,7 +186,7 @@ Em todas as telas aparece:
 
 1. ✅ Aplicativo está pronto para uso!
 2. 📱 Compartilhe o link com seus clientes
-3. 🔐 Altere a senha administrativa (atual: **top@beer10**)
+3. 🔐 Altere a senha administrativa (atual: **123**)
 4. 🎨 Personalize logos (principal 200x200 e rodapé 60x40)
 5. 📦 Cadastre seus produtos reais
 6. 💬 Configure seu número de WhatsApp
