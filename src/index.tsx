@@ -16,7 +16,7 @@ app.use('/api/*', cors())
 // Verificar senha administrativa
 app.post('/api/auth/verify', async (c) => {
   const { password } = await c.req.json()
-  return c.json({ success: password === 'top@beer10' })
+  return c.json({ success: password === '123' })
 })
 
 // ============ PRODUTOS ============
@@ -602,11 +602,14 @@ app.get('/', (c) => {
                                 <h3 class="font-bold text-sm mb-1">\${p.name}</h3>
                                 <p class="text-xs text-gray-400 mb-1">\${p.brand}</p>
                                 <p class="text-yellow-400 font-bold mb-2">R$ \${parseFloat(p.price).toFixed(2)}</p>
-                                <div class="quantity-control">
+                                <div class="quantity-control mb-2">
                                     <button class="quantity-btn" onclick="event.stopPropagation(); addToCartWithQuantity(\${p.id}, -1)">-</button>
                                     <span class="font-bold text-lg" id="qty-\${p.id}">0</span>
                                     <button class="quantity-btn" onclick="event.stopPropagation(); addToCartWithQuantity(\${p.id}, 1)">+</button>
                                 </div>
+                                <button onclick="buyProduct(\${p.id})" class="btn-red w-full" style="padding: 8px 12px; font-size: 14px;">
+                                    <i class="fas fa-shopping-cart mr-1"></i> Comprar
+                                </button>
                             </div>
                         \`).join('')}
                     </div>
@@ -654,6 +657,40 @@ app.get('/', (c) => {
             const itemInCart = cart.find(item => item.product_id === productId);
             if (qtyEl) {
                 qtyEl.textContent = itemInCart ? itemInCart.quantity : 0;
+            }
+        }
+
+        // Comprar produto - adiciona ao carrinho e vai para checkout
+        function buyProduct(productId) {
+            const qtyEl = document.getElementById(\`qty-\${productId}\`);
+            const currentQty = qtyEl ? parseInt(qtyEl.textContent) : 0;
+            
+            if (currentQty === 0) {
+                alert('Por favor, selecione a quantidade usando as setas + e -');
+                return;
+            }
+            
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            const existingItem = cart.find(item => item.product_id === productId);
+            
+            if (existingItem) {
+                // Já está no carrinho com a quantidade selecionada
+                showCart();
+            } else {
+                // Adicionar ao carrinho se não existir (não deveria acontecer, mas por garantia)
+                cart.push({
+                    product_id: productId,
+                    product_name: product.name,
+                    brand: product.brand,
+                    unit_price: parseFloat(product.price),
+                    quantity: currentQty,
+                    total_price: parseFloat(product.price) * currentQty,
+                    image_url: product.image_url
+                });
+                updateCartBadge();
+                showCart();
             }
         }
 
