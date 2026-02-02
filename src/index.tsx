@@ -39,11 +39,11 @@ app.get('/api/products/:id', async (c) => {
 // Criar novo produto
 app.post('/api/products', async (c) => {
   const { DB } = c.env
-  const { name, price, brand, stock_quantity, image_url } = await c.req.json()
+  const { name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type } = await c.req.json()
   
   const result = await DB.prepare(
-    'INSERT INTO products (name, price, brand, stock_quantity, image_url) VALUES (?, ?, ?, ?, ?)'
-  ).bind(name, price, brand, stock_quantity || 0, image_url || null).run()
+    'INSERT INTO products (name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+  ).bind(name, price, brand, stock_quantity || 0, image_url || null, cold_quantity || 0, hot_quantity || 0, unit_type || 'Unidade').run()
   
   return c.json({ id: result.meta.last_row_id, success: true })
 })
@@ -52,11 +52,11 @@ app.post('/api/products', async (c) => {
 app.put('/api/products/:id', async (c) => {
   const { DB } = c.env
   const id = c.req.param('id')
-  const { name, price, brand, stock_quantity, image_url } = await c.req.json()
+  const { name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type } = await c.req.json()
   
   await DB.prepare(
-    'UPDATE products SET name = ?, price = ?, brand = ?, stock_quantity = ?, image_url = ? WHERE id = ?'
-  ).bind(name, price, brand, stock_quantity, image_url, id).run()
+    'UPDATE products SET name = ?, price = ?, brand = ?, stock_quantity = ?, image_url = ?, cold_quantity = ?, hot_quantity = ?, unit_type = ? WHERE id = ?'
+  ).bind(name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type, id).run()
   
   return c.json({ success: true })
 })
@@ -474,6 +474,29 @@ app.get('/', (c) => {
         }
         .tab-button.active {
             background: #dc2626;
+        }
+        
+        /* RESPONSIVIDADE MOBILE */
+        @media (max-width: 640px) {
+            body { font-size: 14px; }
+            .container { padding: 12px !important; }
+            .btn-red, .btn-yellow, .btn-black { padding: 10px 16px; font-size: 14px; }
+            .card { padding: 15px; }
+            .banner { height: 200px; margin-bottom: 100px; }
+            .logo-container { width: 150px; height: 150px; bottom: -75px; }
+            h1, h2 { font-size: 1.5rem !important; }
+            h3 { font-size: 1.25rem !important; }
+            .input-field { font-size: 16px; /* Evita zoom no iOS */ }
+            .product-card { padding: 12px; }
+            .quantity-btn { width: 32px; height: 32px; font-size: 18px; }
+            .modal-content { padding: 20px; }
+            .grid.grid-cols-2 { gap: 12px; }
+        }
+        
+        @media (max-width: 480px) {
+            .banner { height: 180px; margin-bottom: 80px; }
+            .logo-container { width: 120px; height: 120px; bottom: -60px; }
+            .footer { padding: 15px; font-size: 13px; }
         }
     </style>
 </head>
@@ -1264,6 +1287,22 @@ app.get('/', (c) => {
                         <label class="block mb-2 text-sm font-bold">Marca</label>
                         <input type="text" id="productBrand" placeholder="Ex: Heineken" class="input-field">
                         
+                        <label class="block mb-2 text-sm font-bold">Quantidade</label>
+                        <input type="number" id="productQuantity" placeholder="Ex: 100" class="input-field">
+                        
+                        <label class="block mb-2 text-sm font-bold">Gelada</label>
+                        <input type="number" id="productCold" placeholder="Quantidade gelada" class="input-field">
+                        
+                        <label class="block mb-2 text-sm font-bold">Quente</label>
+                        <input type="number" id="productHot" placeholder="Quantidade quente" class="input-field">
+                        
+                        <label class="block mb-2 text-sm font-bold">Tipo</label>
+                        <select id="productType" class="input-field">
+                            <option value="Unidade">Unidade</option>
+                            <option value="Caixa">Caixa</option>
+                            <option value="Fardo">Fardo</option>
+                        </select>
+                        
                         <label class="block mb-2 text-sm font-bold">Imagem do Produto</label>
                         <input type="file" id="productImage" accept="image/*" class="input-field">
                         
@@ -1311,6 +1350,10 @@ app.get('/', (c) => {
             const name = document.getElementById('productName').value;
             const price = document.getElementById('productPrice').value;
             const brand = document.getElementById('productBrand').value;
+            const quantity = document.getElementById('productQuantity').value;
+            const cold = document.getElementById('productCold').value;
+            const hot = document.getElementById('productHot').value;
+            const type = document.getElementById('productType').value;
             const imageInput = document.getElementById('productImage');
             
             if (!name || !price || !brand) {
@@ -1353,7 +1396,10 @@ app.get('/', (c) => {
                     name,
                     price: parseFloat(price),
                     brand,
-                    stock_quantity: 100,
+                    stock_quantity: parseInt(quantity) || 0,
+                    cold_quantity: parseInt(cold) || 0,
+                    hot_quantity: parseInt(hot) || 0,
+                    unit_type: type || 'Unidade',
                     image_url
                 };
                 
@@ -1384,6 +1430,10 @@ app.get('/', (c) => {
             document.getElementById('productName').value = product.name;
             document.getElementById('productPrice').value = product.price;
             document.getElementById('productBrand').value = product.brand;
+            document.getElementById('productQuantity').value = product.stock_quantity || 0;
+            document.getElementById('productCold').value = product.cold_quantity || 0;
+            document.getElementById('productHot').value = product.hot_quantity || 0;
+            document.getElementById('productType').value = product.unit_type || 'Unidade';
             
             // Scroll para o formulário
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1411,6 +1461,10 @@ app.get('/', (c) => {
             document.getElementById('productName').value = '';
             document.getElementById('productPrice').value = '';
             document.getElementById('productBrand').value = '';
+            document.getElementById('productQuantity').value = '';
+            document.getElementById('productCold').value = '';
+            document.getElementById('productHot').value = '';
+            document.getElementById('productType').value = 'Unidade';
             document.getElementById('productImage').value = '';
         }
 
