@@ -67,6 +67,10 @@
    - Nome do Produto
    - Preço Unitário (ex: 5.50)
    - Marca
+   - **Quantidade** (estoque total)
+   - **Gelada** (quantidade gelada)
+   - **Quente** (quantidade quente)
+   - **Tipo** (escolha: Unidade, Caixa ou Fardo)
 3. Clique em **"Escolher arquivo"** para upload de imagem
 4. Clique em **"Gravar"**
 
