@@ -39,11 +39,11 @@ app.get('/api/products/:id', async (c) => {
 // Criar novo produto
 app.post('/api/products', async (c) => {
   const { DB } = c.env
-  const { name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type } = await c.req.json()
+  const { name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type, category } = await c.req.json()
   
   const result = await DB.prepare(
-    'INSERT INTO products (name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-  ).bind(name, price, brand, stock_quantity || 0, image_url || null, cold_quantity || 0, hot_quantity || 0, unit_type || 'Unidade').run()
+    'INSERT INTO products (name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+  ).bind(name, price, brand, stock_quantity || 0, image_url || null, cold_quantity || 0, hot_quantity || 0, unit_type || 'Unidade', category || 'Bebidas').run()
   
   return c.json({ id: result.meta.last_row_id, success: true })
 })
@@ -52,11 +52,11 @@ app.post('/api/products', async (c) => {
 app.put('/api/products/:id', async (c) => {
   const { DB } = c.env
   const id = c.req.param('id')
-  const { name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type } = await c.req.json()
+  const { name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type, category } = await c.req.json()
   
   await DB.prepare(
-    'UPDATE products SET name = ?, price = ?, brand = ?, stock_quantity = ?, image_url = ?, cold_quantity = ?, hot_quantity = ?, unit_type = ? WHERE id = ?'
-  ).bind(name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type, id).run()
+    'UPDATE products SET name = ?, price = ?, brand = ?, stock_quantity = ?, image_url = ?, cold_quantity = ?, hot_quantity = ?, unit_type = ?, category = ? WHERE id = ?'
+  ).bind(name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type, category, id).run()
   
   return c.json({ success: true })
 })
@@ -207,6 +207,25 @@ app.post('/api/settings/footer-logo', async (c) => {
   await DB.prepare(
     "INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('footer_logo_url', ?, CURRENT_TIMESTAMP)"
   ).bind(footer_logo_url).run()
+  
+  return c.json({ success: true })
+})
+
+// Buscar informações de filiais
+app.get('/api/settings/branches', async (c) => {
+  const { DB } = c.env
+  const { results } = await DB.prepare("SELECT value FROM settings WHERE key = 'branches'").all()
+  return c.json({ branches: results[0]?.value || '' })
+})
+
+// Salvar informações de filiais
+app.post('/api/settings/branches', async (c) => {
+  const { DB } = c.env
+  const { branches } = await c.req.json()
+  
+  await DB.prepare(
+    "INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('branches', ?, CURRENT_TIMESTAMP)"
+  ).bind(branches).run()
   
   return c.json({ success: true })
 })
@@ -522,11 +541,14 @@ app.get('/', (c) => {
                     <i class="fas fa-shopping-cart mr-2"></i> Carrinho
                     <span id="cartBadge" class="cart-badge hidden">0</span>
                 </button>
-                <button onclick="showAdminLogin()" class="btn-black py-4 text-lg">
-                    <i class="fas fa-cog mr-2"></i> Admin
+                <button onclick="showBranches()" class="btn-yellow py-4 text-lg">
+                    <i class="fas fa-store mr-2"></i> Filiais
                 </button>
                 <button onclick="showCustomerForm()" class="btn-red py-4 text-lg">
                     <i class="fas fa-users mr-2"></i> Clientes
+                </button>
+                <button onclick="showAdminLogin()" class="btn-black py-4 text-lg col-span-2">
+                    <i class="fas fa-cog mr-2"></i> Admin
                 </button>
             </div>
         </div>
@@ -606,9 +628,18 @@ app.get('/', (c) => {
         }
 
         // Mostrar catálogo
-        async function showCatalog() {
+        async function showCatalog(filterCategory = '', filterTemp = '', filterType = '') {
             hideHome();
             const content = document.getElementById('dynamic-content');
+            
+            // Obter categorias únicas
+            const categories = ['Todas', ...new Set(products.map(p => p.category).filter(c => c))];
+            
+            // Filtrar produtos
+            let filteredProducts = products;
+            if (filterCategory && filterCategory !== 'Todas') {
+                filteredProducts = filteredProducts.filter(p => p.category === filterCategory);
+            }
             
             const html = \`
                 <div>
@@ -616,23 +647,76 @@ app.get('/', (c) => {
                         <i class="fas fa-arrow-left mr-2"></i> Voltar
                     </button>
                     <h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">Catálogo de Produtos</h2>
-                    <div class="grid grid-cols-2 gap-4" id="productList">
-                        \${products.map(p => \`
-                            <div class="product-card">
-                                <div style="width: 100%; height: 120px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; overflow: hidden;">
-                                    \${p.image_url ? \`<img src="\${p.image_url}" style="width: 100%; height: 100%; object-fit: contain;">\` : '<i class="fas fa-beer text-4xl text-yellow-400"></i>'}
+                    
+                    <!-- Filtros -->
+                    <div class="card mb-4">
+                        <label class="block mb-2 text-sm font-bold">Filtrar por Categoria</label>
+                        <select id="filterCategory" class="input-field" onchange="showCatalog(this.value, document.getElementById('filterTemp').value, document.getElementById('filterType').value)">
+                            \${categories.map(cat => \`<option value="\${cat}" \${filterCategory === cat ? 'selected' : ''}>\${cat}</option>\`).join('')}
+                        </select>
+                        
+                        <label class="block mb-2 text-sm font-bold mt-3">Temperatura</label>
+                        <select id="filterTemp" class="input-field">
+                            <option value="">Todas</option>
+                            <option value="Gelada" \${filterTemp === 'Gelada' ? 'selected' : ''}>Gelada</option>
+                            <option value="Quente" \${filterTemp === 'Quente' ? 'selected' : ''}>Quente (Ambiente)</option>
+                        </select>
+                        
+                        <label class="block mb-2 text-sm font-bold mt-3">Tipo de Embalagem</label>
+                        <select id="filterType" class="input-field">
+                            <option value="">Todos</option>
+                            <option value="Unidade" \${filterType === 'Unidade' ? 'selected' : ''}>Unidade</option>
+                            <option value="Caixa" \${filterType === 'Caixa' ? 'selected' : ''}>Caixa</option>
+                            <option value="Fardo" \${filterType === 'Fardo' ? 'selected' : ''}>Fardo</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Produtos em coluna única -->
+                    <div class="space-y-4" id="productList">
+                        \${filteredProducts.map(p => \`
+                            <div class="card">
+                                <div class="flex gap-4">
+                                    <div style="width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+                                        \${p.image_url ? \`<img src="\${p.image_url}" style="width: 100%; height: 100%; object-fit: contain;">\` : '<i class="fas fa-beer text-4xl text-yellow-400"></i>'}
+                                    </div>
+                                    <div class="flex-1">
+                                        <h3 class="font-bold text-lg mb-1">\${p.name}</h3>
+                                        <p class="text-sm text-gray-400 mb-1">\${p.brand} \${p.category ? '• ' + p.category : ''}</p>
+                                        <p class="text-yellow-400 font-bold text-xl mb-2">R$ \${parseFloat(p.price).toFixed(2)}</p>
+                                        
+                                        <!-- Seleção de Temperatura -->
+                                        <div class="mb-2">
+                                            <label class="text-xs text-gray-400">Temperatura:</label>
+                                            <select id="temp-\${p.id}" class="input-field" style="padding: 6px; font-size: 14px;">
+                                                <option value="Gelada">Gelada (\${p.cold_quantity || 0} disp.)</option>
+                                                <option value="Quente">Quente (\${p.hot_quantity || 0} disp.)</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <!-- Seleção de Tipo -->
+                                        <div class="mb-2">
+                                            <label class="text-xs text-gray-400">Tipo:</label>
+                                            <select id="type-\${p.id}" class="input-field" style="padding: 6px; font-size: 14px;">
+                                                <option value="\${p.unit_type}">\${p.unit_type}</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <!-- Controle de Quantidade -->
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <label class="text-xs text-gray-400">Quantidade:</label>
+                                            <div class="quantity-control">
+                                                <button class="quantity-btn" onclick="event.stopPropagation(); addToCartWithQuantity(\${p.id}, -1)">-</button>
+                                                <span class="font-bold text-lg" id="qty-\${p.id}">0</span>
+                                                <button class="quantity-btn" onclick="event.stopPropagation(); addToCartWithQuantity(\${p.id}, 1)">+</button>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Botão Comprar -->
+                                        <button onclick="buyProductWithOptions(\${p.id})" class="btn-red w-full" style="padding: 10px; font-size: 16px;">
+                                            <i class="fas fa-shopping-cart mr-2"></i> Comprar
+                                        </button>
+                                    </div>
                                 </div>
-                                <h3 class="font-bold text-sm mb-1">\${p.name}</h3>
-                                <p class="text-xs text-gray-400 mb-1">\${p.brand}</p>
-                                <p class="text-yellow-400 font-bold mb-2">R$ \${parseFloat(p.price).toFixed(2)}</p>
-                                <div class="quantity-control mb-2">
-                                    <button class="quantity-btn" onclick="event.stopPropagation(); addToCartWithQuantity(\${p.id}, -1)">-</button>
-                                    <span class="font-bold text-lg" id="qty-\${p.id}">0</span>
-                                    <button class="quantity-btn" onclick="event.stopPropagation(); addToCartWithQuantity(\${p.id}, 1)">+</button>
-                                </div>
-                                <button onclick="buyProduct(\${p.id})" class="btn-red w-full" style="padding: 8px 12px; font-size: 14px;">
-                                    <i class="fas fa-shopping-cart mr-1"></i> Comprar
-                                </button>
                             </div>
                         \`).join('')}
                     </div>
@@ -717,7 +801,57 @@ app.get('/', (c) => {
             }
         }
 
-        // Adicionar ao carrinho
+        // Comprar produto com opções (temperatura e tipo)
+        function buyProductWithOptions(productId) {
+            const qtyEl = document.getElementById(\`qty-\${productId}\`);
+            const currentQty = qtyEl ? parseInt(qtyEl.textContent) : 0;
+            
+            if (currentQty === 0) {
+                alert('Por favor, selecione a quantidade usando as setas + e -');
+                return;
+            }
+            
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            // Pegar as opções selecionadas
+            const tempSelect = document.getElementById(\`temp-\${productId}\`);
+            const typeSelect = document.getElementById(\`type-\${productId}\`);
+            const temperature = tempSelect ? tempSelect.value : 'Gelada';
+            const type = typeSelect ? typeSelect.value : product.unit_type;
+            
+            // Verificar disponibilidade
+            const availableQty = temperature === 'Gelada' ? (product.cold_quantity || 0) : (product.hot_quantity || 0);
+            if (currentQty > availableQty) {
+                alert(\`Apenas \${availableQty} unidades disponíveis como \${temperature}!\`);
+                return;
+            }
+            
+            const existingItem = cart.find(item => 
+                item.product_id === productId && 
+                item.temperature === temperature && 
+                item.type === type
+            );
+            
+            if (existingItem) {
+                showCart();
+            } else {
+                cart.push({
+                    product_id: productId,
+                    product_name: product.name,
+                    brand: product.brand,
+                    unit_price: parseFloat(product.price),
+                    quantity: currentQty,
+                    total_price: parseFloat(product.price) * currentQty,
+                    image_url: product.image_url,
+                    temperature: temperature,
+                    type: type,
+                    category: product.category
+                });
+                updateCartBadge();
+                showCart();
+            }
+        }
         function addToCart(productId) {
             const product = products.find(p => p.id === productId);
             if (!product) return;
@@ -1099,6 +1233,9 @@ app.get('/', (c) => {
                         <button onclick="showProductForm()" class="btn-red w-full py-4">
                             <i class="fas fa-box mr-2"></i> Gerenciar Produtos
                         </button>
+                        <button onclick="showBranchesAdmin()" class="btn-yellow w-full py-4">
+                            <i class="fas fa-store mr-2"></i> Gerenciar Filiais
+                        </button>
                         <button onclick="showLogoUpload()" class="btn-yellow w-full py-4">
                             <i class="fas fa-image mr-2"></i> Alterar Logo Principal
                         </button>
@@ -1303,6 +1440,9 @@ app.get('/', (c) => {
                             <option value="Fardo">Fardo</option>
                         </select>
                         
+                        <label class="block mb-2 text-sm font-bold">Categoria</label>
+                        <input type="text" id="productCategory" placeholder="Ex: Cervejas, Refrigerantes, Águas" class="input-field">
+                        
                         <label class="block mb-2 text-sm font-bold">Imagem do Produto</label>
                         <input type="file" id="productImage" accept="image/*" class="input-field">
                         
@@ -1354,6 +1494,7 @@ app.get('/', (c) => {
             const cold = document.getElementById('productCold').value;
             const hot = document.getElementById('productHot').value;
             const type = document.getElementById('productType').value;
+            const category = document.getElementById('productCategory').value;
             const imageInput = document.getElementById('productImage');
             
             if (!name || !price || !brand) {
@@ -1400,6 +1541,7 @@ app.get('/', (c) => {
                     cold_quantity: parseInt(cold) || 0,
                     hot_quantity: parseInt(hot) || 0,
                     unit_type: type || 'Unidade',
+                    category: category || 'Bebidas',
                     image_url
                 };
                 
@@ -1434,6 +1576,7 @@ app.get('/', (c) => {
             document.getElementById('productCold').value = product.cold_quantity || 0;
             document.getElementById('productHot').value = product.hot_quantity || 0;
             document.getElementById('productType').value = product.unit_type || 'Unidade';
+            document.getElementById('productCategory').value = product.category || 'Bebidas';
             
             // Scroll para o formulário
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1465,7 +1608,87 @@ app.get('/', (c) => {
             document.getElementById('productCold').value = '';
             document.getElementById('productHot').value = '';
             document.getElementById('productType').value = 'Unidade';
+            document.getElementById('productCategory').value = '';
             document.getElementById('productImage').value = '';
+        }
+
+        // Mostrar informações de filiais (público)
+        async function showBranches() {
+            hideHome();
+            const content = document.getElementById('dynamic-content');
+            
+            try {
+                const res = await axios.get('/api/settings/branches');
+                const branchesText = res.data.branches || 'Nenhuma informação de filiais cadastrada.';
+                
+                const html = \`
+                    <div>
+                        <button onclick="showHome()" class="btn-black mb-4">
+                            <i class="fas fa-arrow-left mr-2"></i> Voltar
+                        </button>
+                        <h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">Nossas Filiais</h2>
+                        
+                        <div class="card">
+                            <div style="white-space: pre-wrap; line-height: 1.8;">\${branchesText}</div>
+                        </div>
+                    </div>
+                \`;
+                content.innerHTML = html;
+            } catch (error) {
+                console.error('Erro ao carregar filiais:', error);
+            }
+        }
+
+        // Gerenciar filiais (admin)
+        async function showBranchesAdmin() {
+            if (!isAdmin) {
+                showAdminLogin();
+                return;
+            }
+            
+            hideHome();
+            const content = document.getElementById('dynamic-content');
+            
+            try {
+                const res = await axios.get('/api/settings/branches');
+                const branchesText = res.data.branches || '';
+                
+                const html = \`
+                    <div>
+                        <button onclick="showAdminPanel()" class="btn-black mb-4">
+                            <i class="fas fa-arrow-left mr-2"></i> Voltar
+                        </button>
+                        <h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">Gerenciar Filiais</h2>
+                        
+                        <div class="card">
+                            <label class="block mb-2 text-sm font-bold">Informações das Filiais</label>
+                            <p class="text-sm text-gray-400 mb-2">Digite as informações das filiais (endereços, telefones, horários, etc.)</p>
+                            <textarea id="branchesText" class="input-field" rows="10" placeholder="Ex:&#10;Filial Centro&#10;Rua Principal, 123&#10;Tel: (18) 1234-5678&#10;Horário: Seg-Sex 8h-18h&#10;&#10;Filial Bairro&#10;Av. Secundária, 456&#10;Tel: (18) 8765-4321&#10;Horário: Seg-Sáb 8h-20h">\${branchesText}</textarea>
+                            
+                            <button onclick="saveBranches()" class="btn-red w-full mt-4">
+                                <i class="fas fa-save mr-2"></i> Salvar Informações
+                            </button>
+                        </div>
+                    </div>
+                \`;
+                content.innerHTML = html;
+            } catch (error) {
+                console.error('Erro ao carregar filiais:', error);
+            }
+        }
+
+        // Salvar informações de filiais
+        async function saveBranches() {
+            const branchesText = document.getElementById('branchesText').value;
+            
+            try {
+                await axios.post('/api/settings/branches', { branches: branchesText });
+                alert('Informações de filiais salvas com sucesso!');
+                showBranchesAdmin();
+            } catch (error) {
+                console.error('Erro ao salvar filiais:', error);
+                alert('Erro ao salvar informações de filiais.');
+            }
         }
 
         // Inicializar app
