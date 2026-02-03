@@ -9,7 +9,7 @@ Aplicativo web mobile completo para gerenciamento de distribuidora de bebidas co
 - **Preto**: Fundo e elementos de contraste (#1a1a1a)
 
 ## 🌐 URLs
-- **Desenvolvimento**: https://3000-i0rgiisbe7rka4pql8s4v-b9b802c4.sandbox.novita.ai
+- **Desenvolvimento**: https://3000-i0rgiisbe7rka4pql8s4v-5634da27.sandbox.novita.ai
 - **GitHub**: (Adicionar após push)
 
 ## ✨ Funcionalidades Implementadas
@@ -21,12 +21,18 @@ Aplicativo web mobile completo para gerenciamento de distribuidora de bebidas co
 - ✅ Navegação por botões (Catálogo, Carrinho, Admin, Clientes)
 
 ### 📦 Catálogo de Produtos
-- ✅ Layout responsivo com 2 produtos por linha
+- ✅ **Layout em coluna única** (otimizado para mobile)
 - ✅ Imagens dos produtos centralizadas
-- ✅ Exibição de nome, marca e preço
+- ✅ Exibição de nome, marca, categoria e preço
+- ✅ **Filtros inteligentes**:
+  - 🏷️ Por Categoria (Cervejas, Refrigerantes, Águas, etc.)
+  - 🌡️ Por Temperatura (Gelada/Quente)
+  - 📦 Por Tipo de Embalagem (Unidade/Caixa/Fardo)
+- ✅ **Seleção de temperatura e tipo** para cada produto
 - ✅ **Setas vermelhas para alterar quantidade** diretamente no catálogo
 - ✅ **Botão "Comprar"** em cada produto
 - ✅ Contador de quantidade em tempo real
+- ✅ Validação de estoque por temperatura
 
 ### 🛒 Carrinho de Compras
 - ✅ Setas vermelhas para aumentar/diminuir quantidade
@@ -45,6 +51,13 @@ Aplicativo web mobile completo para gerenciamento de distribuidora de bebidas co
 - ✅ **Clientes clicáveis para edição rápida**
 - ✅ Edição e exclusão de clientes
 
+### 🏢 Filiais
+- ✅ **Campo digitável** para informações de filiais
+- ✅ Suporte a múltiplas linhas (endereços, telefones, horários)
+- ✅ **Botão na tela inicial** para visualizar filiais
+- ✅ Área administrativa para editar informações
+- ✅ Exibição pública formatada
+
 ### 🔐 Área Administrativa
 - ✅ Senha administrativa: **123**
 - ✅ Gerenciamento de produtos
@@ -57,6 +70,7 @@ Aplicativo web mobile completo para gerenciamento de distribuidora de bebidas co
   - **Gelada** (quantidade gelada)
   - **Quente** (quantidade quente)
   - **Tipo** (Unidade, Caixa ou Fardo)
+  - **Categoria** (Cervejas, Refrigerantes, Águas, etc.)
   - Imagem do Produto
 - ✅ Botões: Novo, Gravar, Alterar, Excluir
 - ✅ Upload de logo principal da empresa
@@ -88,6 +102,7 @@ Aplicativo web mobile completo para gerenciamento de distribuidora de bebidas co
 - **Quantidade Gelada**
 - **Quantidade Quente**
 - **Tipo de Unidade** (Unidade/Caixa/Fardo)
+- **Categoria** (Cervejas, Refrigerantes, Águas, etc.)
 - Data de Criação
 
 **Clientes:**
