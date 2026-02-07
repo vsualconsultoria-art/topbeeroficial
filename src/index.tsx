@@ -682,14 +682,14 @@ app.get('/', (c) => {
                                     <div class="flex-1">
                                         <h3 class="font-bold text-lg mb-1">\${p.name}</h3>
                                         <p class="text-sm text-gray-400 mb-1">\${p.brand} \${p.category ? '• ' + p.category : ''}</p>
-                                        <p class="text-yellow-400 font-bold text-xl mb-2">R$ \${parseFloat(p.price).toFixed(2)}</p>
+                                        <p class="text-yellow-400 font-bold text-xl mb-2" id="price-\${p.id}">R$ \${parseFloat(p.price).toFixed(2)}</p>
                                         
                                         <!-- Seleção de Temperatura -->
                                         <div class="mb-2">
                                             <label class="text-xs text-gray-400">Temperatura:</label>
-                                            <select id="temp-\${p.id}" class="input-field" style="padding: 6px; font-size: 14px;">
-                                                <option value="Gelada">Gelada (\${p.cold_quantity || 0} disp.)</option>
-                                                <option value="Quente">Quente (\${p.hot_quantity || 0} disp.)</option>
+                                            <select id="temp-\${p.id}" class="input-field" style="padding: 6px; font-size: 14px;" onchange="updatePrice(\${p.id})">
+                                                <option value="Gelada">Gelada</option>
+                                                <option value="Quente">Quente</option>
                                             </select>
                                         </div>
                                         
@@ -729,6 +729,33 @@ app.get('/', (c) => {
                 const qtyEl = document.getElementById(\`qty-\${item.product_id}\`);
                 if (qtyEl) qtyEl.textContent = item.quantity;
             });
+            
+            // Atualizar preços iniciais baseados na temperatura padrão (Gelada)
+            filteredProducts.forEach(p => {
+                updatePrice(p.id);
+            });
+        }
+
+        // Atualizar preço baseado na temperatura selecionada
+        function updatePrice(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            const tempSelect = document.getElementById('temp-' + productId);
+            const priceEl = document.getElementById('price-' + productId);
+            
+            if (tempSelect && priceEl) {
+                const temperature = tempSelect.value;
+                let displayPrice = product.price;
+                
+                if (temperature === 'Gelada' && product.price_cold) {
+                    displayPrice = product.price_cold;
+                } else if (temperature === 'Quente' && product.price_hot) {
+                    displayPrice = product.price_hot;
+                }
+                
+                priceEl.textContent = 'R$ ' + parseFloat(displayPrice).toFixed(2);
+            }
         }
 
         // Adicionar ao carrinho com quantidade do catálogo
@@ -806,6 +833,7 @@ app.get('/', (c) => {
             const qtyEl = document.getElementById(\`qty-\${productId}\`);
             const currentQty = qtyEl ? parseInt(qtyEl.textContent) : 0;
             
+            // MODAL: Quantidade zero
             if (currentQty === 0) {
                 alert('Por favor, selecione a quantidade usando as setas + e -');
                 return;
@@ -819,6 +847,14 @@ app.get('/', (c) => {
             const typeSelect = document.getElementById(\`type-\${productId}\`);
             const temperature = tempSelect ? tempSelect.value : 'Gelada';
             const type = typeSelect ? typeSelect.value : product.unit_type;
+            
+            // Determinar preço baseado na temperatura
+            let finalPrice = product.price;
+            if (temperature === 'Gelada' && product.price_cold) {
+                finalPrice = product.price_cold;
+            } else if (temperature === 'Quente' && product.price_hot) {
+                finalPrice = product.price_hot;
+            }
             
             // Verificar disponibilidade
             const availableQty = temperature === 'Gelada' ? (product.cold_quantity || 0) : (product.hot_quantity || 0);
@@ -834,21 +870,30 @@ app.get('/', (c) => {
             );
             
             if (existingItem) {
-                showCart();
+                existingItem.quantity += currentQty;
+                existingItem.total_price = existingItem.quantity * existingItem.unit_price;
             } else {
                 cart.push({
                     product_id: productId,
                     product_name: product.name,
                     brand: product.brand,
-                    unit_price: parseFloat(product.price),
+                    unit_price: parseFloat(finalPrice),
                     quantity: currentQty,
-                    total_price: parseFloat(product.price) * currentQty,
+                    total_price: parseFloat(finalPrice) * currentQty,
                     image_url: product.image_url,
                     temperature: temperature,
                     type: type,
                     category: product.category
                 });
-                updateCartBadge();
+            }
+            updateCartBadge();
+            
+            // MODAL: Continuar comprando ou ir para carrinho
+            if (confirm('Continuar Comprando?')) {
+                // Continuar comprando - não faz nada, continua no catálogo
+                return;
+            } else {
+                // Ir para o carrinho
                 showCart();
             }
         }
