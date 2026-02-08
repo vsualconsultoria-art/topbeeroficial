@@ -628,7 +628,7 @@ app.get('/', (c) => {
         }
 
         // Mostrar catálogo
-        async function showCatalog(filterCategory = '', filterTemp = '', filterType = '') {
+        async function showCatalog(filterCategory = '') {
             hideHome();
             const content = document.getElementById('dynamic-content');
             
@@ -648,26 +648,11 @@ app.get('/', (c) => {
                     </button>
                     <h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">Catálogo de Produtos</h2>
                     
-                    <!-- Filtros -->
+                    <!-- Filtro APENAS por Categoria -->
                     <div class="card mb-4">
                         <label class="block mb-2 text-sm font-bold">Filtrar por Categoria</label>
-                        <select id="filterCategory" class="input-field" onchange="showCatalog(this.value, document.getElementById('filterTemp').value, document.getElementById('filterType').value)">
+                        <select id="filterCategory" class="input-field" onchange="showCatalog(this.value)">
                             \${categories.map(cat => \`<option value="\${cat}" \${filterCategory === cat ? 'selected' : ''}>\${cat}</option>\`).join('')}
-                        </select>
-                        
-                        <label class="block mb-2 text-sm font-bold mt-3">Temperatura</label>
-                        <select id="filterTemp" class="input-field">
-                            <option value="">Todas</option>
-                            <option value="Gelada" \${filterTemp === 'Gelada' ? 'selected' : ''}>Gelada</option>
-                            <option value="Quente" \${filterTemp === 'Quente' ? 'selected' : ''}>Quente (Ambiente)</option>
-                        </select>
-                        
-                        <label class="block mb-2 text-sm font-bold mt-3">Tipo de Embalagem</label>
-                        <select id="filterType" class="input-field">
-                            <option value="">Todos</option>
-                            <option value="Unidade" \${filterType === 'Unidade' ? 'selected' : ''}>Unidade</option>
-                            <option value="Caixa" \${filterType === 'Caixa' ? 'selected' : ''}>Caixa</option>
-                            <option value="Fardo" \${filterType === 'Fardo' ? 'selected' : ''}>Fardo</option>
                         </select>
                     </div>
                     
@@ -686,7 +671,7 @@ app.get('/', (c) => {
                                         
                                         <!-- Seleção de Temperatura -->
                                         <div class="mb-2">
-                                            <label class="text-xs text-gray-400">Temperatura:</label>
+                                            <label class="text-xs text-gray-400">Gelada ou Quente:</label>
                                             <select id="temp-\${p.id}" class="input-field" style="padding: 6px; font-size: 14px;" onchange="updatePrice(\${p.id})">
                                                 <option value="Gelada">Gelada</option>
                                                 <option value="Quente">Quente</option>
