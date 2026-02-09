@@ -660,14 +660,16 @@ app.get('/', (c) => {
                     <div class="space-y-4" id="productList">
                         \${filteredProducts.map(p => \`
                             <div class="card">
-                                <div class="flex gap-4">
-                                    <div style="width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
-                                        \${p.image_url ? \`<img src="\${p.image_url}" style="width: 100%; height: 100%; object-fit: contain;">\` : '<i class="fas fa-beer text-4xl text-yellow-400"></i>'}
-                                    </div>
-                                    <div class="flex-1">
-                                        <h3 class="font-bold text-lg mb-1">\${p.name}</h3>
-                                        <p class="text-sm text-gray-400 mb-1">\${p.brand} \${p.category ? '• ' + p.category : ''}</p>
-                                        <p class="text-yellow-400 font-bold text-xl mb-2" id="price-\${p.id}">R$ \${parseFloat(p.price).toFixed(2)}</p>
+                                <!-- IMAGEM EM CIMA -->
+                                <div style="width: 100%; height: 150px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 12px;">
+                                    \${p.image_url ? \`<img src="\${p.image_url}" style="width: 100%; height: 100%; object-fit: contain;">\` : '<i class="fas fa-beer text-5xl text-yellow-400"></i>'}
+                                </div>
+                                
+                                <!-- INFORMAÇÕES EMBAIXO -->
+                                <div>
+                                    <h3 class="font-bold text-lg mb-1">\${p.name}</h3>
+                                    <p class="text-sm text-gray-400 mb-1">\${p.brand} \${p.category ? '• ' + p.category : ''}</p>
+                                    <p class="text-yellow-400 font-bold text-xl mb-2" id="price-\${p.id}">R$ \${parseFloat(p.price).toFixed(2)}</p>
                                         
                                         <!-- Seleção de Temperatura -->
                                         <div class="mb-2">
@@ -701,7 +703,6 @@ app.get('/', (c) => {
                                             <i class="fas fa-shopping-cart mr-2"></i> Comprar
                                         </button>
                                     </div>
-                                </div>
                             </div>
                         \`).join('')}
                     </div>
@@ -1099,26 +1100,6 @@ app.get('/', (c) => {
                             </button>
                         </div>
                     </div>
-                    
-                    <h3 class="text-xl font-bold mt-6 mb-4 text-yellow-400">Clientes Cadastrados</h3>
-                    <div class="space-y-2">
-                        \${customers.map(c => \`
-                            <div class="card flex justify-between items-center" style="cursor: pointer;" onclick="editCustomer(\${c.id})">
-                                <div>
-                                    <p class="font-bold">\${c.name}</p>
-                                    <p class="text-sm text-gray-400">\${c.phone}</p>
-                                </div>
-                                <div class="flex gap-2">
-                                    <button onclick="event.stopPropagation(); editCustomer(\${c.id})" class="btn-yellow" style="padding: 8px 12px;">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button onclick="event.stopPropagation(); deleteCustomer(\${c.id})" class="btn-red" style="padding: 8px 12px;">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        \`).join('')}
-                    </div>
                 </div>
             \`;
             content.innerHTML = html;
@@ -1263,6 +1244,9 @@ app.get('/', (c) => {
                         <button onclick="showProductForm()" class="btn-red w-full py-4">
                             <i class="fas fa-box mr-2"></i> Gerenciar Produtos
                         </button>
+                        <button onclick="showCustomersAdmin()" class="btn-yellow w-full py-4">
+                            <i class="fas fa-users mr-2"></i> Gerenciar Clientes
+                        </button>
                         <button onclick="showBranchesAdmin()" class="btn-yellow w-full py-4">
                             <i class="fas fa-store mr-2"></i> Gerenciar Filiais
                         </button>
@@ -1282,6 +1266,63 @@ app.get('/', (c) => {
         function logout() {
             isAdmin = false;
             showHome();
+        }
+
+        // Mostrar lista de clientes no admin
+        async function showCustomersAdmin() {
+            if (!isAdmin) {
+                showAdminLogin();
+                return;
+            }
+            
+            hideHome();
+            const content = document.getElementById('dynamic-content');
+            
+            // Recarregar lista de clientes
+            const response = await axios.get('/api/customers');
+            customers = response.data;
+            
+            const html = \`
+                <div>
+                    <button onclick="showAdminPanel()" class="btn-black mb-4">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">Clientes Cadastrados</h2>
+                    
+                    <div class="space-y-2">
+                        \${customers.map(c => \`
+                            <div class="card flex justify-between items-center">
+                                <div>
+                                    <p class="font-bold">\${c.name}</p>
+                                    <p class="text-sm text-gray-400">\${c.address}, \${c.neighborhood}</p>
+                                    <p class="text-sm text-gray-400">\${c.city} - CEP: \${c.zip_code}</p>
+                                    <p class="text-sm text-gray-400">Tel: \${c.phone}</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="deleteCustomerAdmin(\${c.id})" class="btn-red" style="padding: 8px 12px;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        \`).join('')}
+                    </div>
+                </div>
+            \`;
+            content.innerHTML = html;
+        }
+
+        // Deletar cliente no admin
+        async function deleteCustomerAdmin(id) {
+            if (confirm('Tem certeza que deseja excluir este cliente?')) {
+                try {
+                    await axios.delete(\`/api/customers/\${id}\`);
+                    alert('Cliente excluído com sucesso!');
+                    showCustomersAdmin();
+                } catch (error) {
+                    console.error('Erro ao excluir cliente:', error);
+                    alert('Erro ao excluir cliente. Tente novamente.');
+                }
+            }
         }
 
         // Mostrar upload de logo
