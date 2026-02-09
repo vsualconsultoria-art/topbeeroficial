@@ -230,6 +230,40 @@ app.post('/api/settings/branches', async (c) => {
   return c.json({ success: true })
 })
 
+// Obter configurações de pagamento
+app.get('/api/settings/payment', async (c) => {
+  const { DB } = c.env
+  const { results } = await DB.prepare("SELECT key, value FROM settings WHERE key IN ('pix_key', 'qrcode_url')").all()
+  
+  const settings = {
+    pix_key: '',
+    qrcode_url: ''
+  }
+  
+  results.forEach(row => {
+    if (row.key === 'pix_key') settings.pix_key = row.value || ''
+    if (row.key === 'qrcode_url') settings.qrcode_url = row.value || ''
+  })
+  
+  return c.json(settings)
+})
+
+// Salvar configurações de pagamento
+app.post('/api/settings/payment', async (c) => {
+  const { DB } = c.env
+  const { pix_key, qrcode_url } = await c.req.json()
+  
+  await DB.prepare(
+    "INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('pix_key', ?, CURRENT_TIMESTAMP)"
+  ).bind(pix_key || '').run()
+  
+  await DB.prepare(
+    "INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('qrcode_url', ?, CURRENT_TIMESTAMP)"
+  ).bind(qrcode_url || '').run()
+  
+  return c.json({ success: true })
+})
+
 // ============ UPLOAD DE IMAGENS ============
 
 // Upload de imagem (base64)
@@ -569,6 +603,8 @@ app.get('/', (c) => {
         let cart = [];
         let products = [];
         let customers = [];
+        let paymentSettings = { pix_key: '', qrcode_url: '' };
+        let selectedPaymentMethod = 'pix';
         let isAdmin = false;
         let currentProduct = null;
         let currentCustomer = null;
@@ -578,16 +614,18 @@ app.get('/', (c) => {
         // Carregar dados iniciais
         async function loadInitialData() {
             try {
-                const [productsRes, customersRes, logoRes, footerLogoRes] = await Promise.all([
+                const [productsRes, customersRes, logoRes, footerLogoRes, paymentRes] = await Promise.all([
                     axios.get('/api/products'),
                     axios.get('/api/customers'),
                     axios.get('/api/settings/logo'),
-                    axios.get('/api/settings/footer-logo')
+                    axios.get('/api/settings/footer-logo'),
+                    axios.get('/api/settings/payment')
                 ]);
                 products = productsRes.data;
                 customers = customersRes.data;
                 logoUrl = logoRes.data.logo_url;
                 footerLogoUrl = footerLogoRes.data.footer_logo_url;
+                paymentSettings = paymentRes.data;
                 
                 if (logoUrl) {
                     document.getElementById('logoImage').src = logoUrl;
@@ -786,7 +824,7 @@ app.get('/', (c) => {
             const currentQty = qtyEl ? parseInt(qtyEl.textContent) : 0;
             
             if (currentQty === 0) {
-                alert('Por favor, selecione a quantidade usando as setas + e -');
+                alert('Por favor, selecione a quantidade.');
                 return;
             }
             
@@ -821,7 +859,7 @@ app.get('/', (c) => {
             
             // MODAL: Quantidade zero
             if (currentQty === 0) {
-                alert('Por favor, selecione a quantidade usando as setas + e -');
+                alert('Por favor, selecione a quantidade.');
                 return;
             }
             
@@ -966,10 +1004,40 @@ app.get('/', (c) => {
                         
                         <div class="mt-6">
                             <label class="block mb-2 text-sm font-bold">Forma de Pagamento:</label>
-                            <select id="paymentMethod" class="input-field">
-                                <option value="pix">PIX - 123.456.789</option>
-                                <option value="cash">À Vista</option>
-                            </select>
+                            <div class="grid grid-cols-2 gap-3 mb-4">
+                                <button id="btnPix" onclick="selectPayment('pix')" class="btn-yellow py-3" style="background-color: #25d366; color: white;">
+                                    <i class="fas fa-qrcode mr-2"></i> PIX
+                                </button>
+                                <button id="btnCash" onclick="selectPayment('cash')" class="btn-yellow py-3">
+                                    <i class="fas fa-money-bill mr-2"></i> Dinheiro
+                                </button>
+                            </div>
+                            
+                            <div id="pixSection" style="display: block;">
+                                \${paymentSettings.pix_key ? \`
+                                    <div class="card">
+                                        <label class="block mb-2 text-sm font-bold">Chave PIX:</label>
+                                        <div class="flex gap-2 mb-3">
+                                            <input type="text" id="pixKeyDisplay" value="\${paymentSettings.pix_key}" class="input-field" readonly>
+                                            <button onclick="copyPix()" class="btn-yellow" style="padding: 10px 20px;">
+                                                <i class="fas fa-copy mr-1"></i> Copiar PIX
+                                            </button>
+                                        </div>
+                                        \${paymentSettings.qrcode_url ? \`
+                                            <label class="block mb-2 text-sm font-bold">QR Code:</label>
+                                            <div style="text-align: center;">
+                                                <img src="\${paymentSettings.qrcode_url}" style="width: 200px; height: 200px; object-fit: contain; border: 2px solid #25d366; border-radius: 8px; margin: 0 auto;" />
+                                            </div>
+                                        \` : ''}
+                                    </div>
+                                \` : '<p class="text-gray-400">PIX não configurado</p>'}
+                            </div>
+                            
+                            <div id="cashSection" style="display: none;">
+                                <div class="card">
+                                    <p class="text-center text-lg">Pagamento em dinheiro na entrega</p>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="grid grid-cols-2 gap-4 mt-6">
@@ -984,6 +1052,43 @@ app.get('/', (c) => {
                 </div>
             \`;
             content.innerHTML = html;
+            
+            // Selecionar PIX por padrão
+            selectPayment('pix');
+        }
+
+        // Selecionar forma de pagamento
+        function selectPayment(method) {
+            selectedPaymentMethod = method;
+            
+            const btnPix = document.getElementById('btnPix');
+            const btnCash = document.getElementById('btnCash');
+            const pixSection = document.getElementById('pixSection');
+            const cashSection = document.getElementById('cashSection');
+            
+            if (method === 'pix') {
+                btnPix.style.backgroundColor = '#25d366';
+                btnPix.style.color = 'white';
+                btnCash.style.backgroundColor = '';
+                btnCash.style.color = '';
+                pixSection.style.display = 'block';
+                cashSection.style.display = 'none';
+            } else {
+                btnCash.style.backgroundColor = '#25d366';
+                btnCash.style.color = 'white';
+                btnPix.style.backgroundColor = '';
+                btnPix.style.color = '';
+                pixSection.style.display = 'none';
+                cashSection.style.display = 'block';
+            }
+        }
+
+        // Copiar chave PIX
+        function copyPix() {
+            const pixInput = document.getElementById('pixKeyDisplay');
+            pixInput.select();
+            document.execCommand('copy');
+            alert('Chave PIX copiada!');
         }
 
         // Atualizar quantidade no carrinho
@@ -1247,6 +1352,9 @@ app.get('/', (c) => {
                         <button onclick="showCustomersAdmin()" class="btn-yellow w-full py-4">
                             <i class="fas fa-users mr-2"></i> Gerenciar Clientes
                         </button>
+                        <button onclick="showPaymentSettings()" class="btn-yellow w-full py-4">
+                            <i class="fas fa-money-bill mr-2"></i> Formas de Pagamento
+                        </button>
                         <button onclick="showBranchesAdmin()" class="btn-yellow w-full py-4">
                             <i class="fas fa-store mr-2"></i> Gerenciar Filiais
                         </button>
@@ -1260,6 +1368,102 @@ app.get('/', (c) => {
                 </div>
             \`;
             content.innerHTML = html;
+        }
+
+        // Mostrar configurações de pagamento
+        async function showPaymentSettings() {
+            if (!isAdmin) {
+                showAdminLogin();
+                return;
+            }
+            
+            hideHome();
+            const content = document.getElementById('dynamic-content');
+            
+            // Carregar configurações atuais
+            const response = await axios.get('/api/settings/payment');
+            const settings = response.data;
+            
+            const html = \`
+                <div>
+                    <button onclick="showAdminPanel()" class="btn-black mb-4">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">Formas de Pagamento</h2>
+                    
+                    <div class="card">
+                        <label class="block mb-2 text-sm font-bold">Chave PIX</label>
+                        <input type="text" id="pixKey" placeholder="Digite a chave PIX" class="input-field" value="\${settings.pix_key || ''}">
+                        
+                        <label class="block mb-2 text-sm font-bold mt-4">QR Code (200x200)</label>
+                        <div class="mb-2">
+                            <input type="file" id="qrcodeFile" accept="image/*" class="input-field">
+                        </div>
+                        
+                        \${settings.qrcode_url ? \`
+                            <div class="mb-4">
+                                <label class="block mb-2 text-sm">QR Code Atual:</label>
+                                <img src="\${settings.qrcode_url}" style="width: 200px; height: 200px; object-fit: contain; border: 1px solid #333; border-radius: 8px;" />
+                            </div>
+                        \` : ''}
+                        
+                        <button onclick="savePaymentSettings()" class="btn-red w-full mt-4">
+                            <i class="fas fa-save mr-2"></i> Salvar Configurações
+                        </button>
+                    </div>
+                </div>
+            \`;
+            content.innerHTML = html;
+        }
+
+        // Salvar configurações de pagamento
+        async function savePaymentSettings() {
+            const pixKey = document.getElementById('pixKey').value;
+            const qrcodeFile = document.getElementById('qrcodeFile').files[0];
+            
+            try {
+                let qrcodeUrl = '';
+                
+                // Upload do QR Code se houver arquivo
+                if (qrcodeFile) {
+                    const reader = new FileReader();
+                    reader.onload = async function(e) {
+                        try {
+                            const uploadResponse = await axios.post('/api/upload', {
+                                image: e.target.result,
+                                filename: 'qrcode.png'
+                            });
+                            qrcodeUrl = uploadResponse.data.url;
+                            
+                            // Salvar configurações
+                            await axios.post('/api/settings/payment', {
+                                pix_key: pixKey,
+                                qrcode_url: qrcodeUrl
+                            });
+                            
+                            alert('Configurações salvas com sucesso!');
+                            showPaymentSettings();
+                        } catch (error) {
+                            console.error('Erro ao fazer upload:', error);
+                            alert('Erro ao fazer upload do QR Code. Tente novamente.');
+                        }
+                    };
+                    reader.readAsDataURL(qrcodeFile);
+                } else {
+                    // Salvar apenas a chave PIX
+                    const currentSettings = await axios.get('/api/settings/payment');
+                    await axios.post('/api/settings/payment', {
+                        pix_key: pixKey,
+                        qrcode_url: currentSettings.data.qrcode_url || ''
+                    });
+                    
+                    alert('Configurações salvas com sucesso!');
+                    showPaymentSettings();
+                }
+            } catch (error) {
+                console.error('Erro ao salvar configurações:', error);
+                alert('Erro ao salvar configurações. Tente novamente.');
+            }
         }
 
         // Logout admin
@@ -1289,6 +1493,10 @@ app.get('/', (c) => {
                     </button>
                     <h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">Clientes Cadastrados</h2>
                     
+                    <button onclick="showCustomerFormAdmin()" class="btn-yellow w-full mb-4">
+                        <i class="fas fa-plus mr-2"></i> Novo Cliente
+                    </button>
+                    
                     <div class="space-y-2">
                         \${customers.map(c => \`
                             <div class="card flex justify-between items-center">
@@ -1299,6 +1507,9 @@ app.get('/', (c) => {
                                     <p class="text-sm text-gray-400">Tel: \${c.phone}</p>
                                 </div>
                                 <div class="flex gap-2">
+                                    <button onclick="editCustomerAdmin(\${c.id})" class="btn-yellow" style="padding: 8px 12px;">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
                                     <button onclick="deleteCustomerAdmin(\${c.id})" class="btn-red" style="padding: 8px 12px;">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -1309,6 +1520,83 @@ app.get('/', (c) => {
                 </div>
             \`;
             content.innerHTML = html;
+        }
+
+        // Mostrar formulário de cliente no admin
+        async function showCustomerFormAdmin(editId = null) {
+            if (!isAdmin) {
+                showAdminLogin();
+                return;
+            }
+            
+            hideHome();
+            const content = document.getElementById('dynamic-content');
+            
+            let customer = null;
+            if (editId) {
+                customer = customers.find(c => c.id === editId);
+            }
+            
+            const html = \`
+                <div>
+                    <button onclick="showCustomersAdmin()" class="btn-black mb-4">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">\${editId ? 'Alterar Cliente' : 'Novo Cliente'}</h2>
+                    
+                    <div class="card">
+                        <input type="text" id="customerNameAdmin" placeholder="Nome do Cliente" class="input-field" value="\${customer ? customer.name : ''}">
+                        <input type="text" id="customerAddressAdmin" placeholder="Endereço" class="input-field" value="\${customer ? customer.address : ''}">
+                        <input type="text" id="customerNeighborhoodAdmin" placeholder="Bairro" class="input-field" value="\${customer ? customer.neighborhood : ''}">
+                        <input type="text" id="customerZipCodeAdmin" placeholder="CEP" class="input-field" value="\${customer ? customer.zip_code : ''}">
+                        <input type="text" id="customerCityAdmin" placeholder="Cidade" class="input-field" value="\${customer ? customer.city : ''}">
+                        <input type="tel" id="customerPhoneAdmin" placeholder="Telefone" class="input-field" value="\${customer ? customer.phone : ''}">
+                        
+                        <button onclick="saveCustomerAdmin(\${editId})" class="btn-red w-full mt-4">
+                            <i class="fas fa-save mr-2"></i> Gravar
+                        </button>
+                    </div>
+                </div>
+            \`;
+            content.innerHTML = html;
+        }
+
+        // Editar cliente no admin
+        function editCustomerAdmin(id) {
+            showCustomerFormAdmin(id);
+        }
+
+        // Salvar cliente no admin
+        async function saveCustomerAdmin(editId) {
+            const name = document.getElementById('customerNameAdmin').value;
+            const address = document.getElementById('customerAddressAdmin').value;
+            const neighborhood = document.getElementById('customerNeighborhoodAdmin').value;
+            const zip_code = document.getElementById('customerZipCodeAdmin').value;
+            const city = document.getElementById('customerCityAdmin').value;
+            const phone = document.getElementById('customerPhoneAdmin').value;
+            
+            if (!name || !address || !neighborhood || !zip_code || !city || !phone) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+            
+            try {
+                if (editId) {
+                    await axios.put(\`/api/customers/\${editId}\`, {
+                        name, address, neighborhood, zip_code, city, phone
+                    });
+                    alert('Cliente atualizado com sucesso!');
+                } else {
+                    await axios.post('/api/customers', {
+                        name, address, neighborhood, zip_code, city, phone
+                    });
+                    alert('Cliente cadastrado com sucesso!');
+                }
+                showCustomersAdmin();
+            } catch (error) {
+                console.error('Erro ao salvar cliente:', error);
+                alert('Erro ao salvar cliente. Tente novamente.');
+            }
         }
 
         // Deletar cliente no admin
