@@ -1,4 +1,4 @@
-var gt=Object.defineProperty;var He=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in e?gt(e,t,{enumerable:!0,configurable:!0,writable:!0,value:o}):e[t]=o;var h=(e,t,o)=>bt(e,typeof t!="symbol"?t+"":t,o),Te=(e,t,o)=>t.has(e)||He("Cannot "+o);var i=(e,t,o)=>(Te(e,t,"read from private field"),o?o.call(e):t.get(e)),f=(e,t,o)=>t.has(e)?He("Cannot add the same private member more than once"):t instanceof WeakSet?t.add(e):t.set(e,o),m=(e,t,o,r)=>(Te(e,t,"write to private field"),r?r.call(e,o):t.set(e,o),o),b=(e,t,o)=>(Te(e,t,"access private method"),o);var De=(e,t,o,r)=>({set _(a){m(e,t,a,o)},get _(){return i(e,t,r)}});var Me=(e,t,o)=>(r,a)=>{let n=-1;return s(0);async function s(d){if(d<=n)throw new Error("next() called multiple times");n=d;let c,l=!1,u;if(e[d]?(u=e[d][0][0],r.req.routeIndex=d):u=d===e.length&&a||void 0,u)try{c=await u(r,()=>s(d+1))}catch(p){if(p instanceof Error&&t)r.error=p,c=await t(p,r),l=!0;else throw p}else r.finalized===!1&&o&&(c=await o(r));return c&&(r.finalized===!1||l)&&(r.res=c),r}},yt=Symbol(),xt=async(e,t=Object.create(null))=>{const{all:o=!1,dot:r=!1}=t,n=(e instanceof ot?e.raw.headers:e.headers).get("Content-Type");return n!=null&&n.startsWith("multipart/form-data")||n!=null&&n.startsWith("application/x-www-form-urlencoded")?vt(e,{all:o,dot:r}):{}};async function vt(e,t){const o=await e.formData();return o?wt(o,t):{}}function wt(e,t){const o=Object.create(null);return e.forEach((r,a)=>{t.all||a.endsWith("[]")?Et(o,a,r):o[a]=r}),t.dot&&Object.entries(o).forEach(([r,a])=>{r.includes(".")&&(Ct(o,r,a),delete o[r])}),o}var Et=(e,t,o)=>{e[t]!==void 0?Array.isArray(e[t])?e[t].push(o):e[t]=[e[t],o]:t.endsWith("[]")?e[t]=[o]:e[t]=o},Ct=(e,t,o)=>{let r=e;const a=t.split(".");a.forEach((n,s)=>{s===a.length-1?r[n]=o:((!r[n]||typeof r[n]!="object"||Array.isArray(r[n])||r[n]instanceof File)&&(r[n]=Object.create(null)),r=r[n])})},Ye=e=>{const t=e.split("/");return t[0]===""&&t.shift(),t},It=e=>{const{groups:t,path:o}=_t(e),r=Ye(o);return Pt(r,t)},_t=e=>{const t=[];return e=e.replace(/\{[^}]+\}/g,(o,r)=>{const a=`@${r}`;return t.push([a,o]),a}),{groups:t,path:e}},Pt=(e,t)=>{for(let o=t.length-1;o>=0;o--){const[r]=t[o];for(let a=e.length-1;a>=0;a--)if(e[a].includes(r)){e[a]=e[a].replace(r,t[o][1]);break}}return e},_e={},Rt=(e,t)=>{if(e==="*")return"*";const o=e.match(/^\:([^\{\}]+)(?:\{(.+)\})?$/);if(o){const r=`${e}#${t}`;return _e[r]||(o[2]?_e[r]=t&&t[0]!==":"&&t[0]!=="*"?[r,o[1],new RegExp(`^${o[2]}(?=/${t})`)]:[e,o[1],new RegExp(`^${o[2]}$`)]:_e[r]=[e,o[1],!0]),_e[r]}return null},Oe=(e,t)=>{try{return t(e)}catch{return e.replace(/(?:%[0-9A-Fa-f]{2})+/g,o=>{try{return t(o)}catch{return o}})}},At=e=>Oe(e,decodeURI),Je=e=>{const t=e.url,o=t.indexOf("/",t.indexOf(":")+4);let r=o;for(;r<t.length;r++){const a=t.charCodeAt(r);if(a===37){const n=t.indexOf("?",r),s=t.slice(o,n===-1?void 0:n);return At(s.includes("%25")?s.replace(/%25/g,"%2525"):s)}else if(a===63)break}return t.slice(o,r)},kt=e=>{const t=Je(e);return t.length>1&&t.at(-1)==="/"?t.slice(0,-1):t},re=(e,t,...o)=>(o.length&&(t=re(t,...o)),`${(e==null?void 0:e[0])==="/"?"":"/"}${e}${t==="/"?"":`${(e==null?void 0:e.at(-1))==="/"?"":"/"}${(t==null?void 0:t[0])==="/"?t.slice(1):t}`}`),Ze=e=>{if(e.charCodeAt(e.length-1)!==63||!e.includes(":"))return null;const t=e.split("/"),o=[];let r="";return t.forEach(a=>{if(a!==""&&!/\:/.test(a))r+="/"+a;else if(/\:/.test(a))if(/\?/.test(a)){o.length===0&&r===""?o.push("/"):o.push(r);const n=a.replace("?","");r+="/"+n,o.push(r)}else r+="/"+a}),o.filter((a,n,s)=>s.indexOf(a)===n)},qe=e=>/[%+]/.test(e)?(e.indexOf("+")!==-1&&(e=e.replace(/\+/g," ")),e.indexOf("%")!==-1?Oe(e,tt):e):e,et=(e,t,o)=>{let r;if(!o&&t&&!/[%+]/.test(t)){let s=e.indexOf("?",8);if(s===-1)return;for(e.startsWith(t,s+1)||(s=e.indexOf(`&${t}`,s+1));s!==-1;){const d=e.charCodeAt(s+t.length+1);if(d===61){const c=s+t.length+2,l=e.indexOf("&",c);return qe(e.slice(c,l===-1?void 0:l))}else if(d==38||isNaN(d))return"";s=e.indexOf(`&${t}`,s+1)}if(r=/[%+]/.test(e),!r)return}const a={};r??(r=/[%+]/.test(e));let n=e.indexOf("?",8);for(;n!==-1;){const s=e.indexOf("&",n+1);let d=e.indexOf("=",n);d>s&&s!==-1&&(d=-1);let c=e.slice(n+1,d===-1?s===-1?void 0:s:d);if(r&&(c=qe(c)),n=s,c==="")continue;let l;d===-1?l="":(l=e.slice(d+1,s===-1?void 0:s),r&&(l=qe(l))),o?(a[c]&&Array.isArray(a[c])||(a[c]=[]),a[c].push(l)):a[c]??(a[c]=l)}return t?a[t]:a},Bt=et,St=(e,t)=>et(e,t,!0),tt=decodeURIComponent,Ne=e=>Oe(e,tt),se,A,F,rt,at,je,N,Qe,ot=(Qe=class{constructor(e,t="/",o=[[]]){f(this,F);h(this,"raw");f(this,se);f(this,A);h(this,"routeIndex",0);h(this,"path");h(this,"bodyCache",{});f(this,N,e=>{const{bodyCache:t,raw:o}=this,r=t[e];if(r)return r;const a=Object.keys(t)[0];return a?t[a].then(n=>(a==="json"&&(n=JSON.stringify(n)),new Response(n)[e]())):t[e]=o[e]()});this.raw=e,this.path=t,m(this,A,o),m(this,se,{})}param(e){return e?b(this,F,rt).call(this,e):b(this,F,at).call(this)}query(e){return Bt(this.url,e)}queries(e){return St(this.url,e)}header(e){if(e)return this.raw.headers.get(e)??void 0;const t={};return this.raw.headers.forEach((o,r)=>{t[r]=o}),t}async parseBody(e){var t;return(t=this.bodyCache).parsedBody??(t.parsedBody=await xt(this,e))}json(){return i(this,N).call(this,"text").then(e=>JSON.parse(e))}text(){return i(this,N).call(this,"text")}arrayBuffer(){return i(this,N).call(this,"arrayBuffer")}blob(){return i(this,N).call(this,"blob")}formData(){return i(this,N).call(this,"formData")}addValidatedData(e,t){i(this,se)[e]=t}valid(e){return i(this,se)[e]}get url(){return this.raw.url}get method(){return this.raw.method}get[yt](){return i(this,A)}get matchedRoutes(){return i(this,A)[0].map(([[,e]])=>e)}get routePath(){return i(this,A)[0].map(([[,e]])=>e)[this.routeIndex].path}},se=new WeakMap,A=new WeakMap,F=new WeakSet,rt=function(e){const t=i(this,A)[0][this.routeIndex][1][e],o=b(this,F,je).call(this,t);return o&&/\%/.test(o)?Ne(o):o},at=function(){const e={},t=Object.keys(i(this,A)[0][this.routeIndex][1]);for(const o of t){const r=b(this,F,je).call(this,i(this,A)[0][this.routeIndex][1][o]);r!==void 0&&(e[o]=/\%/.test(r)?Ne(r):r)}return e},je=function(e){return i(this,A)[1]?i(this,A)[1][e]:e},N=new WeakMap,Qe),$t={Stringify:1},nt=async(e,t,o,r,a)=>{typeof e=="object"&&!(e instanceof String)&&(e instanceof Promise||(e=e.toString()),e instanceof Promise&&(e=await e));const n=e.callbacks;return n!=null&&n.length?(a?a[0]+=e:a=[e],Promise.all(n.map(d=>d({phase:t,buffer:a,context:r}))).then(d=>Promise.all(d.filter(Boolean).map(c=>nt(c,t,!1,r,a))).then(()=>a[0]))):Promise.resolve(e)},Tt="text/plain; charset=UTF-8",Le=(e,t)=>({"Content-Type":e,...t}),be,ye,q,ie,L,P,xe,ce,le,X,ve,we,U,ae,Ve,qt=(Ve=class{constructor(e,t){f(this,U);f(this,be);f(this,ye);h(this,"env",{});f(this,q);h(this,"finalized",!1);h(this,"error");f(this,ie);f(this,L);f(this,P);f(this,xe);f(this,ce);f(this,le);f(this,X);f(this,ve);f(this,we);h(this,"render",(...e)=>(i(this,ce)??m(this,ce,t=>this.html(t)),i(this,ce).call(this,...e)));h(this,"setLayout",e=>m(this,xe,e));h(this,"getLayout",()=>i(this,xe));h(this,"setRenderer",e=>{m(this,ce,e)});h(this,"header",(e,t,o)=>{this.finalized&&m(this,P,new Response(i(this,P).body,i(this,P)));const r=i(this,P)?i(this,P).headers:i(this,X)??m(this,X,new Headers);t===void 0?r.delete(e):o!=null&&o.append?r.append(e,t):r.set(e,t)});h(this,"status",e=>{m(this,ie,e)});h(this,"set",(e,t)=>{i(this,q)??m(this,q,new Map),i(this,q).set(e,t)});h(this,"get",e=>i(this,q)?i(this,q).get(e):void 0);h(this,"newResponse",(...e)=>b(this,U,ae).call(this,...e));h(this,"body",(e,t,o)=>b(this,U,ae).call(this,e,t,o));h(this,"text",(e,t,o)=>!i(this,X)&&!i(this,ie)&&!t&&!o&&!this.finalized?new Response(e):b(this,U,ae).call(this,e,t,Le(Tt,o)));h(this,"json",(e,t,o)=>b(this,U,ae).call(this,JSON.stringify(e),t,Le("application/json",o)));h(this,"html",(e,t,o)=>{const r=a=>b(this,U,ae).call(this,a,t,Le("text/html; charset=UTF-8",o));return typeof e=="object"?nt(e,$t.Stringify,!1,{}).then(r):r(e)});h(this,"redirect",(e,t)=>{const o=String(e);return this.header("Location",/[^\x00-\xFF]/.test(o)?encodeURI(o):o),this.newResponse(null,t??302)});h(this,"notFound",()=>(i(this,le)??m(this,le,()=>new Response),i(this,le).call(this,this)));m(this,be,e),t&&(m(this,L,t.executionCtx),this.env=t.env,m(this,le,t.notFoundHandler),m(this,we,t.path),m(this,ve,t.matchResult))}get req(){return i(this,ye)??m(this,ye,new ot(i(this,be),i(this,we),i(this,ve))),i(this,ye)}get event(){if(i(this,L)&&"respondWith"in i(this,L))return i(this,L);throw Error("This context has no FetchEvent")}get executionCtx(){if(i(this,L))return i(this,L);throw Error("This context has no ExecutionContext")}get res(){return i(this,P)||m(this,P,new Response(null,{headers:i(this,X)??m(this,X,new Headers)}))}set res(e){if(i(this,P)&&e){e=new Response(e.body,e);for(const[t,o]of i(this,P).headers.entries())if(t!=="content-type")if(t==="set-cookie"){const r=i(this,P).headers.getSetCookie();e.headers.delete("set-cookie");for(const a of r)e.headers.append("set-cookie",a)}else e.headers.set(t,o)}m(this,P,e),this.finalized=!0}get var(){return i(this,q)?Object.fromEntries(i(this,q)):{}}},be=new WeakMap,ye=new WeakMap,q=new WeakMap,ie=new WeakMap,L=new WeakMap,P=new WeakMap,xe=new WeakMap,ce=new WeakMap,le=new WeakMap,X=new WeakMap,ve=new WeakMap,we=new WeakMap,U=new WeakSet,ae=function(e,t,o){const r=i(this,P)?new Headers(i(this,P).headers):i(this,X)??new Headers;if(typeof t=="object"&&"headers"in t){const n=t.headers instanceof Headers?t.headers:new Headers(t.headers);for(const[s,d]of n)s.toLowerCase()==="set-cookie"?r.append(s,d):r.set(s,d)}if(o)for(const[n,s]of Object.entries(o))if(typeof s=="string")r.set(n,s);else{r.delete(n);for(const d of s)r.append(n,d)}const a=typeof t=="number"?t:(t==null?void 0:t.status)??i(this,ie);return new Response(e,{status:a,headers:r})},Ve),w="ALL",Lt="all",jt=["get","post","put","delete","options","patch"],st="Can not add a route since the matcher is already built.",it=class extends Error{},Ot="__COMPOSED_HANDLER",Ft=e=>e.text("404 Not Found",404),Ue=(e,t)=>{if("getResponse"in e){const o=e.getResponse();return t.newResponse(o.body,o)}return console.error(e),t.text("Internal Server Error",500)},k,E,ct,B,G,Pe,Re,de,Ht=(de=class{constructor(t={}){f(this,E);h(this,"get");h(this,"post");h(this,"put");h(this,"delete");h(this,"options");h(this,"patch");h(this,"all");h(this,"on");h(this,"use");h(this,"router");h(this,"getPath");h(this,"_basePath","/");f(this,k,"/");h(this,"routes",[]);f(this,B,Ft);h(this,"errorHandler",Ue);h(this,"onError",t=>(this.errorHandler=t,this));h(this,"notFound",t=>(m(this,B,t),this));h(this,"fetch",(t,...o)=>b(this,E,Re).call(this,t,o[1],o[0],t.method));h(this,"request",(t,o,r,a)=>t instanceof Request?this.fetch(o?new Request(t,o):t,r,a):(t=t.toString(),this.fetch(new Request(/^https?:\/\//.test(t)?t:`http://localhost${re("/",t)}`,o),r,a)));h(this,"fire",()=>{addEventListener("fetch",t=>{t.respondWith(b(this,E,Re).call(this,t.request,t,void 0,t.request.method))})});[...jt,Lt].forEach(n=>{this[n]=(s,...d)=>(typeof s=="string"?m(this,k,s):b(this,E,G).call(this,n,i(this,k),s),d.forEach(c=>{b(this,E,G).call(this,n,i(this,k),c)}),this)}),this.on=(n,s,...d)=>{for(const c of[s].flat()){m(this,k,c);for(const l of[n].flat())d.map(u=>{b(this,E,G).call(this,l.toUpperCase(),i(this,k),u)})}return this},this.use=(n,...s)=>(typeof n=="string"?m(this,k,n):(m(this,k,"*"),s.unshift(n)),s.forEach(d=>{b(this,E,G).call(this,w,i(this,k),d)}),this);const{strict:r,...a}=t;Object.assign(this,a),this.getPath=r??!0?t.getPath??Je:kt}route(t,o){const r=this.basePath(t);return o.routes.map(a=>{var s;let n;o.errorHandler===Ue?n=a.handler:(n=async(d,c)=>(await Me([],o.errorHandler)(d,()=>a.handler(d,c))).res,n[Ot]=a.handler),b(s=r,E,G).call(s,a.method,a.path,n)}),this}basePath(t){const o=b(this,E,ct).call(this);return o._basePath=re(this._basePath,t),o}mount(t,o,r){let a,n;r&&(typeof r=="function"?n=r:(n=r.optionHandler,r.replaceRequest===!1?a=c=>c:a=r.replaceRequest));const s=n?c=>{const l=n(c);return Array.isArray(l)?l:[l]}:c=>{let l;try{l=c.executionCtx}catch{}return[c.env,l]};a||(a=(()=>{const c=re(this._basePath,t),l=c==="/"?0:c.length;return u=>{const p=new URL(u.url);return p.pathname=p.pathname.slice(l)||"/",new Request(p,u)}})());const d=async(c,l)=>{const u=await o(a(c.req.raw),...s(c));if(u)return u;await l()};return b(this,E,G).call(this,w,re(t,"*"),d),this}},k=new WeakMap,E=new WeakSet,ct=function(){const t=new de({router:this.router,getPath:this.getPath});return t.errorHandler=this.errorHandler,m(t,B,i(this,B)),t.routes=this.routes,t},B=new WeakMap,G=function(t,o,r){t=t.toUpperCase(),o=re(this._basePath,o);const a={basePath:this._basePath,path:o,method:t,handler:r};this.router.add(t,o,[r,a]),this.routes.push(a)},Pe=function(t,o){if(t instanceof Error)return this.errorHandler(t,o);throw t},Re=function(t,o,r,a){if(a==="HEAD")return(async()=>new Response(null,await b(this,E,Re).call(this,t,o,r,"GET")))();const n=this.getPath(t,{env:r}),s=this.router.match(a,n),d=new qt(t,{path:n,matchResult:s,env:r,executionCtx:o,notFoundHandler:i(this,B)});if(s[0].length===1){let l;try{l=s[0][0][0][0](d,async()=>{d.res=await i(this,B).call(this,d)})}catch(u){return b(this,E,Pe).call(this,u,d)}return l instanceof Promise?l.then(u=>u||(d.finalized?d.res:i(this,B).call(this,d))).catch(u=>b(this,E,Pe).call(this,u,d)):l??i(this,B).call(this,d)}const c=Me(s[0],this.errorHandler,i(this,B));return(async()=>{try{const l=await c(d);if(!l.finalized)throw new Error("Context is not finalized. Did you forget to return a Response object or `await next()`?");return l.res}catch(l){return b(this,E,Pe).call(this,l,d)}})()},de),lt=[];function Dt(e,t){const o=this.buildAllMatchers(),r=((a,n)=>{const s=o[a]||o[w],d=s[2][n];if(d)return d;const c=n.match(s[0]);if(!c)return[[],lt];const l=c.indexOf("",1);return[s[1][l],c]});return this.match=r,r(e,t)}var ke="[^/]+",fe=".*",ge="(?:|/.*)",ne=Symbol(),Mt=new Set(".\\+*[^]$()");function Nt(e,t){return e.length===1?t.length===1?e<t?-1:1:-1:t.length===1||e===fe||e===ge?1:t===fe||t===ge?-1:e===ke?1:t===ke?-1:e.length===t.length?e<t?-1:1:t.length-e.length}var Y,J,S,te,Ut=(te=class{constructor(){f(this,Y);f(this,J);f(this,S,Object.create(null))}insert(t,o,r,a,n){if(t.length===0){if(i(this,Y)!==void 0)throw ne;if(n)return;m(this,Y,o);return}const[s,...d]=t,c=s==="*"?d.length===0?["","",fe]:["","",ke]:s==="/*"?["","",ge]:s.match(/^\:([^\{\}]+)(?:\{(.+)\})?$/);let l;if(c){const u=c[1];let p=c[2]||ke;if(u&&c[2]&&(p===".*"||(p=p.replace(/^\((?!\?:)(?=[^)]+\)$)/,"(?:"),/\((?!\?:)/.test(p))))throw ne;if(l=i(this,S)[p],!l){if(Object.keys(i(this,S)).some(g=>g!==fe&&g!==ge))throw ne;if(n)return;l=i(this,S)[p]=new te,u!==""&&m(l,J,a.varIndex++)}!n&&u!==""&&r.push([u,i(l,J)])}else if(l=i(this,S)[s],!l){if(Object.keys(i(this,S)).some(u=>u.length>1&&u!==fe&&u!==ge))throw ne;if(n)return;l=i(this,S)[s]=new te}l.insert(d,o,r,a,n)}buildRegExpStr(){const o=Object.keys(i(this,S)).sort(Nt).map(r=>{const a=i(this,S)[r];return(typeof i(a,J)=="number"?`(${r})@${i(a,J)}`:Mt.has(r)?`\\${r}`:r)+a.buildRegExpStr()});return typeof i(this,Y)=="number"&&o.unshift(`#${i(this,Y)}`),o.length===0?"":o.length===1?o[0]:"(?:"+o.join("|")+")"}},Y=new WeakMap,J=new WeakMap,S=new WeakMap,te),Be,Ee,We,zt=(We=class{constructor(){f(this,Be,{varIndex:0});f(this,Ee,new Ut)}insert(e,t,o){const r=[],a=[];for(let s=0;;){let d=!1;if(e=e.replace(/\{[^}]+\}/g,c=>{const l=`@\\${s}`;return a[s]=[l,c],s++,d=!0,l}),!d)break}const n=e.match(/(?::[^\/]+)|(?:\/\*$)|./g)||[];for(let s=a.length-1;s>=0;s--){const[d]=a[s];for(let c=n.length-1;c>=0;c--)if(n[c].indexOf(d)!==-1){n[c]=n[c].replace(d,a[s][1]);break}}return i(this,Ee).insert(n,t,r,i(this,Be),o),r}buildRegExp(){let e=i(this,Ee).buildRegExpStr();if(e==="")return[/^$/,[],[]];let t=0;const o=[],r=[];return e=e.replace(/#(\d+)|@(\d+)|\.\*\$/g,(a,n,s)=>n!==void 0?(o[++t]=Number(n),"$()"):(s!==void 0&&(r[Number(s)]=++t),"")),[new RegExp(`^${e}`),o,r]}},Be=new WeakMap,Ee=new WeakMap,We),Qt=[/^$/,[],Object.create(null)],Ae=Object.create(null);function dt(e){return Ae[e]??(Ae[e]=new RegExp(e==="*"?"":`^${e.replace(/\/\*$|([.\\+*[^\]$()])/g,(t,o)=>o?`\\${o}`:"(?:|/.*)")}$`))}function Vt(){Ae=Object.create(null)}function Wt(e){var l;const t=new zt,o=[];if(e.length===0)return Qt;const r=e.map(u=>[!/\*|\/:/.test(u[0]),...u]).sort(([u,p],[g,v])=>u?1:g?-1:p.length-v.length),a=Object.create(null);for(let u=0,p=-1,g=r.length;u<g;u++){const[v,R,H]=r[u];v?a[R]=[H.map(([_])=>[_,Object.create(null)]),lt]:p++;let x;try{x=t.insert(R,p,v)}catch(_){throw _===ne?new it(R):_}v||(o[p]=H.map(([_,D])=>{const Ce=Object.create(null);for(D-=1;D>=0;D--){const[Ie,$]=x[D];Ce[Ie]=$}return[_,Ce]}))}const[n,s,d]=t.buildRegExp();for(let u=0,p=o.length;u<p;u++)for(let g=0,v=o[u].length;g<v;g++){const R=(l=o[u][g])==null?void 0:l[1];if(!R)continue;const H=Object.keys(R);for(let x=0,_=H.length;x<_;x++)R[H[x]]=d[R[H[x]]]}const c=[];for(const u in s)c[u]=o[s[u]];return[n,c,a]}function oe(e,t){if(e){for(const o of Object.keys(e).sort((r,a)=>a.length-r.length))if(dt(o).test(t))return[...e[o]]}}var z,Q,Se,ut,Ge,Gt=(Ge=class{constructor(){f(this,Se);h(this,"name","RegExpRouter");f(this,z);f(this,Q);h(this,"match",Dt);m(this,z,{[w]:Object.create(null)}),m(this,Q,{[w]:Object.create(null)})}add(e,t,o){var d;const r=i(this,z),a=i(this,Q);if(!r||!a)throw new Error(st);r[e]||[r,a].forEach(c=>{c[e]=Object.create(null),Object.keys(c[w]).forEach(l=>{c[e][l]=[...c[w][l]]})}),t==="/*"&&(t="*");const n=(t.match(/\/:/g)||[]).length;if(/\*$/.test(t)){const c=dt(t);e===w?Object.keys(r).forEach(l=>{var u;(u=r[l])[t]||(u[t]=oe(r[l],t)||oe(r[w],t)||[])}):(d=r[e])[t]||(d[t]=oe(r[e],t)||oe(r[w],t)||[]),Object.keys(r).forEach(l=>{(e===w||e===l)&&Object.keys(r[l]).forEach(u=>{c.test(u)&&r[l][u].push([o,n])})}),Object.keys(a).forEach(l=>{(e===w||e===l)&&Object.keys(a[l]).forEach(u=>c.test(u)&&a[l][u].push([o,n]))});return}const s=Ze(t)||[t];for(let c=0,l=s.length;c<l;c++){const u=s[c];Object.keys(a).forEach(p=>{var g;(e===w||e===p)&&((g=a[p])[u]||(g[u]=[...oe(r[p],u)||oe(r[w],u)||[]]),a[p][u].push([o,n-l+c+1]))})}}buildAllMatchers(){const e=Object.create(null);return Object.keys(i(this,Q)).concat(Object.keys(i(this,z))).forEach(t=>{e[t]||(e[t]=b(this,Se,ut).call(this,t))}),m(this,z,m(this,Q,void 0)),Vt(),e}},z=new WeakMap,Q=new WeakMap,Se=new WeakSet,ut=function(e){const t=[];let o=e===w;return[i(this,z),i(this,Q)].forEach(r=>{const a=r[e]?Object.keys(r[e]).map(n=>[n,r[e][n]]):[];a.length!==0?(o||(o=!0),t.push(...a)):e!==w&&t.push(...Object.keys(r[w]).map(n=>[n,r[w][n]]))}),o?Wt(t):null},Ge),V,j,Ke,Kt=(Ke=class{constructor(e){h(this,"name","SmartRouter");f(this,V,[]);f(this,j,[]);m(this,V,e.routers)}add(e,t,o){if(!i(this,j))throw new Error(st);i(this,j).push([e,t,o])}match(e,t){if(!i(this,j))throw new Error("Fatal error");const o=i(this,V),r=i(this,j),a=o.length;let n=0,s;for(;n<a;n++){const d=o[n];try{for(let c=0,l=r.length;c<l;c++)d.add(...r[c]);s=d.match(e,t)}catch(c){if(c instanceof it)continue;throw c}this.match=d.match.bind(d),m(this,V,[d]),m(this,j,void 0);break}if(n===a)throw new Error("Fatal error");return this.name=`SmartRouter + ${this.activeRouter.name}`,s}get activeRouter(){if(i(this,j)||i(this,V).length!==1)throw new Error("No active router has been determined yet.");return i(this,V)[0]}},V=new WeakMap,j=new WeakMap,Ke),he=Object.create(null),W,I,Z,ue,C,O,K,pe,Xt=(pe=class{constructor(t,o,r){f(this,O);f(this,W);f(this,I);f(this,Z);f(this,ue,0);f(this,C,he);if(m(this,I,r||Object.create(null)),m(this,W,[]),t&&o){const a=Object.create(null);a[t]={handler:o,possibleKeys:[],score:0},m(this,W,[a])}m(this,Z,[])}insert(t,o,r){m(this,ue,++De(this,ue)._);let a=this;const n=It(o),s=[];for(let d=0,c=n.length;d<c;d++){const l=n[d],u=n[d+1],p=Rt(l,u),g=Array.isArray(p)?p[0]:l;if(g in i(a,I)){a=i(a,I)[g],p&&s.push(p[1]);continue}i(a,I)[g]=new pe,p&&(i(a,Z).push(p),s.push(p[1])),a=i(a,I)[g]}return i(a,W).push({[t]:{handler:r,possibleKeys:s.filter((d,c,l)=>l.indexOf(d)===c),score:i(this,ue)}}),a}search(t,o){var c;const r=[];m(this,C,he);let n=[this];const s=Ye(o),d=[];for(let l=0,u=s.length;l<u;l++){const p=s[l],g=l===u-1,v=[];for(let R=0,H=n.length;R<H;R++){const x=n[R],_=i(x,I)[p];_&&(m(_,C,i(x,C)),g?(i(_,I)["*"]&&r.push(...b(this,O,K).call(this,i(_,I)["*"],t,i(x,C))),r.push(...b(this,O,K).call(this,_,t,i(x,C)))):v.push(_));for(let D=0,Ce=i(x,Z).length;D<Ce;D++){const Ie=i(x,Z)[D],$=i(x,C)===he?{}:{...i(x,C)};if(Ie==="*"){const M=i(x,I)["*"];M&&(r.push(...b(this,O,K).call(this,M,t,i(x,C))),m(M,C,$),v.push(M));continue}const[ht,Fe,me]=Ie;if(!p&&!(me instanceof RegExp))continue;const T=i(x,I)[ht],ft=s.slice(l).join("/");if(me instanceof RegExp){const M=me.exec(ft);if(M){if($[Fe]=M[0],r.push(...b(this,O,K).call(this,T,t,i(x,C),$)),Object.keys(i(T,I)).length){m(T,C,$);const $e=((c=M[0].match(/\//))==null?void 0:c.length)??0;(d[$e]||(d[$e]=[])).push(T)}continue}}(me===!0||me.test(p))&&($[Fe]=p,g?(r.push(...b(this,O,K).call(this,T,t,$,i(x,C))),i(T,I)["*"]&&r.push(...b(this,O,K).call(this,i(T,I)["*"],t,$,i(x,C)))):(m(T,C,$),v.push(T)))}}n=v.concat(d.shift()??[])}return r.length>1&&r.sort((l,u)=>l.score-u.score),[r.map(({handler:l,params:u})=>[l,u])]}},W=new WeakMap,I=new WeakMap,Z=new WeakMap,ue=new WeakMap,C=new WeakMap,O=new WeakSet,K=function(t,o,r,a){const n=[];for(let s=0,d=i(t,W).length;s<d;s++){const c=i(t,W)[s],l=c[o]||c[w],u={};if(l!==void 0&&(l.params=Object.create(null),n.push(l),r!==he||a&&a!==he))for(let p=0,g=l.possibleKeys.length;p<g;p++){const v=l.possibleKeys[p],R=u[l.score];l.params[v]=a!=null&&a[v]&&!R?a[v]:r[v]??(a==null?void 0:a[v]),u[l.score]=!0}}return n},pe),ee,Xe,Yt=(Xe=class{constructor(){h(this,"name","TrieRouter");f(this,ee);m(this,ee,new Xt)}add(e,t,o){const r=Ze(t);if(r){for(let a=0,n=r.length;a<n;a++)i(this,ee).insert(e,r[a],o);return}i(this,ee).insert(e,t,o)}match(e,t){return i(this,ee).search(e,t)}},ee=new WeakMap,Xe),pt=class extends Ht{constructor(e={}){super(e),this.router=e.router??new Kt({routers:[new Gt,new Yt]})}},Jt=e=>{const o={...{origin:"*",allowMethods:["GET","HEAD","PUT","POST","DELETE","PATCH"],allowHeaders:[],exposeHeaders:[]},...e},r=(n=>typeof n=="string"?n==="*"?()=>n:s=>n===s?s:null:typeof n=="function"?n:s=>n.includes(s)?s:null)(o.origin),a=(n=>typeof n=="function"?n:Array.isArray(n)?()=>n:()=>[])(o.allowMethods);return async function(s,d){var u;function c(p,g){s.res.headers.set(p,g)}const l=await r(s.req.header("origin")||"",s);if(l&&c("Access-Control-Allow-Origin",l),o.credentials&&c("Access-Control-Allow-Credentials","true"),(u=o.exposeHeaders)!=null&&u.length&&c("Access-Control-Expose-Headers",o.exposeHeaders.join(",")),s.req.method==="OPTIONS"){o.origin!=="*"&&c("Vary","Origin"),o.maxAge!=null&&c("Access-Control-Max-Age",o.maxAge.toString());const p=await a(s.req.header("origin")||"",s);p.length&&c("Access-Control-Allow-Methods",p.join(","));let g=o.allowHeaders;if(!(g!=null&&g.length)){const v=s.req.header("Access-Control-Request-Headers");v&&(g=v.split(/\s*,\s*/))}return g!=null&&g.length&&(c("Access-Control-Allow-Headers",g.join(",")),s.res.headers.append("Vary","Access-Control-Request-Headers")),s.res.headers.delete("Content-Length"),s.res.headers.delete("Content-Type"),new Response(null,{headers:s.res.headers,status:204,statusText:"No Content"})}await d(),o.origin!=="*"&&s.header("Vary","Origin",{append:!0})}};const y=new pt;y.use("/api/*",Jt());y.post("/api/auth/verify",async e=>{const{password:t}=await e.req.json();return e.json({success:t==="123"})});y.get("/api/products",async e=>{const{DB:t}=e.env,{results:o}=await t.prepare("SELECT * FROM products ORDER BY id DESC").all();return e.json(o)});y.get("/api/products/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{results:r}=await t.prepare("SELECT * FROM products WHERE id = ?").bind(o).all();return e.json(r[0]||null)});y.post("/api/products",async e=>{const{DB:t}=e.env,{name:o,price:r,brand:a,stock_quantity:n,image_url:s,cold_quantity:d,hot_quantity:c,unit_type:l,category:u}=await e.req.json(),p=await t.prepare("INSERT INTO products (name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").bind(o,r,a,n||0,s||null,d||0,c||0,l||"Unidade",u||"Bebidas").run();return e.json({id:p.meta.last_row_id,success:!0})});y.put("/api/products/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{name:r,price:a,brand:n,stock_quantity:s,image_url:d,cold_quantity:c,hot_quantity:l,unit_type:u,category:p}=await e.req.json();return await t.prepare("UPDATE products SET name = ?, price = ?, brand = ?, stock_quantity = ?, image_url = ?, cold_quantity = ?, hot_quantity = ?, unit_type = ?, category = ? WHERE id = ?").bind(r,a,n,s,d,c,l,u,p,o).run(),e.json({success:!0})});y.delete("/api/products/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id");return await t.prepare("DELETE FROM products WHERE id = ?").bind(o).run(),e.json({success:!0})});y.get("/api/customers",async e=>{const{DB:t}=e.env,{results:o}=await t.prepare("SELECT * FROM customers ORDER BY name").all();return e.json(o)});y.get("/api/customers/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{results:r}=await t.prepare("SELECT * FROM customers WHERE id = ?").bind(o).all();return e.json(r[0]||null)});y.post("/api/customers",async e=>{const{DB:t}=e.env,{name:o,address:r,neighborhood:a,zip_code:n,city:s,phone:d}=await e.req.json(),c=await t.prepare("INSERT INTO customers (name, address, neighborhood, zip_code, city, phone) VALUES (?, ?, ?, ?, ?, ?)").bind(o,r,a,n,s,d).run();return e.json({id:c.meta.last_row_id,success:!0})});y.put("/api/customers/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{name:r,address:a,neighborhood:n,zip_code:s,city:d,phone:c}=await e.req.json();return await t.prepare("UPDATE customers SET name = ?, address = ?, neighborhood = ?, zip_code = ?, city = ?, phone = ? WHERE id = ?").bind(r,a,n,s,d,c,o).run(),e.json({success:!0})});y.delete("/api/customers/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id");return await t.prepare("DELETE FROM customers WHERE id = ?").bind(o).run(),e.json({success:!0})});y.post("/api/orders",async e=>{const{DB:t}=e.env,{customer_id:o,items:r,payment_method:a,total_amount:n}=await e.req.json(),d=(await t.prepare("INSERT INTO orders (customer_id, total_amount, payment_method) VALUES (?, ?, ?)").bind(o,n,a).run()).meta.last_row_id;for(const c of r)await t.prepare("INSERT INTO order_items (order_id, product_id, quantity, unit_price, total_price) VALUES (?, ?, ?, ?, ?)").bind(d,c.product_id,c.quantity,c.unit_price,c.total_price).run();return e.json({id:d,success:!0})});y.get("/api/orders/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{results:r}=await t.prepare("SELECT o.*, c.name as customer_name, c.phone, c.address, c.neighborhood, c.city FROM orders o JOIN customers c ON o.customer_id = c.id WHERE o.id = ?").bind(o).all();if(!r.length)return e.json(null);const a=r[0],{results:n}=await t.prepare("SELECT oi.*, p.name as product_name, p.brand FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?").bind(o).all();return e.json({...a,items:n})});y.get("/api/settings/logo",async e=>{var r;const{DB:t}=e.env,{results:o}=await t.prepare("SELECT value FROM settings WHERE key = 'logo_url'").all();return e.json({logo_url:((r=o[0])==null?void 0:r.value)||null})});y.post("/api/settings/logo",async e=>{const{DB:t}=e.env,{logo_url:o}=await e.req.json();return await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('logo_url', ?, CURRENT_TIMESTAMP)").bind(o).run(),e.json({success:!0})});y.get("/api/settings/footer-logo",async e=>{var r;const{DB:t}=e.env,{results:o}=await t.prepare("SELECT value FROM settings WHERE key = 'footer_logo_url'").all();return e.json({footer_logo_url:((r=o[0])==null?void 0:r.value)||null})});y.post("/api/settings/footer-logo",async e=>{const{DB:t}=e.env,{footer_logo_url:o}=await e.req.json();return await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('footer_logo_url', ?, CURRENT_TIMESTAMP)").bind(o).run(),e.json({success:!0})});y.get("/api/settings/branches",async e=>{var r;const{DB:t}=e.env,{results:o}=await t.prepare("SELECT value FROM settings WHERE key = 'branches'").all();return e.json({branches:((r=o[0])==null?void 0:r.value)||""})});y.post("/api/settings/branches",async e=>{const{DB:t}=e.env,{branches:o}=await e.req.json();return await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('branches', ?, CURRENT_TIMESTAMP)").bind(o).run(),e.json({success:!0})});y.get("/api/settings/payment",async e=>{const{DB:t}=e.env,{results:o}=await t.prepare("SELECT key, value FROM settings WHERE key IN ('pix_key', 'qrcode_url')").all(),r={pix_key:"",qrcode_url:""};return o.forEach(a=>{a.key==="pix_key"&&(r.pix_key=a.value||""),a.key==="qrcode_url"&&(r.qrcode_url=a.value||"")}),e.json(r)});y.post("/api/settings/payment",async e=>{const{DB:t}=e.env,{pix_key:o,qrcode_url:r}=await e.req.json();return await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('pix_key', ?, CURRENT_TIMESTAMP)").bind(o||"").run(),await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('qrcode_url', ?, CURRENT_TIMESTAMP)").bind(r||"").run(),e.json({success:!0})});y.post("/api/upload",async e=>{try{const{image:t,filename:o}=await e.req.json(),r=t.split(",")[1]||t,a=atob(r),n=new Uint8Array(a.length);for(let c=0;c<a.length;c++)n[c]=a.charCodeAt(c);const s=`${Date.now()}-${o}`,d=t;return e.json({success:!0,url:d})}catch(t){return console.error("Upload error:",t),e.json({success:!1,error:"Upload failed"},500)}});y.get("/",e=>e.html(`
+var gt=Object.defineProperty;var Fe=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in e?gt(e,t,{enumerable:!0,configurable:!0,writable:!0,value:o}):e[t]=o;var h=(e,t,o)=>bt(e,typeof t!="symbol"?t+"":t,o),qe=(e,t,o)=>t.has(e)||Fe("Cannot "+o);var i=(e,t,o)=>(qe(e,t,"read from private field"),o?o.call(e):t.get(e)),f=(e,t,o)=>t.has(e)?Fe("Cannot add the same private member more than once"):t instanceof WeakSet?t.add(e):t.set(e,o),m=(e,t,o,r)=>(qe(e,t,"write to private field"),r?r.call(e,o):t.set(e,o),o),b=(e,t,o)=>(qe(e,t,"access private method"),o);var De=(e,t,o,r)=>({set _(a){m(e,t,a,o)},get _(){return i(e,t,r)}});var He=(e,t,o)=>(r,a)=>{let n=-1;return s(0);async function s(d){if(d<=n)throw new Error("next() called multiple times");n=d;let c,l=!1,u;if(e[d]?(u=e[d][0][0],r.req.routeIndex=d):u=d===e.length&&a||void 0,u)try{c=await u(r,()=>s(d+1))}catch(p){if(p instanceof Error&&t)r.error=p,c=await t(p,r),l=!0;else throw p}else r.finalized===!1&&o&&(c=await o(r));return c&&(r.finalized===!1||l)&&(r.res=c),r}},yt=Symbol(),xt=async(e,t=Object.create(null))=>{const{all:o=!1,dot:r=!1}=t,n=(e instanceof ot?e.raw.headers:e.headers).get("Content-Type");return n!=null&&n.startsWith("multipart/form-data")||n!=null&&n.startsWith("application/x-www-form-urlencoded")?vt(e,{all:o,dot:r}):{}};async function vt(e,t){const o=await e.formData();return o?wt(o,t):{}}function wt(e,t){const o=Object.create(null);return e.forEach((r,a)=>{t.all||a.endsWith("[]")?Et(o,a,r):o[a]=r}),t.dot&&Object.entries(o).forEach(([r,a])=>{r.includes(".")&&(Ct(o,r,a),delete o[r])}),o}var Et=(e,t,o)=>{e[t]!==void 0?Array.isArray(e[t])?e[t].push(o):e[t]=[e[t],o]:t.endsWith("[]")?e[t]=[o]:e[t]=o},Ct=(e,t,o)=>{let r=e;const a=t.split(".");a.forEach((n,s)=>{s===a.length-1?r[n]=o:((!r[n]||typeof r[n]!="object"||Array.isArray(r[n])||r[n]instanceof File)&&(r[n]=Object.create(null)),r=r[n])})},Ye=e=>{const t=e.split("/");return t[0]===""&&t.shift(),t},It=e=>{const{groups:t,path:o}=_t(e),r=Ye(o);return Pt(r,t)},_t=e=>{const t=[];return e=e.replace(/\{[^}]+\}/g,(o,r)=>{const a=`@${r}`;return t.push([a,o]),a}),{groups:t,path:e}},Pt=(e,t)=>{for(let o=t.length-1;o>=0;o--){const[r]=t[o];for(let a=e.length-1;a>=0;a--)if(e[a].includes(r)){e[a]=e[a].replace(r,t[o][1]);break}}return e},_e={},At=(e,t)=>{if(e==="*")return"*";const o=e.match(/^\:([^\{\}]+)(?:\{(.+)\})?$/);if(o){const r=`${e}#${t}`;return _e[r]||(o[2]?_e[r]=t&&t[0]!==":"&&t[0]!=="*"?[r,o[1],new RegExp(`^${o[2]}(?=/${t})`)]:[e,o[1],new RegExp(`^${o[2]}$`)]:_e[r]=[e,o[1],!0]),_e[r]}return null},je=(e,t)=>{try{return t(e)}catch{return e.replace(/(?:%[0-9A-Fa-f]{2})+/g,o=>{try{return t(o)}catch{return o}})}},Rt=e=>je(e,decodeURI),Ze=e=>{const t=e.url,o=t.indexOf("/",t.indexOf(":")+4);let r=o;for(;r<t.length;r++){const a=t.charCodeAt(r);if(a===37){const n=t.indexOf("?",r),s=t.slice(o,n===-1?void 0:n);return Rt(s.includes("%25")?s.replace(/%25/g,"%2525"):s)}else if(a===63)break}return t.slice(o,r)},kt=e=>{const t=Ze(e);return t.length>1&&t.at(-1)==="/"?t.slice(0,-1):t},re=(e,t,...o)=>(o.length&&(t=re(t,...o)),`${(e==null?void 0:e[0])==="/"?"":"/"}${e}${t==="/"?"":`${(e==null?void 0:e.at(-1))==="/"?"":"/"}${(t==null?void 0:t[0])==="/"?t.slice(1):t}`}`),Je=e=>{if(e.charCodeAt(e.length-1)!==63||!e.includes(":"))return null;const t=e.split("/"),o=[];let r="";return t.forEach(a=>{if(a!==""&&!/\:/.test(a))r+="/"+a;else if(/\:/.test(a))if(/\?/.test(a)){o.length===0&&r===""?o.push("/"):o.push(r);const n=a.replace("?","");r+="/"+n,o.push(r)}else r+="/"+a}),o.filter((a,n,s)=>s.indexOf(a)===n)},$e=e=>/[%+]/.test(e)?(e.indexOf("+")!==-1&&(e=e.replace(/\+/g," ")),e.indexOf("%")!==-1?je(e,tt):e):e,et=(e,t,o)=>{let r;if(!o&&t&&!/[%+]/.test(t)){let s=e.indexOf("?",8);if(s===-1)return;for(e.startsWith(t,s+1)||(s=e.indexOf(`&${t}`,s+1));s!==-1;){const d=e.charCodeAt(s+t.length+1);if(d===61){const c=s+t.length+2,l=e.indexOf("&",c);return $e(e.slice(c,l===-1?void 0:l))}else if(d==38||isNaN(d))return"";s=e.indexOf(`&${t}`,s+1)}if(r=/[%+]/.test(e),!r)return}const a={};r??(r=/[%+]/.test(e));let n=e.indexOf("?",8);for(;n!==-1;){const s=e.indexOf("&",n+1);let d=e.indexOf("=",n);d>s&&s!==-1&&(d=-1);let c=e.slice(n+1,d===-1?s===-1?void 0:s:d);if(r&&(c=$e(c)),n=s,c==="")continue;let l;d===-1?l="":(l=e.slice(d+1,s===-1?void 0:s),r&&(l=$e(l))),o?(a[c]&&Array.isArray(a[c])||(a[c]=[]),a[c].push(l)):a[c]??(a[c]=l)}return t?a[t]:a},St=et,Bt=(e,t)=>et(e,t,!0),tt=decodeURIComponent,Ne=e=>je(e,tt),se,R,M,rt,at,Oe,N,Qe,ot=(Qe=class{constructor(e,t="/",o=[[]]){f(this,M);h(this,"raw");f(this,se);f(this,R);h(this,"routeIndex",0);h(this,"path");h(this,"bodyCache",{});f(this,N,e=>{const{bodyCache:t,raw:o}=this,r=t[e];if(r)return r;const a=Object.keys(t)[0];return a?t[a].then(n=>(a==="json"&&(n=JSON.stringify(n)),new Response(n)[e]())):t[e]=o[e]()});this.raw=e,this.path=t,m(this,R,o),m(this,se,{})}param(e){return e?b(this,M,rt).call(this,e):b(this,M,at).call(this)}query(e){return St(this.url,e)}queries(e){return Bt(this.url,e)}header(e){if(e)return this.raw.headers.get(e)??void 0;const t={};return this.raw.headers.forEach((o,r)=>{t[r]=o}),t}async parseBody(e){var t;return(t=this.bodyCache).parsedBody??(t.parsedBody=await xt(this,e))}json(){return i(this,N).call(this,"text").then(e=>JSON.parse(e))}text(){return i(this,N).call(this,"text")}arrayBuffer(){return i(this,N).call(this,"arrayBuffer")}blob(){return i(this,N).call(this,"blob")}formData(){return i(this,N).call(this,"formData")}addValidatedData(e,t){i(this,se)[e]=t}valid(e){return i(this,se)[e]}get url(){return this.raw.url}get method(){return this.raw.method}get[yt](){return i(this,R)}get matchedRoutes(){return i(this,R)[0].map(([[,e]])=>e)}get routePath(){return i(this,R)[0].map(([[,e]])=>e)[this.routeIndex].path}},se=new WeakMap,R=new WeakMap,M=new WeakSet,rt=function(e){const t=i(this,R)[0][this.routeIndex][1][e],o=b(this,M,Oe).call(this,t);return o&&/\%/.test(o)?Ne(o):o},at=function(){const e={},t=Object.keys(i(this,R)[0][this.routeIndex][1]);for(const o of t){const r=b(this,M,Oe).call(this,i(this,R)[0][this.routeIndex][1][o]);r!==void 0&&(e[o]=/\%/.test(r)?Ne(r):r)}return e},Oe=function(e){return i(this,R)[1]?i(this,R)[1][e]:e},N=new WeakMap,Qe),Tt={Stringify:1},nt=async(e,t,o,r,a)=>{typeof e=="object"&&!(e instanceof String)&&(e instanceof Promise||(e=e.toString()),e instanceof Promise&&(e=await e));const n=e.callbacks;return n!=null&&n.length?(a?a[0]+=e:a=[e],Promise.all(n.map(d=>d({phase:t,buffer:a,context:r}))).then(d=>Promise.all(d.filter(Boolean).map(c=>nt(c,t,!1,r,a))).then(()=>a[0]))):Promise.resolve(e)},qt="text/plain; charset=UTF-8",Le=(e,t)=>({"Content-Type":e,...t}),be,ye,$,ie,L,P,xe,ce,le,X,ve,we,U,ae,Ve,$t=(Ve=class{constructor(e,t){f(this,U);f(this,be);f(this,ye);h(this,"env",{});f(this,$);h(this,"finalized",!1);h(this,"error");f(this,ie);f(this,L);f(this,P);f(this,xe);f(this,ce);f(this,le);f(this,X);f(this,ve);f(this,we);h(this,"render",(...e)=>(i(this,ce)??m(this,ce,t=>this.html(t)),i(this,ce).call(this,...e)));h(this,"setLayout",e=>m(this,xe,e));h(this,"getLayout",()=>i(this,xe));h(this,"setRenderer",e=>{m(this,ce,e)});h(this,"header",(e,t,o)=>{this.finalized&&m(this,P,new Response(i(this,P).body,i(this,P)));const r=i(this,P)?i(this,P).headers:i(this,X)??m(this,X,new Headers);t===void 0?r.delete(e):o!=null&&o.append?r.append(e,t):r.set(e,t)});h(this,"status",e=>{m(this,ie,e)});h(this,"set",(e,t)=>{i(this,$)??m(this,$,new Map),i(this,$).set(e,t)});h(this,"get",e=>i(this,$)?i(this,$).get(e):void 0);h(this,"newResponse",(...e)=>b(this,U,ae).call(this,...e));h(this,"body",(e,t,o)=>b(this,U,ae).call(this,e,t,o));h(this,"text",(e,t,o)=>!i(this,X)&&!i(this,ie)&&!t&&!o&&!this.finalized?new Response(e):b(this,U,ae).call(this,e,t,Le(qt,o)));h(this,"json",(e,t,o)=>b(this,U,ae).call(this,JSON.stringify(e),t,Le("application/json",o)));h(this,"html",(e,t,o)=>{const r=a=>b(this,U,ae).call(this,a,t,Le("text/html; charset=UTF-8",o));return typeof e=="object"?nt(e,Tt.Stringify,!1,{}).then(r):r(e)});h(this,"redirect",(e,t)=>{const o=String(e);return this.header("Location",/[^\x00-\xFF]/.test(o)?encodeURI(o):o),this.newResponse(null,t??302)});h(this,"notFound",()=>(i(this,le)??m(this,le,()=>new Response),i(this,le).call(this,this)));m(this,be,e),t&&(m(this,L,t.executionCtx),this.env=t.env,m(this,le,t.notFoundHandler),m(this,we,t.path),m(this,ve,t.matchResult))}get req(){return i(this,ye)??m(this,ye,new ot(i(this,be),i(this,we),i(this,ve))),i(this,ye)}get event(){if(i(this,L)&&"respondWith"in i(this,L))return i(this,L);throw Error("This context has no FetchEvent")}get executionCtx(){if(i(this,L))return i(this,L);throw Error("This context has no ExecutionContext")}get res(){return i(this,P)||m(this,P,new Response(null,{headers:i(this,X)??m(this,X,new Headers)}))}set res(e){if(i(this,P)&&e){e=new Response(e.body,e);for(const[t,o]of i(this,P).headers.entries())if(t!=="content-type")if(t==="set-cookie"){const r=i(this,P).headers.getSetCookie();e.headers.delete("set-cookie");for(const a of r)e.headers.append("set-cookie",a)}else e.headers.set(t,o)}m(this,P,e),this.finalized=!0}get var(){return i(this,$)?Object.fromEntries(i(this,$)):{}}},be=new WeakMap,ye=new WeakMap,$=new WeakMap,ie=new WeakMap,L=new WeakMap,P=new WeakMap,xe=new WeakMap,ce=new WeakMap,le=new WeakMap,X=new WeakMap,ve=new WeakMap,we=new WeakMap,U=new WeakSet,ae=function(e,t,o){const r=i(this,P)?new Headers(i(this,P).headers):i(this,X)??new Headers;if(typeof t=="object"&&"headers"in t){const n=t.headers instanceof Headers?t.headers:new Headers(t.headers);for(const[s,d]of n)s.toLowerCase()==="set-cookie"?r.append(s,d):r.set(s,d)}if(o)for(const[n,s]of Object.entries(o))if(typeof s=="string")r.set(n,s);else{r.delete(n);for(const d of s)r.append(n,d)}const a=typeof t=="number"?t:(t==null?void 0:t.status)??i(this,ie);return new Response(e,{status:a,headers:r})},Ve),w="ALL",Lt="all",Ot=["get","post","put","delete","options","patch"],st="Can not add a route since the matcher is already built.",it=class extends Error{},jt="__COMPOSED_HANDLER",Mt=e=>e.text("404 Not Found",404),Ue=(e,t)=>{if("getResponse"in e){const o=e.getResponse();return t.newResponse(o.body,o)}return console.error(e),t.text("Internal Server Error",500)},k,E,ct,S,G,Pe,Ae,de,Ft=(de=class{constructor(t={}){f(this,E);h(this,"get");h(this,"post");h(this,"put");h(this,"delete");h(this,"options");h(this,"patch");h(this,"all");h(this,"on");h(this,"use");h(this,"router");h(this,"getPath");h(this,"_basePath","/");f(this,k,"/");h(this,"routes",[]);f(this,S,Mt);h(this,"errorHandler",Ue);h(this,"onError",t=>(this.errorHandler=t,this));h(this,"notFound",t=>(m(this,S,t),this));h(this,"fetch",(t,...o)=>b(this,E,Ae).call(this,t,o[1],o[0],t.method));h(this,"request",(t,o,r,a)=>t instanceof Request?this.fetch(o?new Request(t,o):t,r,a):(t=t.toString(),this.fetch(new Request(/^https?:\/\//.test(t)?t:`http://localhost${re("/",t)}`,o),r,a)));h(this,"fire",()=>{addEventListener("fetch",t=>{t.respondWith(b(this,E,Ae).call(this,t.request,t,void 0,t.request.method))})});[...Ot,Lt].forEach(n=>{this[n]=(s,...d)=>(typeof s=="string"?m(this,k,s):b(this,E,G).call(this,n,i(this,k),s),d.forEach(c=>{b(this,E,G).call(this,n,i(this,k),c)}),this)}),this.on=(n,s,...d)=>{for(const c of[s].flat()){m(this,k,c);for(const l of[n].flat())d.map(u=>{b(this,E,G).call(this,l.toUpperCase(),i(this,k),u)})}return this},this.use=(n,...s)=>(typeof n=="string"?m(this,k,n):(m(this,k,"*"),s.unshift(n)),s.forEach(d=>{b(this,E,G).call(this,w,i(this,k),d)}),this);const{strict:r,...a}=t;Object.assign(this,a),this.getPath=r??!0?t.getPath??Ze:kt}route(t,o){const r=this.basePath(t);return o.routes.map(a=>{var s;let n;o.errorHandler===Ue?n=a.handler:(n=async(d,c)=>(await He([],o.errorHandler)(d,()=>a.handler(d,c))).res,n[jt]=a.handler),b(s=r,E,G).call(s,a.method,a.path,n)}),this}basePath(t){const o=b(this,E,ct).call(this);return o._basePath=re(this._basePath,t),o}mount(t,o,r){let a,n;r&&(typeof r=="function"?n=r:(n=r.optionHandler,r.replaceRequest===!1?a=c=>c:a=r.replaceRequest));const s=n?c=>{const l=n(c);return Array.isArray(l)?l:[l]}:c=>{let l;try{l=c.executionCtx}catch{}return[c.env,l]};a||(a=(()=>{const c=re(this._basePath,t),l=c==="/"?0:c.length;return u=>{const p=new URL(u.url);return p.pathname=p.pathname.slice(l)||"/",new Request(p,u)}})());const d=async(c,l)=>{const u=await o(a(c.req.raw),...s(c));if(u)return u;await l()};return b(this,E,G).call(this,w,re(t,"*"),d),this}},k=new WeakMap,E=new WeakSet,ct=function(){const t=new de({router:this.router,getPath:this.getPath});return t.errorHandler=this.errorHandler,m(t,S,i(this,S)),t.routes=this.routes,t},S=new WeakMap,G=function(t,o,r){t=t.toUpperCase(),o=re(this._basePath,o);const a={basePath:this._basePath,path:o,method:t,handler:r};this.router.add(t,o,[r,a]),this.routes.push(a)},Pe=function(t,o){if(t instanceof Error)return this.errorHandler(t,o);throw t},Ae=function(t,o,r,a){if(a==="HEAD")return(async()=>new Response(null,await b(this,E,Ae).call(this,t,o,r,"GET")))();const n=this.getPath(t,{env:r}),s=this.router.match(a,n),d=new $t(t,{path:n,matchResult:s,env:r,executionCtx:o,notFoundHandler:i(this,S)});if(s[0].length===1){let l;try{l=s[0][0][0][0](d,async()=>{d.res=await i(this,S).call(this,d)})}catch(u){return b(this,E,Pe).call(this,u,d)}return l instanceof Promise?l.then(u=>u||(d.finalized?d.res:i(this,S).call(this,d))).catch(u=>b(this,E,Pe).call(this,u,d)):l??i(this,S).call(this,d)}const c=He(s[0],this.errorHandler,i(this,S));return(async()=>{try{const l=await c(d);if(!l.finalized)throw new Error("Context is not finalized. Did you forget to return a Response object or `await next()`?");return l.res}catch(l){return b(this,E,Pe).call(this,l,d)}})()},de),lt=[];function Dt(e,t){const o=this.buildAllMatchers(),r=((a,n)=>{const s=o[a]||o[w],d=s[2][n];if(d)return d;const c=n.match(s[0]);if(!c)return[[],lt];const l=c.indexOf("",1);return[s[1][l],c]});return this.match=r,r(e,t)}var ke="[^/]+",fe=".*",ge="(?:|/.*)",ne=Symbol(),Ht=new Set(".\\+*[^]$()");function Nt(e,t){return e.length===1?t.length===1?e<t?-1:1:-1:t.length===1||e===fe||e===ge?1:t===fe||t===ge?-1:e===ke?1:t===ke?-1:e.length===t.length?e<t?-1:1:t.length-e.length}var Y,Z,B,te,Ut=(te=class{constructor(){f(this,Y);f(this,Z);f(this,B,Object.create(null))}insert(t,o,r,a,n){if(t.length===0){if(i(this,Y)!==void 0)throw ne;if(n)return;m(this,Y,o);return}const[s,...d]=t,c=s==="*"?d.length===0?["","",fe]:["","",ke]:s==="/*"?["","",ge]:s.match(/^\:([^\{\}]+)(?:\{(.+)\})?$/);let l;if(c){const u=c[1];let p=c[2]||ke;if(u&&c[2]&&(p===".*"||(p=p.replace(/^\((?!\?:)(?=[^)]+\)$)/,"(?:"),/\((?!\?:)/.test(p))))throw ne;if(l=i(this,B)[p],!l){if(Object.keys(i(this,B)).some(g=>g!==fe&&g!==ge))throw ne;if(n)return;l=i(this,B)[p]=new te,u!==""&&m(l,Z,a.varIndex++)}!n&&u!==""&&r.push([u,i(l,Z)])}else if(l=i(this,B)[s],!l){if(Object.keys(i(this,B)).some(u=>u.length>1&&u!==fe&&u!==ge))throw ne;if(n)return;l=i(this,B)[s]=new te}l.insert(d,o,r,a,n)}buildRegExpStr(){const o=Object.keys(i(this,B)).sort(Nt).map(r=>{const a=i(this,B)[r];return(typeof i(a,Z)=="number"?`(${r})@${i(a,Z)}`:Ht.has(r)?`\\${r}`:r)+a.buildRegExpStr()});return typeof i(this,Y)=="number"&&o.unshift(`#${i(this,Y)}`),o.length===0?"":o.length===1?o[0]:"(?:"+o.join("|")+")"}},Y=new WeakMap,Z=new WeakMap,B=new WeakMap,te),Se,Ee,We,zt=(We=class{constructor(){f(this,Se,{varIndex:0});f(this,Ee,new Ut)}insert(e,t,o){const r=[],a=[];for(let s=0;;){let d=!1;if(e=e.replace(/\{[^}]+\}/g,c=>{const l=`@\\${s}`;return a[s]=[l,c],s++,d=!0,l}),!d)break}const n=e.match(/(?::[^\/]+)|(?:\/\*$)|./g)||[];for(let s=a.length-1;s>=0;s--){const[d]=a[s];for(let c=n.length-1;c>=0;c--)if(n[c].indexOf(d)!==-1){n[c]=n[c].replace(d,a[s][1]);break}}return i(this,Ee).insert(n,t,r,i(this,Se),o),r}buildRegExp(){let e=i(this,Ee).buildRegExpStr();if(e==="")return[/^$/,[],[]];let t=0;const o=[],r=[];return e=e.replace(/#(\d+)|@(\d+)|\.\*\$/g,(a,n,s)=>n!==void 0?(o[++t]=Number(n),"$()"):(s!==void 0&&(r[Number(s)]=++t),"")),[new RegExp(`^${e}`),o,r]}},Se=new WeakMap,Ee=new WeakMap,We),Qt=[/^$/,[],Object.create(null)],Re=Object.create(null);function dt(e){return Re[e]??(Re[e]=new RegExp(e==="*"?"":`^${e.replace(/\/\*$|([.\\+*[^\]$()])/g,(t,o)=>o?`\\${o}`:"(?:|/.*)")}$`))}function Vt(){Re=Object.create(null)}function Wt(e){var l;const t=new zt,o=[];if(e.length===0)return Qt;const r=e.map(u=>[!/\*|\/:/.test(u[0]),...u]).sort(([u,p],[g,v])=>u?1:g?-1:p.length-v.length),a=Object.create(null);for(let u=0,p=-1,g=r.length;u<g;u++){const[v,A,F]=r[u];v?a[A]=[F.map(([_])=>[_,Object.create(null)]),lt]:p++;let x;try{x=t.insert(A,p,v)}catch(_){throw _===ne?new it(A):_}v||(o[p]=F.map(([_,D])=>{const Ce=Object.create(null);for(D-=1;D>=0;D--){const[Ie,T]=x[D];Ce[Ie]=T}return[_,Ce]}))}const[n,s,d]=t.buildRegExp();for(let u=0,p=o.length;u<p;u++)for(let g=0,v=o[u].length;g<v;g++){const A=(l=o[u][g])==null?void 0:l[1];if(!A)continue;const F=Object.keys(A);for(let x=0,_=F.length;x<_;x++)A[F[x]]=d[A[F[x]]]}const c=[];for(const u in s)c[u]=o[s[u]];return[n,c,a]}function oe(e,t){if(e){for(const o of Object.keys(e).sort((r,a)=>a.length-r.length))if(dt(o).test(t))return[...e[o]]}}var z,Q,Be,ut,Ge,Gt=(Ge=class{constructor(){f(this,Be);h(this,"name","RegExpRouter");f(this,z);f(this,Q);h(this,"match",Dt);m(this,z,{[w]:Object.create(null)}),m(this,Q,{[w]:Object.create(null)})}add(e,t,o){var d;const r=i(this,z),a=i(this,Q);if(!r||!a)throw new Error(st);r[e]||[r,a].forEach(c=>{c[e]=Object.create(null),Object.keys(c[w]).forEach(l=>{c[e][l]=[...c[w][l]]})}),t==="/*"&&(t="*");const n=(t.match(/\/:/g)||[]).length;if(/\*$/.test(t)){const c=dt(t);e===w?Object.keys(r).forEach(l=>{var u;(u=r[l])[t]||(u[t]=oe(r[l],t)||oe(r[w],t)||[])}):(d=r[e])[t]||(d[t]=oe(r[e],t)||oe(r[w],t)||[]),Object.keys(r).forEach(l=>{(e===w||e===l)&&Object.keys(r[l]).forEach(u=>{c.test(u)&&r[l][u].push([o,n])})}),Object.keys(a).forEach(l=>{(e===w||e===l)&&Object.keys(a[l]).forEach(u=>c.test(u)&&a[l][u].push([o,n]))});return}const s=Je(t)||[t];for(let c=0,l=s.length;c<l;c++){const u=s[c];Object.keys(a).forEach(p=>{var g;(e===w||e===p)&&((g=a[p])[u]||(g[u]=[...oe(r[p],u)||oe(r[w],u)||[]]),a[p][u].push([o,n-l+c+1]))})}}buildAllMatchers(){const e=Object.create(null);return Object.keys(i(this,Q)).concat(Object.keys(i(this,z))).forEach(t=>{e[t]||(e[t]=b(this,Be,ut).call(this,t))}),m(this,z,m(this,Q,void 0)),Vt(),e}},z=new WeakMap,Q=new WeakMap,Be=new WeakSet,ut=function(e){const t=[];let o=e===w;return[i(this,z),i(this,Q)].forEach(r=>{const a=r[e]?Object.keys(r[e]).map(n=>[n,r[e][n]]):[];a.length!==0?(o||(o=!0),t.push(...a)):e!==w&&t.push(...Object.keys(r[w]).map(n=>[n,r[w][n]]))}),o?Wt(t):null},Ge),V,O,Ke,Kt=(Ke=class{constructor(e){h(this,"name","SmartRouter");f(this,V,[]);f(this,O,[]);m(this,V,e.routers)}add(e,t,o){if(!i(this,O))throw new Error(st);i(this,O).push([e,t,o])}match(e,t){if(!i(this,O))throw new Error("Fatal error");const o=i(this,V),r=i(this,O),a=o.length;let n=0,s;for(;n<a;n++){const d=o[n];try{for(let c=0,l=r.length;c<l;c++)d.add(...r[c]);s=d.match(e,t)}catch(c){if(c instanceof it)continue;throw c}this.match=d.match.bind(d),m(this,V,[d]),m(this,O,void 0);break}if(n===a)throw new Error("Fatal error");return this.name=`SmartRouter + ${this.activeRouter.name}`,s}get activeRouter(){if(i(this,O)||i(this,V).length!==1)throw new Error("No active router has been determined yet.");return i(this,V)[0]}},V=new WeakMap,O=new WeakMap,Ke),he=Object.create(null),W,I,J,ue,C,j,K,pe,Xt=(pe=class{constructor(t,o,r){f(this,j);f(this,W);f(this,I);f(this,J);f(this,ue,0);f(this,C,he);if(m(this,I,r||Object.create(null)),m(this,W,[]),t&&o){const a=Object.create(null);a[t]={handler:o,possibleKeys:[],score:0},m(this,W,[a])}m(this,J,[])}insert(t,o,r){m(this,ue,++De(this,ue)._);let a=this;const n=It(o),s=[];for(let d=0,c=n.length;d<c;d++){const l=n[d],u=n[d+1],p=At(l,u),g=Array.isArray(p)?p[0]:l;if(g in i(a,I)){a=i(a,I)[g],p&&s.push(p[1]);continue}i(a,I)[g]=new pe,p&&(i(a,J).push(p),s.push(p[1])),a=i(a,I)[g]}return i(a,W).push({[t]:{handler:r,possibleKeys:s.filter((d,c,l)=>l.indexOf(d)===c),score:i(this,ue)}}),a}search(t,o){var c;const r=[];m(this,C,he);let n=[this];const s=Ye(o),d=[];for(let l=0,u=s.length;l<u;l++){const p=s[l],g=l===u-1,v=[];for(let A=0,F=n.length;A<F;A++){const x=n[A],_=i(x,I)[p];_&&(m(_,C,i(x,C)),g?(i(_,I)["*"]&&r.push(...b(this,j,K).call(this,i(_,I)["*"],t,i(x,C))),r.push(...b(this,j,K).call(this,_,t,i(x,C)))):v.push(_));for(let D=0,Ce=i(x,J).length;D<Ce;D++){const Ie=i(x,J)[D],T=i(x,C)===he?{}:{...i(x,C)};if(Ie==="*"){const H=i(x,I)["*"];H&&(r.push(...b(this,j,K).call(this,H,t,i(x,C))),m(H,C,T),v.push(H));continue}const[ht,Me,me]=Ie;if(!p&&!(me instanceof RegExp))continue;const q=i(x,I)[ht],ft=s.slice(l).join("/");if(me instanceof RegExp){const H=me.exec(ft);if(H){if(T[Me]=H[0],r.push(...b(this,j,K).call(this,q,t,i(x,C),T)),Object.keys(i(q,I)).length){m(q,C,T);const Te=((c=H[0].match(/\//))==null?void 0:c.length)??0;(d[Te]||(d[Te]=[])).push(q)}continue}}(me===!0||me.test(p))&&(T[Me]=p,g?(r.push(...b(this,j,K).call(this,q,t,T,i(x,C))),i(q,I)["*"]&&r.push(...b(this,j,K).call(this,i(q,I)["*"],t,T,i(x,C)))):(m(q,C,T),v.push(q)))}}n=v.concat(d.shift()??[])}return r.length>1&&r.sort((l,u)=>l.score-u.score),[r.map(({handler:l,params:u})=>[l,u])]}},W=new WeakMap,I=new WeakMap,J=new WeakMap,ue=new WeakMap,C=new WeakMap,j=new WeakSet,K=function(t,o,r,a){const n=[];for(let s=0,d=i(t,W).length;s<d;s++){const c=i(t,W)[s],l=c[o]||c[w],u={};if(l!==void 0&&(l.params=Object.create(null),n.push(l),r!==he||a&&a!==he))for(let p=0,g=l.possibleKeys.length;p<g;p++){const v=l.possibleKeys[p],A=u[l.score];l.params[v]=a!=null&&a[v]&&!A?a[v]:r[v]??(a==null?void 0:a[v]),u[l.score]=!0}}return n},pe),ee,Xe,Yt=(Xe=class{constructor(){h(this,"name","TrieRouter");f(this,ee);m(this,ee,new Xt)}add(e,t,o){const r=Je(t);if(r){for(let a=0,n=r.length;a<n;a++)i(this,ee).insert(e,r[a],o);return}i(this,ee).insert(e,t,o)}match(e,t){return i(this,ee).search(e,t)}},ee=new WeakMap,Xe),pt=class extends Ft{constructor(e={}){super(e),this.router=e.router??new Kt({routers:[new Gt,new Yt]})}},Zt=e=>{const o={...{origin:"*",allowMethods:["GET","HEAD","PUT","POST","DELETE","PATCH"],allowHeaders:[],exposeHeaders:[]},...e},r=(n=>typeof n=="string"?n==="*"?()=>n:s=>n===s?s:null:typeof n=="function"?n:s=>n.includes(s)?s:null)(o.origin),a=(n=>typeof n=="function"?n:Array.isArray(n)?()=>n:()=>[])(o.allowMethods);return async function(s,d){var u;function c(p,g){s.res.headers.set(p,g)}const l=await r(s.req.header("origin")||"",s);if(l&&c("Access-Control-Allow-Origin",l),o.credentials&&c("Access-Control-Allow-Credentials","true"),(u=o.exposeHeaders)!=null&&u.length&&c("Access-Control-Expose-Headers",o.exposeHeaders.join(",")),s.req.method==="OPTIONS"){o.origin!=="*"&&c("Vary","Origin"),o.maxAge!=null&&c("Access-Control-Max-Age",o.maxAge.toString());const p=await a(s.req.header("origin")||"",s);p.length&&c("Access-Control-Allow-Methods",p.join(","));let g=o.allowHeaders;if(!(g!=null&&g.length)){const v=s.req.header("Access-Control-Request-Headers");v&&(g=v.split(/\s*,\s*/))}return g!=null&&g.length&&(c("Access-Control-Allow-Headers",g.join(",")),s.res.headers.append("Vary","Access-Control-Request-Headers")),s.res.headers.delete("Content-Length"),s.res.headers.delete("Content-Type"),new Response(null,{headers:s.res.headers,status:204,statusText:"No Content"})}await d(),o.origin!=="*"&&s.header("Vary","Origin",{append:!0})}};const y=new pt;y.use("/api/*",Zt());y.post("/api/auth/verify",async e=>{const{password:t}=await e.req.json();return e.json({success:t==="123"})});y.get("/api/products",async e=>{const{DB:t}=e.env,{results:o}=await t.prepare("SELECT * FROM products ORDER BY id DESC").all();return e.json(o)});y.get("/api/products/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{results:r}=await t.prepare("SELECT * FROM products WHERE id = ?").bind(o).all();return e.json(r[0]||null)});y.post("/api/products",async e=>{const{DB:t}=e.env,{name:o,price:r,brand:a,stock_quantity:n,image_url:s,cold_quantity:d,hot_quantity:c,unit_type:l,category:u}=await e.req.json(),p=await t.prepare("INSERT INTO products (name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").bind(o,r,a,n||0,s||null,d||0,c||0,l||"Unidade",u||"Bebidas").run();return e.json({id:p.meta.last_row_id,success:!0})});y.put("/api/products/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{name:r,price:a,brand:n,stock_quantity:s,image_url:d,cold_quantity:c,hot_quantity:l,unit_type:u,category:p}=await e.req.json();return await t.prepare("UPDATE products SET name = ?, price = ?, brand = ?, stock_quantity = ?, image_url = ?, cold_quantity = ?, hot_quantity = ?, unit_type = ?, category = ? WHERE id = ?").bind(r,a,n,s,d,c,l,u,p,o).run(),e.json({success:!0})});y.delete("/api/products/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id");return await t.prepare("DELETE FROM products WHERE id = ?").bind(o).run(),e.json({success:!0})});y.get("/api/customers",async e=>{const{DB:t}=e.env,{results:o}=await t.prepare("SELECT * FROM customers ORDER BY name").all();return e.json(o)});y.get("/api/customers/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{results:r}=await t.prepare("SELECT * FROM customers WHERE id = ?").bind(o).all();return e.json(r[0]||null)});y.post("/api/customers",async e=>{const{DB:t}=e.env,{name:o,address:r,neighborhood:a,zip_code:n,city:s,phone:d}=await e.req.json(),c=await t.prepare("INSERT INTO customers (name, address, neighborhood, zip_code, city, phone) VALUES (?, ?, ?, ?, ?, ?)").bind(o,r,a,n,s,d).run();return e.json({id:c.meta.last_row_id,success:!0})});y.put("/api/customers/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{name:r,address:a,neighborhood:n,zip_code:s,city:d,phone:c}=await e.req.json();return await t.prepare("UPDATE customers SET name = ?, address = ?, neighborhood = ?, zip_code = ?, city = ?, phone = ? WHERE id = ?").bind(r,a,n,s,d,c,o).run(),e.json({success:!0})});y.delete("/api/customers/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id");return await t.prepare("DELETE FROM customers WHERE id = ?").bind(o).run(),e.json({success:!0})});y.post("/api/orders",async e=>{const{DB:t}=e.env,{customer_id:o,items:r,payment_method:a,total_amount:n}=await e.req.json(),d=(await t.prepare("INSERT INTO orders (customer_id, total_amount, payment_method) VALUES (?, ?, ?)").bind(o,n,a).run()).meta.last_row_id;for(const c of r)await t.prepare("INSERT INTO order_items (order_id, product_id, quantity, unit_price, total_price) VALUES (?, ?, ?, ?, ?)").bind(d,c.product_id,c.quantity,c.unit_price,c.total_price).run();return e.json({id:d,success:!0})});y.get("/api/orders/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{results:r}=await t.prepare("SELECT o.*, c.name as customer_name, c.phone, c.address, c.neighborhood, c.city FROM orders o JOIN customers c ON o.customer_id = c.id WHERE o.id = ?").bind(o).all();if(!r.length)return e.json(null);const a=r[0],{results:n}=await t.prepare("SELECT oi.*, p.name as product_name, p.brand FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?").bind(o).all();return e.json({...a,items:n})});y.get("/api/settings/logo",async e=>{var r;const{DB:t}=e.env,{results:o}=await t.prepare("SELECT value FROM settings WHERE key = 'logo_url'").all();return e.json({logo_url:((r=o[0])==null?void 0:r.value)||null})});y.post("/api/settings/logo",async e=>{const{DB:t}=e.env,{logo_url:o}=await e.req.json();return await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('logo_url', ?, CURRENT_TIMESTAMP)").bind(o).run(),e.json({success:!0})});y.get("/api/settings/footer-logo",async e=>{var r;const{DB:t}=e.env,{results:o}=await t.prepare("SELECT value FROM settings WHERE key = 'footer_logo_url'").all();return e.json({footer_logo_url:((r=o[0])==null?void 0:r.value)||null})});y.post("/api/settings/footer-logo",async e=>{const{DB:t}=e.env,{footer_logo_url:o}=await e.req.json();return await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('footer_logo_url', ?, CURRENT_TIMESTAMP)").bind(o).run(),e.json({success:!0})});y.get("/api/settings/branches",async e=>{var r;const{DB:t}=e.env,{results:o}=await t.prepare("SELECT value FROM settings WHERE key = 'branches'").all();return e.json({branches:((r=o[0])==null?void 0:r.value)||""})});y.post("/api/settings/branches",async e=>{const{DB:t}=e.env,{branches:o}=await e.req.json();return await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('branches', ?, CURRENT_TIMESTAMP)").bind(o).run(),e.json({success:!0})});y.get("/api/settings/payment",async e=>{const{DB:t}=e.env,{results:o}=await t.prepare("SELECT key, value FROM settings WHERE key IN ('pix_key', 'qrcode_url')").all(),r={pix_key:"",qrcode_url:""};return o.forEach(a=>{a.key==="pix_key"&&(r.pix_key=a.value||""),a.key==="qrcode_url"&&(r.qrcode_url=a.value||"")}),e.json(r)});y.post("/api/settings/payment",async e=>{const{DB:t}=e.env,{pix_key:o,qrcode_url:r}=await e.req.json();return await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('pix_key', ?, CURRENT_TIMESTAMP)").bind(o||"").run(),await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('qrcode_url', ?, CURRENT_TIMESTAMP)").bind(r||"").run(),e.json({success:!0})});y.post("/api/upload",async e=>{try{const{image:t,filename:o}=await e.req.json(),r=t.split(",")[1]||t,a=atob(r),n=new Uint8Array(a.length);for(let c=0;c<a.length;c++)n[c]=a.charCodeAt(c);const s=`${Date.now()}-${o}`,d=t;return e.json({success:!0,url:d})}catch(t){return console.error("Upload error:",t),e.json({success:!1,error:"Upload failed"},500)}});y.get("/",e=>e.html(`
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -247,9 +247,200 @@ var gt=Object.defineProperty;var He=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
             .logo-container { width: 120px; height: 120px; bottom: -60px; }
             .footer { padding: 15px; font-size: 13px; }
         }
+        
+        /* MODAIS FLUTUANTES */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            animation: fadeIn 0.3s;
+        }
+        .custom-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content-custom {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 2px solid #dc2626;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(220, 38, 38, 0.3);
+            animation: slideDown 0.3s;
+        }
+        .modal-header {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fbbf24;
+        }
+        .modal-body {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .modal-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .modal-btn-primary {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+        }
+        .modal-btn-secondary {
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+            color: #000;
+        }
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+        }
+        .alert-banner {
+            background-color: #dc2626;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-top: 15px;
+            animation: pulse 2s infinite;
+        }
+        .success-banner {
+            background-color: #25d366;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .modal-qrcode {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .modal-qrcode img {
+            width: 200px;
+            height: 200px;
+            border: 3px solid #25d366;
+            border-radius: 12px;
+            margin: 0 auto;
+        }
+        .pix-key-display {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fbbf24;
+            word-break: break-all;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
     </style>
 </head>
 <body>
+    <!-- MODAIS FLUTUANTES -->
+    <!-- Modal: Continuar Comprando ou Ir para Carrinho -->
+    <div id="modalContinueShopping" class="custom-modal">
+        <div class="modal-content-custom">
+            <div class="modal-header">
+                <i class="fas fa-shopping-cart" style="font-size: 40px; color: #fbbf24;"></i>
+                <div style="margin-top: 10px;">Produto Adicionado!</div>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 16px; margin-bottom: 10px;">O que deseja fazer?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModalAndContinue()">
+                    <i class="fas fa-shopping-basket mr-2"></i>Continuar Comprando
+                </button>
+                <button class="modal-btn modal-btn-primary" onclick="closeModalAndGoCart()">
+                    <i class="fas fa-shopping-cart mr-2"></i>Ir para Carrinho
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Quantidade Zero -->
+    <div id="modalQuantityZero" class="custom-modal">
+        <div class="modal-content-custom">
+            <div class="modal-header">
+                <i class="fas fa-exclamation-triangle" style="font-size: 40px; color: #fbbf24;"></i>
+                <div style="margin-top: 10px;">Atenção!</div>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 16px;">Por favor, selecione a quantidade.</p>
+                <p style="font-size: 14px; color: #999; margin-top: 10px;">Use as setas + e - para escolher a quantidade desejada.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-primary" onclick="closeModal('modalQuantityZero')">
+                    <i class="fas fa-check mr-2"></i>OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: PIX Payment -->
+    <div id="modalPixPayment" class="custom-modal">
+        <div class="modal-content-custom" style="max-width: 450px;">
+            <div class="modal-header">
+                <i class="fas fa-qrcode" style="font-size: 40px; color: #25d366;"></i>
+                <div style="margin-top: 10px;">Pagamento PIX</div>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 14px; color: #999; margin-bottom: 15px;">Chave PIX:</p>
+                <div class="pix-key-display" id="modalPixKey">-</div>
+                
+                <button class="btn-yellow w-full mb-3" onclick="copyPixFromModal()" style="padding: 12px;">
+                    <i class="fas fa-copy mr-2"></i>Copiar PIX
+                </button>
+                
+                <div class="modal-qrcode" id="modalQrCodeSection" style="display: none;">
+                    <p style="font-size: 14px; color: #999; margin-bottom: 10px;">QR Code:</p>
+                    <img id="modalQrCodeImg" src="" alt="QR Code">
+                </div>
+                
+                <div class="alert-banner">
+                    <i class="fas fa-paper-plane mr-2"></i>ENVIAR COMPROVANTE DE PAGAMENTO
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-primary" onclick="closeModal('modalPixPayment')">
+                    <i class="fas fa-times mr-2"></i>Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="app" class="container mx-auto px-4 py-6 max-w-md">
         <!-- TELA INICIAL -->
         <div id="home-screen">
@@ -306,6 +497,83 @@ var gt=Object.defineProperty;var He=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
         let currentCustomer = null;
         let logoUrl = null;
         let footerLogoUrl = null;
+
+        // ============ FUNÇÕES DOS MODAIS FLUTUANTES ============
+        
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+        
+        function closeModalAndContinue() {
+            closeModal('modalContinueShopping');
+            // Permanece no catálogo
+        }
+        
+        function closeModalAndGoCart() {
+            closeModal('modalContinueShopping');
+            showCart();
+        }
+        
+        function showQuantityZeroModal() {
+            openModal('modalQuantityZero');
+        }
+        
+        function showContinueShoppingModal() {
+            openModal('modalContinueShopping');
+        }
+        
+        function showPixModal() {
+            // Atualizar chave PIX
+            const pixKeyEl = document.getElementById('modalPixKey');
+            if (pixKeyEl && paymentSettings.pix_key) {
+                pixKeyEl.textContent = paymentSettings.pix_key;
+            } else if (pixKeyEl) {
+                pixKeyEl.textContent = 'PIX não configurado';
+            }
+            
+            // Atualizar QR Code
+            const qrSection = document.getElementById('modalQrCodeSection');
+            const qrImg = document.getElementById('modalQrCodeImg');
+            if (paymentSettings.qrcode_url) {
+                qrImg.src = paymentSettings.qrcode_url;
+                qrSection.style.display = 'block';
+            } else {
+                qrSection.style.display = 'none';
+            }
+            
+            openModal('modalPixPayment');
+        }
+        
+        function copyPixFromModal() {
+            const pixKey = paymentSettings.pix_key;
+            if (pixKey) {
+                // Criar elemento temporário para copiar
+                const textarea = document.createElement('textarea');
+                textarea.value = pixKey;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                
+                alert('Chave PIX copiada!');
+            } else {
+                alert('PIX não configurado');
+            }
+        }
+
+        // ============ CARREGAR DADOS INICIAIS ============
 
         // Carregar dados iniciais
         async function loadInitialData() {
@@ -553,9 +821,9 @@ var gt=Object.defineProperty;var He=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
             const qtyEl = document.getElementById(\`qty-\${productId}\`);
             const currentQty = qtyEl ? parseInt(qtyEl.textContent) : 0;
             
-            // MODAL: Quantidade zero
+            // MODAL FLUTUANTE: Quantidade zero
             if (currentQty === 0) {
-                alert('Por favor, selecione a quantidade.');
+                showQuantityZeroModal();
                 return;
             }
             
@@ -608,14 +876,8 @@ var gt=Object.defineProperty;var He=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
             }
             updateCartBadge();
             
-            // MODAL: Continuar comprando ou ir para carrinho
-            if (confirm('Continuar Comprando?')) {
-                // Continuar comprando - não faz nada, continua no catálogo
-                return;
-            } else {
-                // Ir para o carrinho
-                showCart();
-            }
+            // MODAL FLUTUANTE: Continuar comprando ou ir para carrinho
+            showContinueShoppingModal();
         }
         function addToCart(productId) {
             const product = products.find(p => p.id === productId);
@@ -701,42 +963,21 @@ var gt=Object.defineProperty;var He=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
                         <div class="mt-6">
                             <label class="block mb-2 text-sm font-bold">Forma de Pagamento:</label>
                             <div class="grid grid-cols-2 gap-3 mb-4">
-                                <button id="btnPix" onclick="selectPayment('pix')" class="btn-yellow py-3" style="background-color: #25d366; color: white;">
+                                <button id="btnPix" onclick="showPixModal()" class="btn-yellow py-3" style="background-color: #25d366; color: white;">
                                     <i class="fas fa-qrcode mr-2"></i> PIX
                                 </button>
                                 <button id="btnCash" onclick="selectPayment('cash')" class="btn-yellow py-3">
                                     <i class="fas fa-money-bill mr-2"></i> Dinheiro
                                 </button>
                             </div>
-                            
-                            <div id="pixSection" style="display: block;">
-                                \${paymentSettings.pix_key ? \`
-                                    <div class="card">
-                                        <label class="block mb-2 text-sm font-bold">Chave PIX:</label>
-                                        <div class="flex gap-2 mb-3">
-                                            <input type="text" id="pixKeyDisplay" value="\${paymentSettings.pix_key}" class="input-field" readonly>
-                                            <button onclick="copyPix()" class="btn-yellow" style="padding: 10px 20px;">
-                                                <i class="fas fa-copy mr-1"></i> Copiar PIX
-                                            </button>
-                                        </div>
-                                        \${paymentSettings.qrcode_url ? \`
-                                            <label class="block mb-2 text-sm font-bold">QR Code:</label>
-                                            <div style="text-align: center;">
-                                                <img src="\${paymentSettings.qrcode_url}" style="width: 200px; height: 200px; object-fit: contain; border: 2px solid #25d366; border-radius: 8px; margin: 0 auto;" />
-                                            </div>
-                                        \` : ''}
-                                    </div>
-                                \` : '<p class="text-gray-400">PIX não configurado</p>'}
-                            </div>
-                            
-                            <div id="cashSection" style="display: none;">
-                                <div class="card">
-                                    <p class="text-center text-lg">Pagamento em dinheiro na entrega</p>
-                                </div>
-                            </div>
                         </div>
                         
-                        <div class="grid grid-cols-2 gap-4 mt-6">
+                        <!-- Tarja Verde WhatsApp -->
+                        <div class="success-banner mt-4">
+                            <i class="fas fa-whatsapp mr-2"></i>Por favor, Finalizar Pedido
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 mt-4">
                             <button onclick="showCatalog()" class="btn-yellow py-4 text-lg">
                                 <i class="fas fa-shopping-basket mr-2"></i> Continuar Comprando
                             </button>
@@ -759,33 +1000,29 @@ var gt=Object.defineProperty;var He=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
             
             const btnPix = document.getElementById('btnPix');
             const btnCash = document.getElementById('btnCash');
-            const pixSection = document.getElementById('pixSection');
-            const cashSection = document.getElementById('cashSection');
             
             if (method === 'pix') {
-                btnPix.style.backgroundColor = '#25d366';
-                btnPix.style.color = 'white';
-                btnCash.style.backgroundColor = '';
-                btnCash.style.color = '';
-                pixSection.style.display = 'block';
-                cashSection.style.display = 'none';
+                if (btnPix) {
+                    btnPix.style.backgroundColor = '#25d366';
+                    btnPix.style.color = 'white';
+                }
+                if (btnCash) {
+                    btnCash.style.backgroundColor = '';
+                    btnCash.style.color = '';
+                }
             } else {
-                btnCash.style.backgroundColor = '#25d366';
-                btnCash.style.color = 'white';
-                btnPix.style.backgroundColor = '';
-                btnPix.style.color = '';
-                pixSection.style.display = 'none';
-                cashSection.style.display = 'block';
+                if (btnCash) {
+                    btnCash.style.backgroundColor = '#25d366';
+                    btnCash.style.color = 'white';
+                }
+                if (btnPix) {
+                    btnPix.style.backgroundColor = '';
+                    btnPix.style.color = '';
+                }
             }
         }
 
         // Copiar chave PIX
-        function copyPix() {
-            const pixInput = document.getElementById('pixKeyDisplay');
-            pixInput.select();
-            document.execCommand('copy');
-            alert('Chave PIX copiada!');
-        }
 
         // Atualizar quantidade no carrinho
         function updateCartQuantity(index, change) {
@@ -1751,4 +1988,4 @@ var gt=Object.defineProperty;var He=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
     <\/script>
 </body>
 </html>
-  `));const ze=new pt,Zt=Object.assign({"/src/index.tsx":y});let mt=!1;for(const[,e]of Object.entries(Zt))e&&(ze.all("*",t=>{let o;try{o=t.executionCtx}catch{}return e.fetch(t.req.raw,t.env,o)}),ze.notFound(t=>{let o;try{o=t.executionCtx}catch{}return e.fetch(t.req.raw,t.env,o)}),mt=!0);if(!mt)throw new Error("Can't import modules from ['/src/index.ts','/src/index.tsx','/app/server.ts']");export{ze as default};
+  `));const ze=new pt,Jt=Object.assign({"/src/index.tsx":y});let mt=!1;for(const[,e]of Object.entries(Jt))e&&(ze.all("*",t=>{let o;try{o=t.executionCtx}catch{}return e.fetch(t.req.raw,t.env,o)}),ze.notFound(t=>{let o;try{o=t.executionCtx}catch{}return e.fetch(t.req.raw,t.env,o)}),mt=!0);if(!mt)throw new Error("Can't import modules from ['/src/index.ts','/src/index.tsx','/app/server.ts']");export{ze as default};

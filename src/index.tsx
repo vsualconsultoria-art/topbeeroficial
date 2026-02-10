@@ -551,9 +551,200 @@ app.get('/', (c) => {
             .logo-container { width: 120px; height: 120px; bottom: -60px; }
             .footer { padding: 15px; font-size: 13px; }
         }
+        
+        /* MODAIS FLUTUANTES */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            animation: fadeIn 0.3s;
+        }
+        .custom-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content-custom {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 2px solid #dc2626;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(220, 38, 38, 0.3);
+            animation: slideDown 0.3s;
+        }
+        .modal-header {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fbbf24;
+        }
+        .modal-body {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .modal-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .modal-btn-primary {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+        }
+        .modal-btn-secondary {
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+            color: #000;
+        }
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+        }
+        .alert-banner {
+            background-color: #dc2626;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-top: 15px;
+            animation: pulse 2s infinite;
+        }
+        .success-banner {
+            background-color: #25d366;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .modal-qrcode {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .modal-qrcode img {
+            width: 200px;
+            height: 200px;
+            border: 3px solid #25d366;
+            border-radius: 12px;
+            margin: 0 auto;
+        }
+        .pix-key-display {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fbbf24;
+            word-break: break-all;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
     </style>
 </head>
 <body>
+    <!-- MODAIS FLUTUANTES -->
+    <!-- Modal: Continuar Comprando ou Ir para Carrinho -->
+    <div id="modalContinueShopping" class="custom-modal">
+        <div class="modal-content-custom">
+            <div class="modal-header">
+                <i class="fas fa-shopping-cart" style="font-size: 40px; color: #fbbf24;"></i>
+                <div style="margin-top: 10px;">Produto Adicionado!</div>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 16px; margin-bottom: 10px;">O que deseja fazer?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModalAndContinue()">
+                    <i class="fas fa-shopping-basket mr-2"></i>Continuar Comprando
+                </button>
+                <button class="modal-btn modal-btn-primary" onclick="closeModalAndGoCart()">
+                    <i class="fas fa-shopping-cart mr-2"></i>Ir para Carrinho
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Quantidade Zero -->
+    <div id="modalQuantityZero" class="custom-modal">
+        <div class="modal-content-custom">
+            <div class="modal-header">
+                <i class="fas fa-exclamation-triangle" style="font-size: 40px; color: #fbbf24;"></i>
+                <div style="margin-top: 10px;">Atenção!</div>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 16px;">Por favor, selecione a quantidade.</p>
+                <p style="font-size: 14px; color: #999; margin-top: 10px;">Use as setas + e - para escolher a quantidade desejada.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-primary" onclick="closeModal('modalQuantityZero')">
+                    <i class="fas fa-check mr-2"></i>OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: PIX Payment -->
+    <div id="modalPixPayment" class="custom-modal">
+        <div class="modal-content-custom" style="max-width: 450px;">
+            <div class="modal-header">
+                <i class="fas fa-qrcode" style="font-size: 40px; color: #25d366;"></i>
+                <div style="margin-top: 10px;">Pagamento PIX</div>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 14px; color: #999; margin-bottom: 15px;">Chave PIX:</p>
+                <div class="pix-key-display" id="modalPixKey">-</div>
+                
+                <button class="btn-yellow w-full mb-3" onclick="copyPixFromModal()" style="padding: 12px;">
+                    <i class="fas fa-copy mr-2"></i>Copiar PIX
+                </button>
+                
+                <div class="modal-qrcode" id="modalQrCodeSection" style="display: none;">
+                    <p style="font-size: 14px; color: #999; margin-bottom: 10px;">QR Code:</p>
+                    <img id="modalQrCodeImg" src="" alt="QR Code">
+                </div>
+                
+                <div class="alert-banner">
+                    <i class="fas fa-paper-plane mr-2"></i>ENVIAR COMPROVANTE DE PAGAMENTO
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-primary" onclick="closeModal('modalPixPayment')">
+                    <i class="fas fa-times mr-2"></i>Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="app" class="container mx-auto px-4 py-6 max-w-md">
         <!-- TELA INICIAL -->
         <div id="home-screen">
@@ -610,6 +801,83 @@ app.get('/', (c) => {
         let currentCustomer = null;
         let logoUrl = null;
         let footerLogoUrl = null;
+
+        // ============ FUNÇÕES DOS MODAIS FLUTUANTES ============
+        
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+        
+        function closeModalAndContinue() {
+            closeModal('modalContinueShopping');
+            // Permanece no catálogo
+        }
+        
+        function closeModalAndGoCart() {
+            closeModal('modalContinueShopping');
+            showCart();
+        }
+        
+        function showQuantityZeroModal() {
+            openModal('modalQuantityZero');
+        }
+        
+        function showContinueShoppingModal() {
+            openModal('modalContinueShopping');
+        }
+        
+        function showPixModal() {
+            // Atualizar chave PIX
+            const pixKeyEl = document.getElementById('modalPixKey');
+            if (pixKeyEl && paymentSettings.pix_key) {
+                pixKeyEl.textContent = paymentSettings.pix_key;
+            } else if (pixKeyEl) {
+                pixKeyEl.textContent = 'PIX não configurado';
+            }
+            
+            // Atualizar QR Code
+            const qrSection = document.getElementById('modalQrCodeSection');
+            const qrImg = document.getElementById('modalQrCodeImg');
+            if (paymentSettings.qrcode_url) {
+                qrImg.src = paymentSettings.qrcode_url;
+                qrSection.style.display = 'block';
+            } else {
+                qrSection.style.display = 'none';
+            }
+            
+            openModal('modalPixPayment');
+        }
+        
+        function copyPixFromModal() {
+            const pixKey = paymentSettings.pix_key;
+            if (pixKey) {
+                // Criar elemento temporário para copiar
+                const textarea = document.createElement('textarea');
+                textarea.value = pixKey;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                
+                alert('Chave PIX copiada!');
+            } else {
+                alert('PIX não configurado');
+            }
+        }
+
+        // ============ CARREGAR DADOS INICIAIS ============
 
         // Carregar dados iniciais
         async function loadInitialData() {
@@ -857,9 +1125,9 @@ app.get('/', (c) => {
             const qtyEl = document.getElementById(\`qty-\${productId}\`);
             const currentQty = qtyEl ? parseInt(qtyEl.textContent) : 0;
             
-            // MODAL: Quantidade zero
+            // MODAL FLUTUANTE: Quantidade zero
             if (currentQty === 0) {
-                alert('Por favor, selecione a quantidade.');
+                showQuantityZeroModal();
                 return;
             }
             
@@ -912,14 +1180,8 @@ app.get('/', (c) => {
             }
             updateCartBadge();
             
-            // MODAL: Continuar comprando ou ir para carrinho
-            if (confirm('Continuar Comprando?')) {
-                // Continuar comprando - não faz nada, continua no catálogo
-                return;
-            } else {
-                // Ir para o carrinho
-                showCart();
-            }
+            // MODAL FLUTUANTE: Continuar comprando ou ir para carrinho
+            showContinueShoppingModal();
         }
         function addToCart(productId) {
             const product = products.find(p => p.id === productId);
@@ -1005,42 +1267,21 @@ app.get('/', (c) => {
                         <div class="mt-6">
                             <label class="block mb-2 text-sm font-bold">Forma de Pagamento:</label>
                             <div class="grid grid-cols-2 gap-3 mb-4">
-                                <button id="btnPix" onclick="selectPayment('pix')" class="btn-yellow py-3" style="background-color: #25d366; color: white;">
+                                <button id="btnPix" onclick="showPixModal()" class="btn-yellow py-3" style="background-color: #25d366; color: white;">
                                     <i class="fas fa-qrcode mr-2"></i> PIX
                                 </button>
                                 <button id="btnCash" onclick="selectPayment('cash')" class="btn-yellow py-3">
                                     <i class="fas fa-money-bill mr-2"></i> Dinheiro
                                 </button>
                             </div>
-                            
-                            <div id="pixSection" style="display: block;">
-                                \${paymentSettings.pix_key ? \`
-                                    <div class="card">
-                                        <label class="block mb-2 text-sm font-bold">Chave PIX:</label>
-                                        <div class="flex gap-2 mb-3">
-                                            <input type="text" id="pixKeyDisplay" value="\${paymentSettings.pix_key}" class="input-field" readonly>
-                                            <button onclick="copyPix()" class="btn-yellow" style="padding: 10px 20px;">
-                                                <i class="fas fa-copy mr-1"></i> Copiar PIX
-                                            </button>
-                                        </div>
-                                        \${paymentSettings.qrcode_url ? \`
-                                            <label class="block mb-2 text-sm font-bold">QR Code:</label>
-                                            <div style="text-align: center;">
-                                                <img src="\${paymentSettings.qrcode_url}" style="width: 200px; height: 200px; object-fit: contain; border: 2px solid #25d366; border-radius: 8px; margin: 0 auto;" />
-                                            </div>
-                                        \` : ''}
-                                    </div>
-                                \` : '<p class="text-gray-400">PIX não configurado</p>'}
-                            </div>
-                            
-                            <div id="cashSection" style="display: none;">
-                                <div class="card">
-                                    <p class="text-center text-lg">Pagamento em dinheiro na entrega</p>
-                                </div>
-                            </div>
                         </div>
                         
-                        <div class="grid grid-cols-2 gap-4 mt-6">
+                        <!-- Tarja Verde WhatsApp -->
+                        <div class="success-banner mt-4">
+                            <i class="fas fa-whatsapp mr-2"></i>Por favor, Finalizar Pedido
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 mt-4">
                             <button onclick="showCatalog()" class="btn-yellow py-4 text-lg">
                                 <i class="fas fa-shopping-basket mr-2"></i> Continuar Comprando
                             </button>
@@ -1063,33 +1304,29 @@ app.get('/', (c) => {
             
             const btnPix = document.getElementById('btnPix');
             const btnCash = document.getElementById('btnCash');
-            const pixSection = document.getElementById('pixSection');
-            const cashSection = document.getElementById('cashSection');
             
             if (method === 'pix') {
-                btnPix.style.backgroundColor = '#25d366';
-                btnPix.style.color = 'white';
-                btnCash.style.backgroundColor = '';
-                btnCash.style.color = '';
-                pixSection.style.display = 'block';
-                cashSection.style.display = 'none';
+                if (btnPix) {
+                    btnPix.style.backgroundColor = '#25d366';
+                    btnPix.style.color = 'white';
+                }
+                if (btnCash) {
+                    btnCash.style.backgroundColor = '';
+                    btnCash.style.color = '';
+                }
             } else {
-                btnCash.style.backgroundColor = '#25d366';
-                btnCash.style.color = 'white';
-                btnPix.style.backgroundColor = '';
-                btnPix.style.color = '';
-                pixSection.style.display = 'none';
-                cashSection.style.display = 'block';
+                if (btnCash) {
+                    btnCash.style.backgroundColor = '#25d366';
+                    btnCash.style.color = 'white';
+                }
+                if (btnPix) {
+                    btnPix.style.backgroundColor = '';
+                    btnPix.style.color = '';
+                }
             }
         }
 
         // Copiar chave PIX
-        function copyPix() {
-            const pixInput = document.getElementById('pixKeyDisplay');
-            pixInput.select();
-            document.execCommand('copy');
-            alert('Chave PIX copiada!');
-        }
 
         // Atualizar quantidade no carrinho
         function updateCartQuantity(index, change) {
