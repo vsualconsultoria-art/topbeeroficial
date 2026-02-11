@@ -1,4 +1,4 @@
-var gt=Object.defineProperty;var Fe=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in e?gt(e,t,{enumerable:!0,configurable:!0,writable:!0,value:o}):e[t]=o;var h=(e,t,o)=>bt(e,typeof t!="symbol"?t+"":t,o),qe=(e,t,o)=>t.has(e)||Fe("Cannot "+o);var i=(e,t,o)=>(qe(e,t,"read from private field"),o?o.call(e):t.get(e)),f=(e,t,o)=>t.has(e)?Fe("Cannot add the same private member more than once"):t instanceof WeakSet?t.add(e):t.set(e,o),m=(e,t,o,r)=>(qe(e,t,"write to private field"),r?r.call(e,o):t.set(e,o),o),b=(e,t,o)=>(qe(e,t,"access private method"),o);var De=(e,t,o,r)=>({set _(a){m(e,t,a,o)},get _(){return i(e,t,r)}});var He=(e,t,o)=>(r,a)=>{let n=-1;return s(0);async function s(d){if(d<=n)throw new Error("next() called multiple times");n=d;let c,l=!1,u;if(e[d]?(u=e[d][0][0],r.req.routeIndex=d):u=d===e.length&&a||void 0,u)try{c=await u(r,()=>s(d+1))}catch(p){if(p instanceof Error&&t)r.error=p,c=await t(p,r),l=!0;else throw p}else r.finalized===!1&&o&&(c=await o(r));return c&&(r.finalized===!1||l)&&(r.res=c),r}},yt=Symbol(),xt=async(e,t=Object.create(null))=>{const{all:o=!1,dot:r=!1}=t,n=(e instanceof ot?e.raw.headers:e.headers).get("Content-Type");return n!=null&&n.startsWith("multipart/form-data")||n!=null&&n.startsWith("application/x-www-form-urlencoded")?vt(e,{all:o,dot:r}):{}};async function vt(e,t){const o=await e.formData();return o?wt(o,t):{}}function wt(e,t){const o=Object.create(null);return e.forEach((r,a)=>{t.all||a.endsWith("[]")?Et(o,a,r):o[a]=r}),t.dot&&Object.entries(o).forEach(([r,a])=>{r.includes(".")&&(Ct(o,r,a),delete o[r])}),o}var Et=(e,t,o)=>{e[t]!==void 0?Array.isArray(e[t])?e[t].push(o):e[t]=[e[t],o]:t.endsWith("[]")?e[t]=[o]:e[t]=o},Ct=(e,t,o)=>{let r=e;const a=t.split(".");a.forEach((n,s)=>{s===a.length-1?r[n]=o:((!r[n]||typeof r[n]!="object"||Array.isArray(r[n])||r[n]instanceof File)&&(r[n]=Object.create(null)),r=r[n])})},Ye=e=>{const t=e.split("/");return t[0]===""&&t.shift(),t},It=e=>{const{groups:t,path:o}=_t(e),r=Ye(o);return Pt(r,t)},_t=e=>{const t=[];return e=e.replace(/\{[^}]+\}/g,(o,r)=>{const a=`@${r}`;return t.push([a,o]),a}),{groups:t,path:e}},Pt=(e,t)=>{for(let o=t.length-1;o>=0;o--){const[r]=t[o];for(let a=e.length-1;a>=0;a--)if(e[a].includes(r)){e[a]=e[a].replace(r,t[o][1]);break}}return e},_e={},At=(e,t)=>{if(e==="*")return"*";const o=e.match(/^\:([^\{\}]+)(?:\{(.+)\})?$/);if(o){const r=`${e}#${t}`;return _e[r]||(o[2]?_e[r]=t&&t[0]!==":"&&t[0]!=="*"?[r,o[1],new RegExp(`^${o[2]}(?=/${t})`)]:[e,o[1],new RegExp(`^${o[2]}$`)]:_e[r]=[e,o[1],!0]),_e[r]}return null},je=(e,t)=>{try{return t(e)}catch{return e.replace(/(?:%[0-9A-Fa-f]{2})+/g,o=>{try{return t(o)}catch{return o}})}},Rt=e=>je(e,decodeURI),Ze=e=>{const t=e.url,o=t.indexOf("/",t.indexOf(":")+4);let r=o;for(;r<t.length;r++){const a=t.charCodeAt(r);if(a===37){const n=t.indexOf("?",r),s=t.slice(o,n===-1?void 0:n);return Rt(s.includes("%25")?s.replace(/%25/g,"%2525"):s)}else if(a===63)break}return t.slice(o,r)},kt=e=>{const t=Ze(e);return t.length>1&&t.at(-1)==="/"?t.slice(0,-1):t},re=(e,t,...o)=>(o.length&&(t=re(t,...o)),`${(e==null?void 0:e[0])==="/"?"":"/"}${e}${t==="/"?"":`${(e==null?void 0:e.at(-1))==="/"?"":"/"}${(t==null?void 0:t[0])==="/"?t.slice(1):t}`}`),Je=e=>{if(e.charCodeAt(e.length-1)!==63||!e.includes(":"))return null;const t=e.split("/"),o=[];let r="";return t.forEach(a=>{if(a!==""&&!/\:/.test(a))r+="/"+a;else if(/\:/.test(a))if(/\?/.test(a)){o.length===0&&r===""?o.push("/"):o.push(r);const n=a.replace("?","");r+="/"+n,o.push(r)}else r+="/"+a}),o.filter((a,n,s)=>s.indexOf(a)===n)},$e=e=>/[%+]/.test(e)?(e.indexOf("+")!==-1&&(e=e.replace(/\+/g," ")),e.indexOf("%")!==-1?je(e,tt):e):e,et=(e,t,o)=>{let r;if(!o&&t&&!/[%+]/.test(t)){let s=e.indexOf("?",8);if(s===-1)return;for(e.startsWith(t,s+1)||(s=e.indexOf(`&${t}`,s+1));s!==-1;){const d=e.charCodeAt(s+t.length+1);if(d===61){const c=s+t.length+2,l=e.indexOf("&",c);return $e(e.slice(c,l===-1?void 0:l))}else if(d==38||isNaN(d))return"";s=e.indexOf(`&${t}`,s+1)}if(r=/[%+]/.test(e),!r)return}const a={};r??(r=/[%+]/.test(e));let n=e.indexOf("?",8);for(;n!==-1;){const s=e.indexOf("&",n+1);let d=e.indexOf("=",n);d>s&&s!==-1&&(d=-1);let c=e.slice(n+1,d===-1?s===-1?void 0:s:d);if(r&&(c=$e(c)),n=s,c==="")continue;let l;d===-1?l="":(l=e.slice(d+1,s===-1?void 0:s),r&&(l=$e(l))),o?(a[c]&&Array.isArray(a[c])||(a[c]=[]),a[c].push(l)):a[c]??(a[c]=l)}return t?a[t]:a},St=et,Bt=(e,t)=>et(e,t,!0),tt=decodeURIComponent,Ne=e=>je(e,tt),se,R,M,rt,at,Oe,N,Qe,ot=(Qe=class{constructor(e,t="/",o=[[]]){f(this,M);h(this,"raw");f(this,se);f(this,R);h(this,"routeIndex",0);h(this,"path");h(this,"bodyCache",{});f(this,N,e=>{const{bodyCache:t,raw:o}=this,r=t[e];if(r)return r;const a=Object.keys(t)[0];return a?t[a].then(n=>(a==="json"&&(n=JSON.stringify(n)),new Response(n)[e]())):t[e]=o[e]()});this.raw=e,this.path=t,m(this,R,o),m(this,se,{})}param(e){return e?b(this,M,rt).call(this,e):b(this,M,at).call(this)}query(e){return St(this.url,e)}queries(e){return Bt(this.url,e)}header(e){if(e)return this.raw.headers.get(e)??void 0;const t={};return this.raw.headers.forEach((o,r)=>{t[r]=o}),t}async parseBody(e){var t;return(t=this.bodyCache).parsedBody??(t.parsedBody=await xt(this,e))}json(){return i(this,N).call(this,"text").then(e=>JSON.parse(e))}text(){return i(this,N).call(this,"text")}arrayBuffer(){return i(this,N).call(this,"arrayBuffer")}blob(){return i(this,N).call(this,"blob")}formData(){return i(this,N).call(this,"formData")}addValidatedData(e,t){i(this,se)[e]=t}valid(e){return i(this,se)[e]}get url(){return this.raw.url}get method(){return this.raw.method}get[yt](){return i(this,R)}get matchedRoutes(){return i(this,R)[0].map(([[,e]])=>e)}get routePath(){return i(this,R)[0].map(([[,e]])=>e)[this.routeIndex].path}},se=new WeakMap,R=new WeakMap,M=new WeakSet,rt=function(e){const t=i(this,R)[0][this.routeIndex][1][e],o=b(this,M,Oe).call(this,t);return o&&/\%/.test(o)?Ne(o):o},at=function(){const e={},t=Object.keys(i(this,R)[0][this.routeIndex][1]);for(const o of t){const r=b(this,M,Oe).call(this,i(this,R)[0][this.routeIndex][1][o]);r!==void 0&&(e[o]=/\%/.test(r)?Ne(r):r)}return e},Oe=function(e){return i(this,R)[1]?i(this,R)[1][e]:e},N=new WeakMap,Qe),Tt={Stringify:1},nt=async(e,t,o,r,a)=>{typeof e=="object"&&!(e instanceof String)&&(e instanceof Promise||(e=e.toString()),e instanceof Promise&&(e=await e));const n=e.callbacks;return n!=null&&n.length?(a?a[0]+=e:a=[e],Promise.all(n.map(d=>d({phase:t,buffer:a,context:r}))).then(d=>Promise.all(d.filter(Boolean).map(c=>nt(c,t,!1,r,a))).then(()=>a[0]))):Promise.resolve(e)},qt="text/plain; charset=UTF-8",Le=(e,t)=>({"Content-Type":e,...t}),be,ye,$,ie,L,P,xe,ce,le,X,ve,we,U,ae,Ve,$t=(Ve=class{constructor(e,t){f(this,U);f(this,be);f(this,ye);h(this,"env",{});f(this,$);h(this,"finalized",!1);h(this,"error");f(this,ie);f(this,L);f(this,P);f(this,xe);f(this,ce);f(this,le);f(this,X);f(this,ve);f(this,we);h(this,"render",(...e)=>(i(this,ce)??m(this,ce,t=>this.html(t)),i(this,ce).call(this,...e)));h(this,"setLayout",e=>m(this,xe,e));h(this,"getLayout",()=>i(this,xe));h(this,"setRenderer",e=>{m(this,ce,e)});h(this,"header",(e,t,o)=>{this.finalized&&m(this,P,new Response(i(this,P).body,i(this,P)));const r=i(this,P)?i(this,P).headers:i(this,X)??m(this,X,new Headers);t===void 0?r.delete(e):o!=null&&o.append?r.append(e,t):r.set(e,t)});h(this,"status",e=>{m(this,ie,e)});h(this,"set",(e,t)=>{i(this,$)??m(this,$,new Map),i(this,$).set(e,t)});h(this,"get",e=>i(this,$)?i(this,$).get(e):void 0);h(this,"newResponse",(...e)=>b(this,U,ae).call(this,...e));h(this,"body",(e,t,o)=>b(this,U,ae).call(this,e,t,o));h(this,"text",(e,t,o)=>!i(this,X)&&!i(this,ie)&&!t&&!o&&!this.finalized?new Response(e):b(this,U,ae).call(this,e,t,Le(qt,o)));h(this,"json",(e,t,o)=>b(this,U,ae).call(this,JSON.stringify(e),t,Le("application/json",o)));h(this,"html",(e,t,o)=>{const r=a=>b(this,U,ae).call(this,a,t,Le("text/html; charset=UTF-8",o));return typeof e=="object"?nt(e,Tt.Stringify,!1,{}).then(r):r(e)});h(this,"redirect",(e,t)=>{const o=String(e);return this.header("Location",/[^\x00-\xFF]/.test(o)?encodeURI(o):o),this.newResponse(null,t??302)});h(this,"notFound",()=>(i(this,le)??m(this,le,()=>new Response),i(this,le).call(this,this)));m(this,be,e),t&&(m(this,L,t.executionCtx),this.env=t.env,m(this,le,t.notFoundHandler),m(this,we,t.path),m(this,ve,t.matchResult))}get req(){return i(this,ye)??m(this,ye,new ot(i(this,be),i(this,we),i(this,ve))),i(this,ye)}get event(){if(i(this,L)&&"respondWith"in i(this,L))return i(this,L);throw Error("This context has no FetchEvent")}get executionCtx(){if(i(this,L))return i(this,L);throw Error("This context has no ExecutionContext")}get res(){return i(this,P)||m(this,P,new Response(null,{headers:i(this,X)??m(this,X,new Headers)}))}set res(e){if(i(this,P)&&e){e=new Response(e.body,e);for(const[t,o]of i(this,P).headers.entries())if(t!=="content-type")if(t==="set-cookie"){const r=i(this,P).headers.getSetCookie();e.headers.delete("set-cookie");for(const a of r)e.headers.append("set-cookie",a)}else e.headers.set(t,o)}m(this,P,e),this.finalized=!0}get var(){return i(this,$)?Object.fromEntries(i(this,$)):{}}},be=new WeakMap,ye=new WeakMap,$=new WeakMap,ie=new WeakMap,L=new WeakMap,P=new WeakMap,xe=new WeakMap,ce=new WeakMap,le=new WeakMap,X=new WeakMap,ve=new WeakMap,we=new WeakMap,U=new WeakSet,ae=function(e,t,o){const r=i(this,P)?new Headers(i(this,P).headers):i(this,X)??new Headers;if(typeof t=="object"&&"headers"in t){const n=t.headers instanceof Headers?t.headers:new Headers(t.headers);for(const[s,d]of n)s.toLowerCase()==="set-cookie"?r.append(s,d):r.set(s,d)}if(o)for(const[n,s]of Object.entries(o))if(typeof s=="string")r.set(n,s);else{r.delete(n);for(const d of s)r.append(n,d)}const a=typeof t=="number"?t:(t==null?void 0:t.status)??i(this,ie);return new Response(e,{status:a,headers:r})},Ve),w="ALL",Lt="all",Ot=["get","post","put","delete","options","patch"],st="Can not add a route since the matcher is already built.",it=class extends Error{},jt="__COMPOSED_HANDLER",Mt=e=>e.text("404 Not Found",404),Ue=(e,t)=>{if("getResponse"in e){const o=e.getResponse();return t.newResponse(o.body,o)}return console.error(e),t.text("Internal Server Error",500)},k,E,ct,S,G,Pe,Ae,de,Ft=(de=class{constructor(t={}){f(this,E);h(this,"get");h(this,"post");h(this,"put");h(this,"delete");h(this,"options");h(this,"patch");h(this,"all");h(this,"on");h(this,"use");h(this,"router");h(this,"getPath");h(this,"_basePath","/");f(this,k,"/");h(this,"routes",[]);f(this,S,Mt);h(this,"errorHandler",Ue);h(this,"onError",t=>(this.errorHandler=t,this));h(this,"notFound",t=>(m(this,S,t),this));h(this,"fetch",(t,...o)=>b(this,E,Ae).call(this,t,o[1],o[0],t.method));h(this,"request",(t,o,r,a)=>t instanceof Request?this.fetch(o?new Request(t,o):t,r,a):(t=t.toString(),this.fetch(new Request(/^https?:\/\//.test(t)?t:`http://localhost${re("/",t)}`,o),r,a)));h(this,"fire",()=>{addEventListener("fetch",t=>{t.respondWith(b(this,E,Ae).call(this,t.request,t,void 0,t.request.method))})});[...Ot,Lt].forEach(n=>{this[n]=(s,...d)=>(typeof s=="string"?m(this,k,s):b(this,E,G).call(this,n,i(this,k),s),d.forEach(c=>{b(this,E,G).call(this,n,i(this,k),c)}),this)}),this.on=(n,s,...d)=>{for(const c of[s].flat()){m(this,k,c);for(const l of[n].flat())d.map(u=>{b(this,E,G).call(this,l.toUpperCase(),i(this,k),u)})}return this},this.use=(n,...s)=>(typeof n=="string"?m(this,k,n):(m(this,k,"*"),s.unshift(n)),s.forEach(d=>{b(this,E,G).call(this,w,i(this,k),d)}),this);const{strict:r,...a}=t;Object.assign(this,a),this.getPath=r??!0?t.getPath??Ze:kt}route(t,o){const r=this.basePath(t);return o.routes.map(a=>{var s;let n;o.errorHandler===Ue?n=a.handler:(n=async(d,c)=>(await He([],o.errorHandler)(d,()=>a.handler(d,c))).res,n[jt]=a.handler),b(s=r,E,G).call(s,a.method,a.path,n)}),this}basePath(t){const o=b(this,E,ct).call(this);return o._basePath=re(this._basePath,t),o}mount(t,o,r){let a,n;r&&(typeof r=="function"?n=r:(n=r.optionHandler,r.replaceRequest===!1?a=c=>c:a=r.replaceRequest));const s=n?c=>{const l=n(c);return Array.isArray(l)?l:[l]}:c=>{let l;try{l=c.executionCtx}catch{}return[c.env,l]};a||(a=(()=>{const c=re(this._basePath,t),l=c==="/"?0:c.length;return u=>{const p=new URL(u.url);return p.pathname=p.pathname.slice(l)||"/",new Request(p,u)}})());const d=async(c,l)=>{const u=await o(a(c.req.raw),...s(c));if(u)return u;await l()};return b(this,E,G).call(this,w,re(t,"*"),d),this}},k=new WeakMap,E=new WeakSet,ct=function(){const t=new de({router:this.router,getPath:this.getPath});return t.errorHandler=this.errorHandler,m(t,S,i(this,S)),t.routes=this.routes,t},S=new WeakMap,G=function(t,o,r){t=t.toUpperCase(),o=re(this._basePath,o);const a={basePath:this._basePath,path:o,method:t,handler:r};this.router.add(t,o,[r,a]),this.routes.push(a)},Pe=function(t,o){if(t instanceof Error)return this.errorHandler(t,o);throw t},Ae=function(t,o,r,a){if(a==="HEAD")return(async()=>new Response(null,await b(this,E,Ae).call(this,t,o,r,"GET")))();const n=this.getPath(t,{env:r}),s=this.router.match(a,n),d=new $t(t,{path:n,matchResult:s,env:r,executionCtx:o,notFoundHandler:i(this,S)});if(s[0].length===1){let l;try{l=s[0][0][0][0](d,async()=>{d.res=await i(this,S).call(this,d)})}catch(u){return b(this,E,Pe).call(this,u,d)}return l instanceof Promise?l.then(u=>u||(d.finalized?d.res:i(this,S).call(this,d))).catch(u=>b(this,E,Pe).call(this,u,d)):l??i(this,S).call(this,d)}const c=He(s[0],this.errorHandler,i(this,S));return(async()=>{try{const l=await c(d);if(!l.finalized)throw new Error("Context is not finalized. Did you forget to return a Response object or `await next()`?");return l.res}catch(l){return b(this,E,Pe).call(this,l,d)}})()},de),lt=[];function Dt(e,t){const o=this.buildAllMatchers(),r=((a,n)=>{const s=o[a]||o[w],d=s[2][n];if(d)return d;const c=n.match(s[0]);if(!c)return[[],lt];const l=c.indexOf("",1);return[s[1][l],c]});return this.match=r,r(e,t)}var ke="[^/]+",fe=".*",ge="(?:|/.*)",ne=Symbol(),Ht=new Set(".\\+*[^]$()");function Nt(e,t){return e.length===1?t.length===1?e<t?-1:1:-1:t.length===1||e===fe||e===ge?1:t===fe||t===ge?-1:e===ke?1:t===ke?-1:e.length===t.length?e<t?-1:1:t.length-e.length}var Y,Z,B,te,Ut=(te=class{constructor(){f(this,Y);f(this,Z);f(this,B,Object.create(null))}insert(t,o,r,a,n){if(t.length===0){if(i(this,Y)!==void 0)throw ne;if(n)return;m(this,Y,o);return}const[s,...d]=t,c=s==="*"?d.length===0?["","",fe]:["","",ke]:s==="/*"?["","",ge]:s.match(/^\:([^\{\}]+)(?:\{(.+)\})?$/);let l;if(c){const u=c[1];let p=c[2]||ke;if(u&&c[2]&&(p===".*"||(p=p.replace(/^\((?!\?:)(?=[^)]+\)$)/,"(?:"),/\((?!\?:)/.test(p))))throw ne;if(l=i(this,B)[p],!l){if(Object.keys(i(this,B)).some(g=>g!==fe&&g!==ge))throw ne;if(n)return;l=i(this,B)[p]=new te,u!==""&&m(l,Z,a.varIndex++)}!n&&u!==""&&r.push([u,i(l,Z)])}else if(l=i(this,B)[s],!l){if(Object.keys(i(this,B)).some(u=>u.length>1&&u!==fe&&u!==ge))throw ne;if(n)return;l=i(this,B)[s]=new te}l.insert(d,o,r,a,n)}buildRegExpStr(){const o=Object.keys(i(this,B)).sort(Nt).map(r=>{const a=i(this,B)[r];return(typeof i(a,Z)=="number"?`(${r})@${i(a,Z)}`:Ht.has(r)?`\\${r}`:r)+a.buildRegExpStr()});return typeof i(this,Y)=="number"&&o.unshift(`#${i(this,Y)}`),o.length===0?"":o.length===1?o[0]:"(?:"+o.join("|")+")"}},Y=new WeakMap,Z=new WeakMap,B=new WeakMap,te),Se,Ee,We,zt=(We=class{constructor(){f(this,Se,{varIndex:0});f(this,Ee,new Ut)}insert(e,t,o){const r=[],a=[];for(let s=0;;){let d=!1;if(e=e.replace(/\{[^}]+\}/g,c=>{const l=`@\\${s}`;return a[s]=[l,c],s++,d=!0,l}),!d)break}const n=e.match(/(?::[^\/]+)|(?:\/\*$)|./g)||[];for(let s=a.length-1;s>=0;s--){const[d]=a[s];for(let c=n.length-1;c>=0;c--)if(n[c].indexOf(d)!==-1){n[c]=n[c].replace(d,a[s][1]);break}}return i(this,Ee).insert(n,t,r,i(this,Se),o),r}buildRegExp(){let e=i(this,Ee).buildRegExpStr();if(e==="")return[/^$/,[],[]];let t=0;const o=[],r=[];return e=e.replace(/#(\d+)|@(\d+)|\.\*\$/g,(a,n,s)=>n!==void 0?(o[++t]=Number(n),"$()"):(s!==void 0&&(r[Number(s)]=++t),"")),[new RegExp(`^${e}`),o,r]}},Se=new WeakMap,Ee=new WeakMap,We),Qt=[/^$/,[],Object.create(null)],Re=Object.create(null);function dt(e){return Re[e]??(Re[e]=new RegExp(e==="*"?"":`^${e.replace(/\/\*$|([.\\+*[^\]$()])/g,(t,o)=>o?`\\${o}`:"(?:|/.*)")}$`))}function Vt(){Re=Object.create(null)}function Wt(e){var l;const t=new zt,o=[];if(e.length===0)return Qt;const r=e.map(u=>[!/\*|\/:/.test(u[0]),...u]).sort(([u,p],[g,v])=>u?1:g?-1:p.length-v.length),a=Object.create(null);for(let u=0,p=-1,g=r.length;u<g;u++){const[v,A,F]=r[u];v?a[A]=[F.map(([_])=>[_,Object.create(null)]),lt]:p++;let x;try{x=t.insert(A,p,v)}catch(_){throw _===ne?new it(A):_}v||(o[p]=F.map(([_,D])=>{const Ce=Object.create(null);for(D-=1;D>=0;D--){const[Ie,T]=x[D];Ce[Ie]=T}return[_,Ce]}))}const[n,s,d]=t.buildRegExp();for(let u=0,p=o.length;u<p;u++)for(let g=0,v=o[u].length;g<v;g++){const A=(l=o[u][g])==null?void 0:l[1];if(!A)continue;const F=Object.keys(A);for(let x=0,_=F.length;x<_;x++)A[F[x]]=d[A[F[x]]]}const c=[];for(const u in s)c[u]=o[s[u]];return[n,c,a]}function oe(e,t){if(e){for(const o of Object.keys(e).sort((r,a)=>a.length-r.length))if(dt(o).test(t))return[...e[o]]}}var z,Q,Be,ut,Ge,Gt=(Ge=class{constructor(){f(this,Be);h(this,"name","RegExpRouter");f(this,z);f(this,Q);h(this,"match",Dt);m(this,z,{[w]:Object.create(null)}),m(this,Q,{[w]:Object.create(null)})}add(e,t,o){var d;const r=i(this,z),a=i(this,Q);if(!r||!a)throw new Error(st);r[e]||[r,a].forEach(c=>{c[e]=Object.create(null),Object.keys(c[w]).forEach(l=>{c[e][l]=[...c[w][l]]})}),t==="/*"&&(t="*");const n=(t.match(/\/:/g)||[]).length;if(/\*$/.test(t)){const c=dt(t);e===w?Object.keys(r).forEach(l=>{var u;(u=r[l])[t]||(u[t]=oe(r[l],t)||oe(r[w],t)||[])}):(d=r[e])[t]||(d[t]=oe(r[e],t)||oe(r[w],t)||[]),Object.keys(r).forEach(l=>{(e===w||e===l)&&Object.keys(r[l]).forEach(u=>{c.test(u)&&r[l][u].push([o,n])})}),Object.keys(a).forEach(l=>{(e===w||e===l)&&Object.keys(a[l]).forEach(u=>c.test(u)&&a[l][u].push([o,n]))});return}const s=Je(t)||[t];for(let c=0,l=s.length;c<l;c++){const u=s[c];Object.keys(a).forEach(p=>{var g;(e===w||e===p)&&((g=a[p])[u]||(g[u]=[...oe(r[p],u)||oe(r[w],u)||[]]),a[p][u].push([o,n-l+c+1]))})}}buildAllMatchers(){const e=Object.create(null);return Object.keys(i(this,Q)).concat(Object.keys(i(this,z))).forEach(t=>{e[t]||(e[t]=b(this,Be,ut).call(this,t))}),m(this,z,m(this,Q,void 0)),Vt(),e}},z=new WeakMap,Q=new WeakMap,Be=new WeakSet,ut=function(e){const t=[];let o=e===w;return[i(this,z),i(this,Q)].forEach(r=>{const a=r[e]?Object.keys(r[e]).map(n=>[n,r[e][n]]):[];a.length!==0?(o||(o=!0),t.push(...a)):e!==w&&t.push(...Object.keys(r[w]).map(n=>[n,r[w][n]]))}),o?Wt(t):null},Ge),V,O,Ke,Kt=(Ke=class{constructor(e){h(this,"name","SmartRouter");f(this,V,[]);f(this,O,[]);m(this,V,e.routers)}add(e,t,o){if(!i(this,O))throw new Error(st);i(this,O).push([e,t,o])}match(e,t){if(!i(this,O))throw new Error("Fatal error");const o=i(this,V),r=i(this,O),a=o.length;let n=0,s;for(;n<a;n++){const d=o[n];try{for(let c=0,l=r.length;c<l;c++)d.add(...r[c]);s=d.match(e,t)}catch(c){if(c instanceof it)continue;throw c}this.match=d.match.bind(d),m(this,V,[d]),m(this,O,void 0);break}if(n===a)throw new Error("Fatal error");return this.name=`SmartRouter + ${this.activeRouter.name}`,s}get activeRouter(){if(i(this,O)||i(this,V).length!==1)throw new Error("No active router has been determined yet.");return i(this,V)[0]}},V=new WeakMap,O=new WeakMap,Ke),he=Object.create(null),W,I,J,ue,C,j,K,pe,Xt=(pe=class{constructor(t,o,r){f(this,j);f(this,W);f(this,I);f(this,J);f(this,ue,0);f(this,C,he);if(m(this,I,r||Object.create(null)),m(this,W,[]),t&&o){const a=Object.create(null);a[t]={handler:o,possibleKeys:[],score:0},m(this,W,[a])}m(this,J,[])}insert(t,o,r){m(this,ue,++De(this,ue)._);let a=this;const n=It(o),s=[];for(let d=0,c=n.length;d<c;d++){const l=n[d],u=n[d+1],p=At(l,u),g=Array.isArray(p)?p[0]:l;if(g in i(a,I)){a=i(a,I)[g],p&&s.push(p[1]);continue}i(a,I)[g]=new pe,p&&(i(a,J).push(p),s.push(p[1])),a=i(a,I)[g]}return i(a,W).push({[t]:{handler:r,possibleKeys:s.filter((d,c,l)=>l.indexOf(d)===c),score:i(this,ue)}}),a}search(t,o){var c;const r=[];m(this,C,he);let n=[this];const s=Ye(o),d=[];for(let l=0,u=s.length;l<u;l++){const p=s[l],g=l===u-1,v=[];for(let A=0,F=n.length;A<F;A++){const x=n[A],_=i(x,I)[p];_&&(m(_,C,i(x,C)),g?(i(_,I)["*"]&&r.push(...b(this,j,K).call(this,i(_,I)["*"],t,i(x,C))),r.push(...b(this,j,K).call(this,_,t,i(x,C)))):v.push(_));for(let D=0,Ce=i(x,J).length;D<Ce;D++){const Ie=i(x,J)[D],T=i(x,C)===he?{}:{...i(x,C)};if(Ie==="*"){const H=i(x,I)["*"];H&&(r.push(...b(this,j,K).call(this,H,t,i(x,C))),m(H,C,T),v.push(H));continue}const[ht,Me,me]=Ie;if(!p&&!(me instanceof RegExp))continue;const q=i(x,I)[ht],ft=s.slice(l).join("/");if(me instanceof RegExp){const H=me.exec(ft);if(H){if(T[Me]=H[0],r.push(...b(this,j,K).call(this,q,t,i(x,C),T)),Object.keys(i(q,I)).length){m(q,C,T);const Te=((c=H[0].match(/\//))==null?void 0:c.length)??0;(d[Te]||(d[Te]=[])).push(q)}continue}}(me===!0||me.test(p))&&(T[Me]=p,g?(r.push(...b(this,j,K).call(this,q,t,T,i(x,C))),i(q,I)["*"]&&r.push(...b(this,j,K).call(this,i(q,I)["*"],t,T,i(x,C)))):(m(q,C,T),v.push(q)))}}n=v.concat(d.shift()??[])}return r.length>1&&r.sort((l,u)=>l.score-u.score),[r.map(({handler:l,params:u})=>[l,u])]}},W=new WeakMap,I=new WeakMap,J=new WeakMap,ue=new WeakMap,C=new WeakMap,j=new WeakSet,K=function(t,o,r,a){const n=[];for(let s=0,d=i(t,W).length;s<d;s++){const c=i(t,W)[s],l=c[o]||c[w],u={};if(l!==void 0&&(l.params=Object.create(null),n.push(l),r!==he||a&&a!==he))for(let p=0,g=l.possibleKeys.length;p<g;p++){const v=l.possibleKeys[p],A=u[l.score];l.params[v]=a!=null&&a[v]&&!A?a[v]:r[v]??(a==null?void 0:a[v]),u[l.score]=!0}}return n},pe),ee,Xe,Yt=(Xe=class{constructor(){h(this,"name","TrieRouter");f(this,ee);m(this,ee,new Xt)}add(e,t,o){const r=Je(t);if(r){for(let a=0,n=r.length;a<n;a++)i(this,ee).insert(e,r[a],o);return}i(this,ee).insert(e,t,o)}match(e,t){return i(this,ee).search(e,t)}},ee=new WeakMap,Xe),pt=class extends Ft{constructor(e={}){super(e),this.router=e.router??new Kt({routers:[new Gt,new Yt]})}},Zt=e=>{const o={...{origin:"*",allowMethods:["GET","HEAD","PUT","POST","DELETE","PATCH"],allowHeaders:[],exposeHeaders:[]},...e},r=(n=>typeof n=="string"?n==="*"?()=>n:s=>n===s?s:null:typeof n=="function"?n:s=>n.includes(s)?s:null)(o.origin),a=(n=>typeof n=="function"?n:Array.isArray(n)?()=>n:()=>[])(o.allowMethods);return async function(s,d){var u;function c(p,g){s.res.headers.set(p,g)}const l=await r(s.req.header("origin")||"",s);if(l&&c("Access-Control-Allow-Origin",l),o.credentials&&c("Access-Control-Allow-Credentials","true"),(u=o.exposeHeaders)!=null&&u.length&&c("Access-Control-Expose-Headers",o.exposeHeaders.join(",")),s.req.method==="OPTIONS"){o.origin!=="*"&&c("Vary","Origin"),o.maxAge!=null&&c("Access-Control-Max-Age",o.maxAge.toString());const p=await a(s.req.header("origin")||"",s);p.length&&c("Access-Control-Allow-Methods",p.join(","));let g=o.allowHeaders;if(!(g!=null&&g.length)){const v=s.req.header("Access-Control-Request-Headers");v&&(g=v.split(/\s*,\s*/))}return g!=null&&g.length&&(c("Access-Control-Allow-Headers",g.join(",")),s.res.headers.append("Vary","Access-Control-Request-Headers")),s.res.headers.delete("Content-Length"),s.res.headers.delete("Content-Type"),new Response(null,{headers:s.res.headers,status:204,statusText:"No Content"})}await d(),o.origin!=="*"&&s.header("Vary","Origin",{append:!0})}};const y=new pt;y.use("/api/*",Zt());y.post("/api/auth/verify",async e=>{const{password:t}=await e.req.json();return e.json({success:t==="123"})});y.get("/api/products",async e=>{const{DB:t}=e.env,{results:o}=await t.prepare("SELECT * FROM products ORDER BY id DESC").all();return e.json(o)});y.get("/api/products/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{results:r}=await t.prepare("SELECT * FROM products WHERE id = ?").bind(o).all();return e.json(r[0]||null)});y.post("/api/products",async e=>{const{DB:t}=e.env,{name:o,price:r,brand:a,stock_quantity:n,image_url:s,cold_quantity:d,hot_quantity:c,unit_type:l,category:u}=await e.req.json(),p=await t.prepare("INSERT INTO products (name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").bind(o,r,a,n||0,s||null,d||0,c||0,l||"Unidade",u||"Bebidas").run();return e.json({id:p.meta.last_row_id,success:!0})});y.put("/api/products/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{name:r,price:a,brand:n,stock_quantity:s,image_url:d,cold_quantity:c,hot_quantity:l,unit_type:u,category:p}=await e.req.json();return await t.prepare("UPDATE products SET name = ?, price = ?, brand = ?, stock_quantity = ?, image_url = ?, cold_quantity = ?, hot_quantity = ?, unit_type = ?, category = ? WHERE id = ?").bind(r,a,n,s,d,c,l,u,p,o).run(),e.json({success:!0})});y.delete("/api/products/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id");return await t.prepare("DELETE FROM products WHERE id = ?").bind(o).run(),e.json({success:!0})});y.get("/api/customers",async e=>{const{DB:t}=e.env,{results:o}=await t.prepare("SELECT * FROM customers ORDER BY name").all();return e.json(o)});y.get("/api/customers/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{results:r}=await t.prepare("SELECT * FROM customers WHERE id = ?").bind(o).all();return e.json(r[0]||null)});y.post("/api/customers",async e=>{const{DB:t}=e.env,{name:o,address:r,neighborhood:a,zip_code:n,city:s,phone:d}=await e.req.json(),c=await t.prepare("INSERT INTO customers (name, address, neighborhood, zip_code, city, phone) VALUES (?, ?, ?, ?, ?, ?)").bind(o,r,a,n,s,d).run();return e.json({id:c.meta.last_row_id,success:!0})});y.put("/api/customers/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{name:r,address:a,neighborhood:n,zip_code:s,city:d,phone:c}=await e.req.json();return await t.prepare("UPDATE customers SET name = ?, address = ?, neighborhood = ?, zip_code = ?, city = ?, phone = ? WHERE id = ?").bind(r,a,n,s,d,c,o).run(),e.json({success:!0})});y.delete("/api/customers/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id");return await t.prepare("DELETE FROM customers WHERE id = ?").bind(o).run(),e.json({success:!0})});y.post("/api/orders",async e=>{const{DB:t}=e.env,{customer_id:o,items:r,payment_method:a,total_amount:n}=await e.req.json(),d=(await t.prepare("INSERT INTO orders (customer_id, total_amount, payment_method) VALUES (?, ?, ?)").bind(o,n,a).run()).meta.last_row_id;for(const c of r)await t.prepare("INSERT INTO order_items (order_id, product_id, quantity, unit_price, total_price) VALUES (?, ?, ?, ?, ?)").bind(d,c.product_id,c.quantity,c.unit_price,c.total_price).run();return e.json({id:d,success:!0})});y.get("/api/orders/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{results:r}=await t.prepare("SELECT o.*, c.name as customer_name, c.phone, c.address, c.neighborhood, c.city FROM orders o JOIN customers c ON o.customer_id = c.id WHERE o.id = ?").bind(o).all();if(!r.length)return e.json(null);const a=r[0],{results:n}=await t.prepare("SELECT oi.*, p.name as product_name, p.brand FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?").bind(o).all();return e.json({...a,items:n})});y.get("/api/settings/logo",async e=>{var r;const{DB:t}=e.env,{results:o}=await t.prepare("SELECT value FROM settings WHERE key = 'logo_url'").all();return e.json({logo_url:((r=o[0])==null?void 0:r.value)||null})});y.post("/api/settings/logo",async e=>{const{DB:t}=e.env,{logo_url:o}=await e.req.json();return await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('logo_url', ?, CURRENT_TIMESTAMP)").bind(o).run(),e.json({success:!0})});y.get("/api/settings/footer-logo",async e=>{var r;const{DB:t}=e.env,{results:o}=await t.prepare("SELECT value FROM settings WHERE key = 'footer_logo_url'").all();return e.json({footer_logo_url:((r=o[0])==null?void 0:r.value)||null})});y.post("/api/settings/footer-logo",async e=>{const{DB:t}=e.env,{footer_logo_url:o}=await e.req.json();return await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('footer_logo_url', ?, CURRENT_TIMESTAMP)").bind(o).run(),e.json({success:!0})});y.get("/api/settings/branches",async e=>{var r;const{DB:t}=e.env,{results:o}=await t.prepare("SELECT value FROM settings WHERE key = 'branches'").all();return e.json({branches:((r=o[0])==null?void 0:r.value)||""})});y.post("/api/settings/branches",async e=>{const{DB:t}=e.env,{branches:o}=await e.req.json();return await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('branches', ?, CURRENT_TIMESTAMP)").bind(o).run(),e.json({success:!0})});y.get("/api/settings/payment",async e=>{const{DB:t}=e.env,{results:o}=await t.prepare("SELECT key, value FROM settings WHERE key IN ('pix_key', 'qrcode_url')").all(),r={pix_key:"",qrcode_url:""};return o.forEach(a=>{a.key==="pix_key"&&(r.pix_key=a.value||""),a.key==="qrcode_url"&&(r.qrcode_url=a.value||"")}),e.json(r)});y.post("/api/settings/payment",async e=>{const{DB:t}=e.env,{pix_key:o,qrcode_url:r}=await e.req.json();return await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('pix_key', ?, CURRENT_TIMESTAMP)").bind(o||"").run(),await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('qrcode_url', ?, CURRENT_TIMESTAMP)").bind(r||"").run(),e.json({success:!0})});y.post("/api/upload",async e=>{try{const{image:t,filename:o}=await e.req.json(),r=t.split(",")[1]||t,a=atob(r),n=new Uint8Array(a.length);for(let c=0;c<a.length;c++)n[c]=a.charCodeAt(c);const s=`${Date.now()}-${o}`,d=t;return e.json({success:!0,url:d})}catch(t){return console.error("Upload error:",t),e.json({success:!1,error:"Upload failed"},500)}});y.get("/",e=>e.html(`
+var gt=Object.defineProperty;var Me=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in e?gt(e,t,{enumerable:!0,configurable:!0,writable:!0,value:o}):e[t]=o;var h=(e,t,o)=>bt(e,typeof t!="symbol"?t+"":t,o),$e=(e,t,o)=>t.has(e)||Me("Cannot "+o);var i=(e,t,o)=>($e(e,t,"read from private field"),o?o.call(e):t.get(e)),f=(e,t,o)=>t.has(e)?Me("Cannot add the same private member more than once"):t instanceof WeakSet?t.add(e):t.set(e,o),m=(e,t,o,r)=>($e(e,t,"write to private field"),r?r.call(e,o):t.set(e,o),o),y=(e,t,o)=>($e(e,t,"access private method"),o);var De=(e,t,o,r)=>({set _(a){m(e,t,a,o)},get _(){return i(e,t,r)}});var Fe=(e,t,o)=>(r,a)=>{let s=-1;return n(0);async function n(d){if(d<=s)throw new Error("next() called multiple times");s=d;let c,l=!1,u;if(e[d]?(u=e[d][0][0],r.req.routeIndex=d):u=d===e.length&&a||void 0,u)try{c=await u(r,()=>n(d+1))}catch(p){if(p instanceof Error&&t)r.error=p,c=await t(p,r),l=!0;else throw p}else r.finalized===!1&&o&&(c=await o(r));return c&&(r.finalized===!1||l)&&(r.res=c),r}},yt=Symbol(),xt=async(e,t=Object.create(null))=>{const{all:o=!1,dot:r=!1}=t,s=(e instanceof ot?e.raw.headers:e.headers).get("Content-Type");return s!=null&&s.startsWith("multipart/form-data")||s!=null&&s.startsWith("application/x-www-form-urlencoded")?vt(e,{all:o,dot:r}):{}};async function vt(e,t){const o=await e.formData();return o?wt(o,t):{}}function wt(e,t){const o=Object.create(null);return e.forEach((r,a)=>{t.all||a.endsWith("[]")?Et(o,a,r):o[a]=r}),t.dot&&Object.entries(o).forEach(([r,a])=>{r.includes(".")&&(It(o,r,a),delete o[r])}),o}var Et=(e,t,o)=>{e[t]!==void 0?Array.isArray(e[t])?e[t].push(o):e[t]=[e[t],o]:t.endsWith("[]")?e[t]=[o]:e[t]=o},It=(e,t,o)=>{let r=e;const a=t.split(".");a.forEach((s,n)=>{n===a.length-1?r[s]=o:((!r[s]||typeof r[s]!="object"||Array.isArray(r[s])||r[s]instanceof File)&&(r[s]=Object.create(null)),r=r[s])})},Ye=e=>{const t=e.split("/");return t[0]===""&&t.shift(),t},Ct=e=>{const{groups:t,path:o}=Pt(e),r=Ye(o);return At(r,t)},Pt=e=>{const t=[];return e=e.replace(/\{[^}]+\}/g,(o,r)=>{const a=`@${r}`;return t.push([a,o]),a}),{groups:t,path:e}},At=(e,t)=>{for(let o=t.length-1;o>=0;o--){const[r]=t[o];for(let a=e.length-1;a>=0;a--)if(e[a].includes(r)){e[a]=e[a].replace(r,t[o][1]);break}}return e},Pe={},_t=(e,t)=>{if(e==="*")return"*";const o=e.match(/^\:([^\{\}]+)(?:\{(.+)\})?$/);if(o){const r=`${e}#${t}`;return Pe[r]||(o[2]?Pe[r]=t&&t[0]!==":"&&t[0]!=="*"?[r,o[1],new RegExp(`^${o[2]}(?=/${t})`)]:[e,o[1],new RegExp(`^${o[2]}$`)]:Pe[r]=[e,o[1],!0]),Pe[r]}return null},Oe=(e,t)=>{try{return t(e)}catch{return e.replace(/(?:%[0-9A-Fa-f]{2})+/g,o=>{try{return t(o)}catch{return o}})}},Rt=e=>Oe(e,decodeURI),Ze=e=>{const t=e.url,o=t.indexOf("/",t.indexOf(":")+4);let r=o;for(;r<t.length;r++){const a=t.charCodeAt(r);if(a===37){const s=t.indexOf("?",r),n=t.slice(o,s===-1?void 0:s);return Rt(n.includes("%25")?n.replace(/%25/g,"%2525"):n)}else if(a===63)break}return t.slice(o,r)},kt=e=>{const t=Ze(e);return t.length>1&&t.at(-1)==="/"?t.slice(0,-1):t},re=(e,t,...o)=>(o.length&&(t=re(t,...o)),`${(e==null?void 0:e[0])==="/"?"":"/"}${e}${t==="/"?"":`${(e==null?void 0:e.at(-1))==="/"?"":"/"}${(t==null?void 0:t[0])==="/"?t.slice(1):t}`}`),Je=e=>{if(e.charCodeAt(e.length-1)!==63||!e.includes(":"))return null;const t=e.split("/"),o=[];let r="";return t.forEach(a=>{if(a!==""&&!/\:/.test(a))r+="/"+a;else if(/\:/.test(a))if(/\?/.test(a)){o.length===0&&r===""?o.push("/"):o.push(r);const s=a.replace("?","");r+="/"+s,o.push(r)}else r+="/"+a}),o.filter((a,s,n)=>n.indexOf(a)===s)},qe=e=>/[%+]/.test(e)?(e.indexOf("+")!==-1&&(e=e.replace(/\+/g," ")),e.indexOf("%")!==-1?Oe(e,tt):e):e,et=(e,t,o)=>{let r;if(!o&&t&&!/[%+]/.test(t)){let n=e.indexOf("?",8);if(n===-1)return;for(e.startsWith(t,n+1)||(n=e.indexOf(`&${t}`,n+1));n!==-1;){const d=e.charCodeAt(n+t.length+1);if(d===61){const c=n+t.length+2,l=e.indexOf("&",c);return qe(e.slice(c,l===-1?void 0:l))}else if(d==38||isNaN(d))return"";n=e.indexOf(`&${t}`,n+1)}if(r=/[%+]/.test(e),!r)return}const a={};r??(r=/[%+]/.test(e));let s=e.indexOf("?",8);for(;s!==-1;){const n=e.indexOf("&",s+1);let d=e.indexOf("=",s);d>n&&n!==-1&&(d=-1);let c=e.slice(s+1,d===-1?n===-1?void 0:n:d);if(r&&(c=qe(c)),s=n,c==="")continue;let l;d===-1?l="":(l=e.slice(d+1,n===-1?void 0:n),r&&(l=qe(l))),o?(a[c]&&Array.isArray(a[c])||(a[c]=[]),a[c].push(l)):a[c]??(a[c]=l)}return t?a[t]:a},St=et,Tt=(e,t)=>et(e,t,!0),tt=decodeURIComponent,Ne=e=>Oe(e,tt),ne,R,U,rt,at,je,N,Qe,ot=(Qe=class{constructor(e,t="/",o=[[]]){f(this,U);h(this,"raw");f(this,ne);f(this,R);h(this,"routeIndex",0);h(this,"path");h(this,"bodyCache",{});f(this,N,e=>{const{bodyCache:t,raw:o}=this,r=t[e];if(r)return r;const a=Object.keys(t)[0];return a?t[a].then(s=>(a==="json"&&(s=JSON.stringify(s)),new Response(s)[e]())):t[e]=o[e]()});this.raw=e,this.path=t,m(this,R,o),m(this,ne,{})}param(e){return e?y(this,U,rt).call(this,e):y(this,U,at).call(this)}query(e){return St(this.url,e)}queries(e){return Tt(this.url,e)}header(e){if(e)return this.raw.headers.get(e)??void 0;const t={};return this.raw.headers.forEach((o,r)=>{t[r]=o}),t}async parseBody(e){var t;return(t=this.bodyCache).parsedBody??(t.parsedBody=await xt(this,e))}json(){return i(this,N).call(this,"text").then(e=>JSON.parse(e))}text(){return i(this,N).call(this,"text")}arrayBuffer(){return i(this,N).call(this,"arrayBuffer")}blob(){return i(this,N).call(this,"blob")}formData(){return i(this,N).call(this,"formData")}addValidatedData(e,t){i(this,ne)[e]=t}valid(e){return i(this,ne)[e]}get url(){return this.raw.url}get method(){return this.raw.method}get[yt](){return i(this,R)}get matchedRoutes(){return i(this,R)[0].map(([[,e]])=>e)}get routePath(){return i(this,R)[0].map(([[,e]])=>e)[this.routeIndex].path}},ne=new WeakMap,R=new WeakMap,U=new WeakSet,rt=function(e){const t=i(this,R)[0][this.routeIndex][1][e],o=y(this,U,je).call(this,t);return o&&/\%/.test(o)?Ne(o):o},at=function(){const e={},t=Object.keys(i(this,R)[0][this.routeIndex][1]);for(const o of t){const r=y(this,U,je).call(this,i(this,R)[0][this.routeIndex][1][o]);r!==void 0&&(e[o]=/\%/.test(r)?Ne(r):r)}return e},je=function(e){return i(this,R)[1]?i(this,R)[1][e]:e},N=new WeakMap,Qe),Bt={Stringify:1},st=async(e,t,o,r,a)=>{typeof e=="object"&&!(e instanceof String)&&(e instanceof Promise||(e=e.toString()),e instanceof Promise&&(e=await e));const s=e.callbacks;return s!=null&&s.length?(a?a[0]+=e:a=[e],Promise.all(s.map(d=>d({phase:t,buffer:a,context:r}))).then(d=>Promise.all(d.filter(Boolean).map(c=>st(c,t,!1,r,a))).then(()=>a[0]))):Promise.resolve(e)},$t="text/plain; charset=UTF-8",Le=(e,t)=>({"Content-Type":e,...t}),be,ye,q,ie,L,A,xe,ce,le,X,ve,we,H,ae,We,qt=(We=class{constructor(e,t){f(this,H);f(this,be);f(this,ye);h(this,"env",{});f(this,q);h(this,"finalized",!1);h(this,"error");f(this,ie);f(this,L);f(this,A);f(this,xe);f(this,ce);f(this,le);f(this,X);f(this,ve);f(this,we);h(this,"render",(...e)=>(i(this,ce)??m(this,ce,t=>this.html(t)),i(this,ce).call(this,...e)));h(this,"setLayout",e=>m(this,xe,e));h(this,"getLayout",()=>i(this,xe));h(this,"setRenderer",e=>{m(this,ce,e)});h(this,"header",(e,t,o)=>{this.finalized&&m(this,A,new Response(i(this,A).body,i(this,A)));const r=i(this,A)?i(this,A).headers:i(this,X)??m(this,X,new Headers);t===void 0?r.delete(e):o!=null&&o.append?r.append(e,t):r.set(e,t)});h(this,"status",e=>{m(this,ie,e)});h(this,"set",(e,t)=>{i(this,q)??m(this,q,new Map),i(this,q).set(e,t)});h(this,"get",e=>i(this,q)?i(this,q).get(e):void 0);h(this,"newResponse",(...e)=>y(this,H,ae).call(this,...e));h(this,"body",(e,t,o)=>y(this,H,ae).call(this,e,t,o));h(this,"text",(e,t,o)=>!i(this,X)&&!i(this,ie)&&!t&&!o&&!this.finalized?new Response(e):y(this,H,ae).call(this,e,t,Le($t,o)));h(this,"json",(e,t,o)=>y(this,H,ae).call(this,JSON.stringify(e),t,Le("application/json",o)));h(this,"html",(e,t,o)=>{const r=a=>y(this,H,ae).call(this,a,t,Le("text/html; charset=UTF-8",o));return typeof e=="object"?st(e,Bt.Stringify,!1,{}).then(r):r(e)});h(this,"redirect",(e,t)=>{const o=String(e);return this.header("Location",/[^\x00-\xFF]/.test(o)?encodeURI(o):o),this.newResponse(null,t??302)});h(this,"notFound",()=>(i(this,le)??m(this,le,()=>new Response),i(this,le).call(this,this)));m(this,be,e),t&&(m(this,L,t.executionCtx),this.env=t.env,m(this,le,t.notFoundHandler),m(this,we,t.path),m(this,ve,t.matchResult))}get req(){return i(this,ye)??m(this,ye,new ot(i(this,be),i(this,we),i(this,ve))),i(this,ye)}get event(){if(i(this,L)&&"respondWith"in i(this,L))return i(this,L);throw Error("This context has no FetchEvent")}get executionCtx(){if(i(this,L))return i(this,L);throw Error("This context has no ExecutionContext")}get res(){return i(this,A)||m(this,A,new Response(null,{headers:i(this,X)??m(this,X,new Headers)}))}set res(e){if(i(this,A)&&e){e=new Response(e.body,e);for(const[t,o]of i(this,A).headers.entries())if(t!=="content-type")if(t==="set-cookie"){const r=i(this,A).headers.getSetCookie();e.headers.delete("set-cookie");for(const a of r)e.headers.append("set-cookie",a)}else e.headers.set(t,o)}m(this,A,e),this.finalized=!0}get var(){return i(this,q)?Object.fromEntries(i(this,q)):{}}},be=new WeakMap,ye=new WeakMap,q=new WeakMap,ie=new WeakMap,L=new WeakMap,A=new WeakMap,xe=new WeakMap,ce=new WeakMap,le=new WeakMap,X=new WeakMap,ve=new WeakMap,we=new WeakMap,H=new WeakSet,ae=function(e,t,o){const r=i(this,A)?new Headers(i(this,A).headers):i(this,X)??new Headers;if(typeof t=="object"&&"headers"in t){const s=t.headers instanceof Headers?t.headers:new Headers(t.headers);for(const[n,d]of s)n.toLowerCase()==="set-cookie"?r.append(n,d):r.set(n,d)}if(o)for(const[s,n]of Object.entries(o))if(typeof n=="string")r.set(s,n);else{r.delete(s);for(const d of n)r.append(s,d)}const a=typeof t=="number"?t:(t==null?void 0:t.status)??i(this,ie);return new Response(e,{status:a,headers:r})},We),w="ALL",Lt="all",jt=["get","post","put","delete","options","patch"],nt="Can not add a route since the matcher is already built.",it=class extends Error{},Ot="__COMPOSED_HANDLER",Ut=e=>e.text("404 Not Found",404),He=(e,t)=>{if("getResponse"in e){const o=e.getResponse();return t.newResponse(o.body,o)}return console.error(e),t.text("Internal Server Error",500)},k,E,ct,S,G,Ae,_e,de,Mt=(de=class{constructor(t={}){f(this,E);h(this,"get");h(this,"post");h(this,"put");h(this,"delete");h(this,"options");h(this,"patch");h(this,"all");h(this,"on");h(this,"use");h(this,"router");h(this,"getPath");h(this,"_basePath","/");f(this,k,"/");h(this,"routes",[]);f(this,S,Ut);h(this,"errorHandler",He);h(this,"onError",t=>(this.errorHandler=t,this));h(this,"notFound",t=>(m(this,S,t),this));h(this,"fetch",(t,...o)=>y(this,E,_e).call(this,t,o[1],o[0],t.method));h(this,"request",(t,o,r,a)=>t instanceof Request?this.fetch(o?new Request(t,o):t,r,a):(t=t.toString(),this.fetch(new Request(/^https?:\/\//.test(t)?t:`http://localhost${re("/",t)}`,o),r,a)));h(this,"fire",()=>{addEventListener("fetch",t=>{t.respondWith(y(this,E,_e).call(this,t.request,t,void 0,t.request.method))})});[...jt,Lt].forEach(s=>{this[s]=(n,...d)=>(typeof n=="string"?m(this,k,n):y(this,E,G).call(this,s,i(this,k),n),d.forEach(c=>{y(this,E,G).call(this,s,i(this,k),c)}),this)}),this.on=(s,n,...d)=>{for(const c of[n].flat()){m(this,k,c);for(const l of[s].flat())d.map(u=>{y(this,E,G).call(this,l.toUpperCase(),i(this,k),u)})}return this},this.use=(s,...n)=>(typeof s=="string"?m(this,k,s):(m(this,k,"*"),n.unshift(s)),n.forEach(d=>{y(this,E,G).call(this,w,i(this,k),d)}),this);const{strict:r,...a}=t;Object.assign(this,a),this.getPath=r??!0?t.getPath??Ze:kt}route(t,o){const r=this.basePath(t);return o.routes.map(a=>{var n;let s;o.errorHandler===He?s=a.handler:(s=async(d,c)=>(await Fe([],o.errorHandler)(d,()=>a.handler(d,c))).res,s[Ot]=a.handler),y(n=r,E,G).call(n,a.method,a.path,s)}),this}basePath(t){const o=y(this,E,ct).call(this);return o._basePath=re(this._basePath,t),o}mount(t,o,r){let a,s;r&&(typeof r=="function"?s=r:(s=r.optionHandler,r.replaceRequest===!1?a=c=>c:a=r.replaceRequest));const n=s?c=>{const l=s(c);return Array.isArray(l)?l:[l]}:c=>{let l;try{l=c.executionCtx}catch{}return[c.env,l]};a||(a=(()=>{const c=re(this._basePath,t),l=c==="/"?0:c.length;return u=>{const p=new URL(u.url);return p.pathname=p.pathname.slice(l)||"/",new Request(p,u)}})());const d=async(c,l)=>{const u=await o(a(c.req.raw),...n(c));if(u)return u;await l()};return y(this,E,G).call(this,w,re(t,"*"),d),this}},k=new WeakMap,E=new WeakSet,ct=function(){const t=new de({router:this.router,getPath:this.getPath});return t.errorHandler=this.errorHandler,m(t,S,i(this,S)),t.routes=this.routes,t},S=new WeakMap,G=function(t,o,r){t=t.toUpperCase(),o=re(this._basePath,o);const a={basePath:this._basePath,path:o,method:t,handler:r};this.router.add(t,o,[r,a]),this.routes.push(a)},Ae=function(t,o){if(t instanceof Error)return this.errorHandler(t,o);throw t},_e=function(t,o,r,a){if(a==="HEAD")return(async()=>new Response(null,await y(this,E,_e).call(this,t,o,r,"GET")))();const s=this.getPath(t,{env:r}),n=this.router.match(a,s),d=new qt(t,{path:s,matchResult:n,env:r,executionCtx:o,notFoundHandler:i(this,S)});if(n[0].length===1){let l;try{l=n[0][0][0][0](d,async()=>{d.res=await i(this,S).call(this,d)})}catch(u){return y(this,E,Ae).call(this,u,d)}return l instanceof Promise?l.then(u=>u||(d.finalized?d.res:i(this,S).call(this,d))).catch(u=>y(this,E,Ae).call(this,u,d)):l??i(this,S).call(this,d)}const c=Fe(n[0],this.errorHandler,i(this,S));return(async()=>{try{const l=await c(d);if(!l.finalized)throw new Error("Context is not finalized. Did you forget to return a Response object or `await next()`?");return l.res}catch(l){return y(this,E,Ae).call(this,l,d)}})()},de),lt=[];function Dt(e,t){const o=this.buildAllMatchers(),r=((a,s)=>{const n=o[a]||o[w],d=n[2][s];if(d)return d;const c=s.match(n[0]);if(!c)return[[],lt];const l=c.indexOf("",1);return[n[1][l],c]});return this.match=r,r(e,t)}var ke="[^/]+",fe=".*",ge="(?:|/.*)",se=Symbol(),Ft=new Set(".\\+*[^]$()");function Nt(e,t){return e.length===1?t.length===1?e<t?-1:1:-1:t.length===1||e===fe||e===ge?1:t===fe||t===ge?-1:e===ke?1:t===ke?-1:e.length===t.length?e<t?-1:1:t.length-e.length}var Y,Z,T,te,Ht=(te=class{constructor(){f(this,Y);f(this,Z);f(this,T,Object.create(null))}insert(t,o,r,a,s){if(t.length===0){if(i(this,Y)!==void 0)throw se;if(s)return;m(this,Y,o);return}const[n,...d]=t,c=n==="*"?d.length===0?["","",fe]:["","",ke]:n==="/*"?["","",ge]:n.match(/^\:([^\{\}]+)(?:\{(.+)\})?$/);let l;if(c){const u=c[1];let p=c[2]||ke;if(u&&c[2]&&(p===".*"||(p=p.replace(/^\((?!\?:)(?=[^)]+\)$)/,"(?:"),/\((?!\?:)/.test(p))))throw se;if(l=i(this,T)[p],!l){if(Object.keys(i(this,T)).some(g=>g!==fe&&g!==ge))throw se;if(s)return;l=i(this,T)[p]=new te,u!==""&&m(l,Z,a.varIndex++)}!s&&u!==""&&r.push([u,i(l,Z)])}else if(l=i(this,T)[n],!l){if(Object.keys(i(this,T)).some(u=>u.length>1&&u!==fe&&u!==ge))throw se;if(s)return;l=i(this,T)[n]=new te}l.insert(d,o,r,a,s)}buildRegExpStr(){const o=Object.keys(i(this,T)).sort(Nt).map(r=>{const a=i(this,T)[r];return(typeof i(a,Z)=="number"?`(${r})@${i(a,Z)}`:Ft.has(r)?`\\${r}`:r)+a.buildRegExpStr()});return typeof i(this,Y)=="number"&&o.unshift(`#${i(this,Y)}`),o.length===0?"":o.length===1?o[0]:"(?:"+o.join("|")+")"}},Y=new WeakMap,Z=new WeakMap,T=new WeakMap,te),Se,Ee,Ve,zt=(Ve=class{constructor(){f(this,Se,{varIndex:0});f(this,Ee,new Ht)}insert(e,t,o){const r=[],a=[];for(let n=0;;){let d=!1;if(e=e.replace(/\{[^}]+\}/g,c=>{const l=`@\\${n}`;return a[n]=[l,c],n++,d=!0,l}),!d)break}const s=e.match(/(?::[^\/]+)|(?:\/\*$)|./g)||[];for(let n=a.length-1;n>=0;n--){const[d]=a[n];for(let c=s.length-1;c>=0;c--)if(s[c].indexOf(d)!==-1){s[c]=s[c].replace(d,a[n][1]);break}}return i(this,Ee).insert(s,t,r,i(this,Se),o),r}buildRegExp(){let e=i(this,Ee).buildRegExpStr();if(e==="")return[/^$/,[],[]];let t=0;const o=[],r=[];return e=e.replace(/#(\d+)|@(\d+)|\.\*\$/g,(a,s,n)=>s!==void 0?(o[++t]=Number(s),"$()"):(n!==void 0&&(r[Number(n)]=++t),"")),[new RegExp(`^${e}`),o,r]}},Se=new WeakMap,Ee=new WeakMap,Ve),Qt=[/^$/,[],Object.create(null)],Re=Object.create(null);function dt(e){return Re[e]??(Re[e]=new RegExp(e==="*"?"":`^${e.replace(/\/\*$|([.\\+*[^\]$()])/g,(t,o)=>o?`\\${o}`:"(?:|/.*)")}$`))}function Wt(){Re=Object.create(null)}function Vt(e){var l;const t=new zt,o=[];if(e.length===0)return Qt;const r=e.map(u=>[!/\*|\/:/.test(u[0]),...u]).sort(([u,p],[g,v])=>u?1:g?-1:p.length-v.length),a=Object.create(null);for(let u=0,p=-1,g=r.length;u<g;u++){const[v,_,M]=r[u];v?a[_]=[M.map(([P])=>[P,Object.create(null)]),lt]:p++;let x;try{x=t.insert(_,p,v)}catch(P){throw P===se?new it(_):P}v||(o[p]=M.map(([P,D])=>{const Ie=Object.create(null);for(D-=1;D>=0;D--){const[Ce,B]=x[D];Ie[Ce]=B}return[P,Ie]}))}const[s,n,d]=t.buildRegExp();for(let u=0,p=o.length;u<p;u++)for(let g=0,v=o[u].length;g<v;g++){const _=(l=o[u][g])==null?void 0:l[1];if(!_)continue;const M=Object.keys(_);for(let x=0,P=M.length;x<P;x++)_[M[x]]=d[_[M[x]]]}const c=[];for(const u in n)c[u]=o[n[u]];return[s,c,a]}function oe(e,t){if(e){for(const o of Object.keys(e).sort((r,a)=>a.length-r.length))if(dt(o).test(t))return[...e[o]]}}var z,Q,Te,ut,Ge,Gt=(Ge=class{constructor(){f(this,Te);h(this,"name","RegExpRouter");f(this,z);f(this,Q);h(this,"match",Dt);m(this,z,{[w]:Object.create(null)}),m(this,Q,{[w]:Object.create(null)})}add(e,t,o){var d;const r=i(this,z),a=i(this,Q);if(!r||!a)throw new Error(nt);r[e]||[r,a].forEach(c=>{c[e]=Object.create(null),Object.keys(c[w]).forEach(l=>{c[e][l]=[...c[w][l]]})}),t==="/*"&&(t="*");const s=(t.match(/\/:/g)||[]).length;if(/\*$/.test(t)){const c=dt(t);e===w?Object.keys(r).forEach(l=>{var u;(u=r[l])[t]||(u[t]=oe(r[l],t)||oe(r[w],t)||[])}):(d=r[e])[t]||(d[t]=oe(r[e],t)||oe(r[w],t)||[]),Object.keys(r).forEach(l=>{(e===w||e===l)&&Object.keys(r[l]).forEach(u=>{c.test(u)&&r[l][u].push([o,s])})}),Object.keys(a).forEach(l=>{(e===w||e===l)&&Object.keys(a[l]).forEach(u=>c.test(u)&&a[l][u].push([o,s]))});return}const n=Je(t)||[t];for(let c=0,l=n.length;c<l;c++){const u=n[c];Object.keys(a).forEach(p=>{var g;(e===w||e===p)&&((g=a[p])[u]||(g[u]=[...oe(r[p],u)||oe(r[w],u)||[]]),a[p][u].push([o,s-l+c+1]))})}}buildAllMatchers(){const e=Object.create(null);return Object.keys(i(this,Q)).concat(Object.keys(i(this,z))).forEach(t=>{e[t]||(e[t]=y(this,Te,ut).call(this,t))}),m(this,z,m(this,Q,void 0)),Wt(),e}},z=new WeakMap,Q=new WeakMap,Te=new WeakSet,ut=function(e){const t=[];let o=e===w;return[i(this,z),i(this,Q)].forEach(r=>{const a=r[e]?Object.keys(r[e]).map(s=>[s,r[e][s]]):[];a.length!==0?(o||(o=!0),t.push(...a)):e!==w&&t.push(...Object.keys(r[w]).map(s=>[s,r[w][s]]))}),o?Vt(t):null},Ge),W,j,Ke,Kt=(Ke=class{constructor(e){h(this,"name","SmartRouter");f(this,W,[]);f(this,j,[]);m(this,W,e.routers)}add(e,t,o){if(!i(this,j))throw new Error(nt);i(this,j).push([e,t,o])}match(e,t){if(!i(this,j))throw new Error("Fatal error");const o=i(this,W),r=i(this,j),a=o.length;let s=0,n;for(;s<a;s++){const d=o[s];try{for(let c=0,l=r.length;c<l;c++)d.add(...r[c]);n=d.match(e,t)}catch(c){if(c instanceof it)continue;throw c}this.match=d.match.bind(d),m(this,W,[d]),m(this,j,void 0);break}if(s===a)throw new Error("Fatal error");return this.name=`SmartRouter + ${this.activeRouter.name}`,n}get activeRouter(){if(i(this,j)||i(this,W).length!==1)throw new Error("No active router has been determined yet.");return i(this,W)[0]}},W=new WeakMap,j=new WeakMap,Ke),he=Object.create(null),V,C,J,ue,I,O,K,pe,Xt=(pe=class{constructor(t,o,r){f(this,O);f(this,V);f(this,C);f(this,J);f(this,ue,0);f(this,I,he);if(m(this,C,r||Object.create(null)),m(this,V,[]),t&&o){const a=Object.create(null);a[t]={handler:o,possibleKeys:[],score:0},m(this,V,[a])}m(this,J,[])}insert(t,o,r){m(this,ue,++De(this,ue)._);let a=this;const s=Ct(o),n=[];for(let d=0,c=s.length;d<c;d++){const l=s[d],u=s[d+1],p=_t(l,u),g=Array.isArray(p)?p[0]:l;if(g in i(a,C)){a=i(a,C)[g],p&&n.push(p[1]);continue}i(a,C)[g]=new pe,p&&(i(a,J).push(p),n.push(p[1])),a=i(a,C)[g]}return i(a,V).push({[t]:{handler:r,possibleKeys:n.filter((d,c,l)=>l.indexOf(d)===c),score:i(this,ue)}}),a}search(t,o){var c;const r=[];m(this,I,he);let s=[this];const n=Ye(o),d=[];for(let l=0,u=n.length;l<u;l++){const p=n[l],g=l===u-1,v=[];for(let _=0,M=s.length;_<M;_++){const x=s[_],P=i(x,C)[p];P&&(m(P,I,i(x,I)),g?(i(P,C)["*"]&&r.push(...y(this,O,K).call(this,i(P,C)["*"],t,i(x,I))),r.push(...y(this,O,K).call(this,P,t,i(x,I)))):v.push(P));for(let D=0,Ie=i(x,J).length;D<Ie;D++){const Ce=i(x,J)[D],B=i(x,I)===he?{}:{...i(x,I)};if(Ce==="*"){const F=i(x,C)["*"];F&&(r.push(...y(this,O,K).call(this,F,t,i(x,I))),m(F,I,B),v.push(F));continue}const[ht,Ue,me]=Ce;if(!p&&!(me instanceof RegExp))continue;const $=i(x,C)[ht],ft=n.slice(l).join("/");if(me instanceof RegExp){const F=me.exec(ft);if(F){if(B[Ue]=F[0],r.push(...y(this,O,K).call(this,$,t,i(x,I),B)),Object.keys(i($,C)).length){m($,I,B);const Be=((c=F[0].match(/\//))==null?void 0:c.length)??0;(d[Be]||(d[Be]=[])).push($)}continue}}(me===!0||me.test(p))&&(B[Ue]=p,g?(r.push(...y(this,O,K).call(this,$,t,B,i(x,I))),i($,C)["*"]&&r.push(...y(this,O,K).call(this,i($,C)["*"],t,B,i(x,I)))):(m($,I,B),v.push($)))}}s=v.concat(d.shift()??[])}return r.length>1&&r.sort((l,u)=>l.score-u.score),[r.map(({handler:l,params:u})=>[l,u])]}},V=new WeakMap,C=new WeakMap,J=new WeakMap,ue=new WeakMap,I=new WeakMap,O=new WeakSet,K=function(t,o,r,a){const s=[];for(let n=0,d=i(t,V).length;n<d;n++){const c=i(t,V)[n],l=c[o]||c[w],u={};if(l!==void 0&&(l.params=Object.create(null),s.push(l),r!==he||a&&a!==he))for(let p=0,g=l.possibleKeys.length;p<g;p++){const v=l.possibleKeys[p],_=u[l.score];l.params[v]=a!=null&&a[v]&&!_?a[v]:r[v]??(a==null?void 0:a[v]),u[l.score]=!0}}return s},pe),ee,Xe,Yt=(Xe=class{constructor(){h(this,"name","TrieRouter");f(this,ee);m(this,ee,new Xt)}add(e,t,o){const r=Je(t);if(r){for(let a=0,s=r.length;a<s;a++)i(this,ee).insert(e,r[a],o);return}i(this,ee).insert(e,t,o)}match(e,t){return i(this,ee).search(e,t)}},ee=new WeakMap,Xe),pt=class extends Mt{constructor(e={}){super(e),this.router=e.router??new Kt({routers:[new Gt,new Yt]})}},Zt=e=>{const o={...{origin:"*",allowMethods:["GET","HEAD","PUT","POST","DELETE","PATCH"],allowHeaders:[],exposeHeaders:[]},...e},r=(s=>typeof s=="string"?s==="*"?()=>s:n=>s===n?n:null:typeof s=="function"?s:n=>s.includes(n)?n:null)(o.origin),a=(s=>typeof s=="function"?s:Array.isArray(s)?()=>s:()=>[])(o.allowMethods);return async function(n,d){var u;function c(p,g){n.res.headers.set(p,g)}const l=await r(n.req.header("origin")||"",n);if(l&&c("Access-Control-Allow-Origin",l),o.credentials&&c("Access-Control-Allow-Credentials","true"),(u=o.exposeHeaders)!=null&&u.length&&c("Access-Control-Expose-Headers",o.exposeHeaders.join(",")),n.req.method==="OPTIONS"){o.origin!=="*"&&c("Vary","Origin"),o.maxAge!=null&&c("Access-Control-Max-Age",o.maxAge.toString());const p=await a(n.req.header("origin")||"",n);p.length&&c("Access-Control-Allow-Methods",p.join(","));let g=o.allowHeaders;if(!(g!=null&&g.length)){const v=n.req.header("Access-Control-Request-Headers");v&&(g=v.split(/\s*,\s*/))}return g!=null&&g.length&&(c("Access-Control-Allow-Headers",g.join(",")),n.res.headers.append("Vary","Access-Control-Request-Headers")),n.res.headers.delete("Content-Length"),n.res.headers.delete("Content-Type"),new Response(null,{headers:n.res.headers,status:204,statusText:"No Content"})}await d(),o.origin!=="*"&&n.header("Vary","Origin",{append:!0})}};const b=new pt;b.use("/api/*",Zt());b.post("/api/auth/verify",async e=>{const{password:t}=await e.req.json();return e.json({success:t==="123"})});b.get("/api/products",async e=>{const{DB:t}=e.env,{results:o}=await t.prepare("SELECT * FROM products ORDER BY id DESC").all();return e.json(o)});b.get("/api/products/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{results:r}=await t.prepare("SELECT * FROM products WHERE id = ?").bind(o).all();return e.json(r[0]||null)});b.post("/api/products",async e=>{const{DB:t}=e.env,{name:o,price:r,brand:a,stock_quantity:s,image_url:n,cold_quantity:d,hot_quantity:c,unit_type:l,category:u}=await e.req.json(),p=await t.prepare("INSERT INTO products (name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").bind(o,r,a,s||0,n||null,d||0,c||0,l||"Unidade",u||"Bebidas").run();return e.json({id:p.meta.last_row_id,success:!0})});b.put("/api/products/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{name:r,price:a,brand:s,stock_quantity:n,image_url:d,cold_quantity:c,hot_quantity:l,unit_type:u,category:p}=await e.req.json();return await t.prepare("UPDATE products SET name = ?, price = ?, brand = ?, stock_quantity = ?, image_url = ?, cold_quantity = ?, hot_quantity = ?, unit_type = ?, category = ? WHERE id = ?").bind(r,a,s,n,d,c,l,u,p,o).run(),e.json({success:!0})});b.delete("/api/products/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id");return await t.prepare("DELETE FROM products WHERE id = ?").bind(o).run(),e.json({success:!0})});b.get("/api/customers",async e=>{const{DB:t}=e.env,{results:o}=await t.prepare("SELECT * FROM customers ORDER BY name").all();return e.json(o)});b.get("/api/customers/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{results:r}=await t.prepare("SELECT * FROM customers WHERE id = ?").bind(o).all();return e.json(r[0]||null)});b.post("/api/customers",async e=>{const{DB:t}=e.env,{name:o,address:r,neighborhood:a,zip_code:s,city:n,phone:d}=await e.req.json(),c=await t.prepare("INSERT INTO customers (name, address, neighborhood, zip_code, city, phone) VALUES (?, ?, ?, ?, ?, ?)").bind(o,r,a,s,n,d).run();return e.json({id:c.meta.last_row_id,success:!0})});b.put("/api/customers/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{name:r,address:a,neighborhood:s,zip_code:n,city:d,phone:c}=await e.req.json();return await t.prepare("UPDATE customers SET name = ?, address = ?, neighborhood = ?, zip_code = ?, city = ?, phone = ? WHERE id = ?").bind(r,a,s,n,d,c,o).run(),e.json({success:!0})});b.delete("/api/customers/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id");return await t.prepare("DELETE FROM customers WHERE id = ?").bind(o).run(),e.json({success:!0})});b.post("/api/orders",async e=>{const{DB:t}=e.env,{customer_id:o,items:r,payment_method:a,total_amount:s}=await e.req.json(),d=(await t.prepare("INSERT INTO orders (customer_id, total_amount, payment_method) VALUES (?, ?, ?)").bind(o,s,a).run()).meta.last_row_id;for(const c of r)await t.prepare("INSERT INTO order_items (order_id, product_id, quantity, unit_price, total_price) VALUES (?, ?, ?, ?, ?)").bind(d,c.product_id,c.quantity,c.unit_price,c.total_price).run();return e.json({id:d,success:!0})});b.get("/api/orders/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{results:r}=await t.prepare("SELECT o.*, c.name as customer_name, c.phone, c.address, c.neighborhood, c.city FROM orders o JOIN customers c ON o.customer_id = c.id WHERE o.id = ?").bind(o).all();if(!r.length)return e.json(null);const a=r[0],{results:s}=await t.prepare("SELECT oi.*, p.name as product_name, p.brand FROM order_items oi JOIN products p ON oi.product_id = p.id WHERE oi.order_id = ?").bind(o).all();return e.json({...a,items:s})});b.get("/api/settings/logo",async e=>{var r;const{DB:t}=e.env,{results:o}=await t.prepare("SELECT value FROM settings WHERE key = 'logo_url'").all();return e.json({logo_url:((r=o[0])==null?void 0:r.value)||null})});b.post("/api/settings/logo",async e=>{const{DB:t}=e.env,{logo_url:o}=await e.req.json();return await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('logo_url', ?, CURRENT_TIMESTAMP)").bind(o).run(),e.json({success:!0})});b.get("/api/settings/footer-logo",async e=>{var r;const{DB:t}=e.env,{results:o}=await t.prepare("SELECT value FROM settings WHERE key = 'footer_logo_url'").all();return e.json({footer_logo_url:((r=o[0])==null?void 0:r.value)||null})});b.post("/api/settings/footer-logo",async e=>{const{DB:t}=e.env,{footer_logo_url:o}=await e.req.json();return await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('footer_logo_url', ?, CURRENT_TIMESTAMP)").bind(o).run(),e.json({success:!0})});b.get("/api/settings/branches",async e=>{var r;const{DB:t}=e.env,{results:o}=await t.prepare("SELECT value FROM settings WHERE key = 'branches'").all();return e.json({branches:((r=o[0])==null?void 0:r.value)||""})});b.post("/api/settings/branches",async e=>{const{DB:t}=e.env,{branches:o}=await e.req.json();return await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('branches', ?, CURRENT_TIMESTAMP)").bind(o).run(),e.json({success:!0})});b.get("/api/settings/payment",async e=>{const{DB:t}=e.env,{results:o}=await t.prepare("SELECT key, value FROM settings WHERE key IN ('pix_key', 'qrcode_url')").all(),r={pix_key:"",qrcode_url:""};return o.forEach(a=>{a.key==="pix_key"&&(r.pix_key=a.value||""),a.key==="qrcode_url"&&(r.qrcode_url=a.value||"")}),e.json(r)});b.post("/api/settings/payment",async e=>{const{DB:t}=e.env,{pix_key:o,qrcode_url:r}=await e.req.json();return await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('pix_key', ?, CURRENT_TIMESTAMP)").bind(o||"").run(),await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('qrcode_url', ?, CURRENT_TIMESTAMP)").bind(r||"").run(),e.json({success:!0})});b.post("/api/upload",async e=>{try{const{image:t,filename:o}=await e.req.json(),r=t.split(",")[1]||t,a=atob(r),s=new Uint8Array(a.length);for(let c=0;c<a.length;c++)s[c]=a.charCodeAt(c);const n=`${Date.now()}-${o}`,d=t;return e.json({success:!0,url:d})}catch(t){return console.error("Upload error:",t),e.json({success:!1,error:"Upload failed"},500)}});b.get("/api/users",async e=>{const{DB:t}=e.env,{results:o}=await t.prepare("SELECT id, username, created_at FROM users ORDER BY id").all();return e.json(o)});b.post("/api/users",async e=>{const{DB:t}=e.env,{username:o,password:r}=await e.req.json(),a=await t.prepare("INSERT INTO users (username, password) VALUES (?, ?)").bind(o,r).run();return e.json({id:a.meta.last_row_id,success:!0})});b.put("/api/users/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id"),{username:r,password:a}=await e.req.json();return await t.prepare("UPDATE users SET username = ?, password = ? WHERE id = ?").bind(r,a,o).run(),e.json({success:!0})});b.delete("/api/users/:id",async e=>{const{DB:t}=e.env,o=e.req.param("id");return await t.prepare("DELETE FROM users WHERE id = ?").bind(o).run(),e.json({success:!0})});b.post("/api/users/login",async e=>{const{DB:t}=e.env,{username:o,password:r}=await e.req.json(),{results:a}=await t.prepare("SELECT id, username FROM users WHERE username = ? AND password = ?").bind(o,r).all();return a.length>0?e.json({success:!0,user:a[0]}):e.json({success:!1,message:"Usuário ou senha inválidos"},401)});b.get("/api/settings/system-whatsapp",async e=>{var r;const{DB:t}=e.env,{results:o}=await t.prepare("SELECT value FROM settings WHERE key = 'system_whatsapp'").all();return e.json({system_whatsapp:((r=o[0])==null?void 0:r.value)||"5518996936262"})});b.post("/api/settings/system-whatsapp",async e=>{const{DB:t}=e.env,{system_whatsapp:o}=await e.req.json();return await t.prepare("INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('system_whatsapp', ?, CURRENT_TIMESTAMP)").bind(o).run(),e.json({success:!0})});b.get("/",e=>e.html(`
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -441,6 +441,25 @@ var gt=Object.defineProperty;var Fe=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
         </div>
     </div>
 
+    <!-- Modal: PIX Copiado -->
+    <div id="modalPixCopied" class="custom-modal">
+        <div class="modal-content-custom">
+            <div class="modal-header">
+                <i class="fas fa-check-circle" style="font-size: 40px; color: #25d366;"></i>
+                <div style="margin-top: 10px;">Sucesso!</div>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 18px; font-weight: bold; color: #25d366;">PIX Copiado</p>
+                <p style="font-size: 14px; color: #999; margin-top: 10px;">A chave PIX foi copiada para a área de transferência.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-primary" onclick="closeModal('modalPixCopied')">
+                    <i class="fas fa-check mr-2"></i>OK
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="app" class="container mx-auto px-4 py-6 max-w-md">
         <!-- TELA INICIAL -->
         <div id="home-screen">
@@ -497,6 +516,8 @@ var gt=Object.defineProperty;var Fe=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
         let currentCustomer = null;
         let logoUrl = null;
         let footerLogoUrl = null;
+        let systemWhatsapp = '5518996936262';
+        let users = [];
 
         // ============ FUNÇÕES DOS MODAIS FLUTUANTES ============
         
@@ -567,7 +588,8 @@ var gt=Object.defineProperty;var Fe=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
                 document.execCommand('copy');
                 document.body.removeChild(textarea);
                 
-                alert('Chave PIX copiada!');
+                // Mostrar modal de sucesso
+                openModal('modalPixCopied');
             } else {
                 alert('PIX não configurado');
             }
@@ -578,18 +600,22 @@ var gt=Object.defineProperty;var Fe=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
         // Carregar dados iniciais
         async function loadInitialData() {
             try {
-                const [productsRes, customersRes, logoRes, footerLogoRes, paymentRes] = await Promise.all([
+                const [productsRes, customersRes, logoRes, footerLogoRes, paymentRes, whatsappRes, usersRes] = await Promise.all([
                     axios.get('/api/products'),
                     axios.get('/api/customers'),
                     axios.get('/api/settings/logo'),
                     axios.get('/api/settings/footer-logo'),
-                    axios.get('/api/settings/payment')
+                    axios.get('/api/settings/payment'),
+                    axios.get('/api/settings/system-whatsapp'),
+                    axios.get('/api/users')
                 ]);
                 products = productsRes.data;
                 customers = customersRes.data;
                 logoUrl = logoRes.data.logo_url;
                 footerLogoUrl = footerLogoRes.data.footer_logo_url;
                 paymentSettings = paymentRes.data;
+                systemWhatsapp = whatsappRes.data.system_whatsapp;
+                users = usersRes.data;
                 
                 if (logoUrl) {
                     document.getElementById('logoImage').src = logoUrl;
@@ -682,12 +708,12 @@ var gt=Object.defineProperty;var Fe=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
                                             </select>
                                         </div>
                                         
-                                        <!-- Seleção de Tipo -->
+                                        <!-- Tipo (somente leitura) -->
                                         <div class="mb-2">
                                             <label class="text-xs text-gray-400">Tipo:</label>
-                                            <select id="type-\${p.id}" class="input-field" style="padding: 6px; font-size: 14px;">
-                                                <option value="\${p.unit_type}">\${p.unit_type}</option>
-                                            </select>
+                                            <div style="padding: 6px; font-size: 14px; color: #fbbf24; font-weight: bold;">
+                                                \${p.unit_type}
+                                            </div>
                                         </div>
                                         
                                         <!-- Controle de Quantidade -->
@@ -832,9 +858,8 @@ var gt=Object.defineProperty;var Fe=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
             
             // Pegar as opções selecionadas
             const tempSelect = document.getElementById(\`temp-\${productId}\`);
-            const typeSelect = document.getElementById(\`type-\${productId}\`);
             const temperature = tempSelect ? tempSelect.value : 'Gelada';
-            const type = typeSelect ? typeSelect.value : product.unit_type;
+            const type = product.unit_type; // Usar o tipo do produto diretamente
             
             // Determinar preço baseado na temperatura
             let finalPrice = product.price;
@@ -972,16 +997,15 @@ var gt=Object.defineProperty;var Fe=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
                             </div>
                         </div>
                         
-                        <!-- Tarja Verde WhatsApp -->
-                        <div class="success-banner mt-4">
-                            <i class="fas fa-whatsapp mr-2"></i>Por favor, Finalizar Pedido
+                        <!-- Mensagem Finalizar Pedido -->
+                        <div class="mt-4" style="text-align: center;">
+                            <p style="color: #dc2626; font-weight: bold; font-size: 16px;">
+                                Por favor, Finalizar Pedido
+                            </p>
                         </div>
                         
-                        <div class="grid grid-cols-2 gap-4 mt-4">
-                            <button onclick="showCatalog()" class="btn-yellow py-4 text-lg">
-                                <i class="fas fa-shopping-basket mr-2"></i> Continuar Comprando
-                            </button>
-                            <button onclick="finishOrder()" class="btn-red py-4 text-lg">
+                        <div class="mt-4">
+                            <button onclick="finishOrder()" class="btn-red w-full py-4 text-lg">
                                 <i class="fas fa-check mr-2"></i> Finalizar Pedido
                             </button>
                         </div>
@@ -1046,7 +1070,6 @@ var gt=Object.defineProperty;var Fe=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
         // Finalizar pedido
         async function finishOrder() {
             const customerSelect = document.getElementById('customerSelect');
-            const paymentMethod = document.getElementById('paymentMethod').value;
             
             if (!customerSelect.value) {
                 alert('Por favor, selecione um cliente!');
@@ -1066,7 +1089,7 @@ var gt=Object.defineProperty;var Fe=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
                         unit_price: item.unit_price,
                         total_price: item.total_price
                     })),
-                    payment_method: paymentMethod === 'pix' ? 'PIX - 123.456.789' : 'À Vista',
+                    payment_method: selectedPaymentMethod === 'pix' ? \`PIX - \${paymentSettings.pix_key}\` : 'Dinheiro',
                     total_amount: total
                 };
                 
@@ -1082,15 +1105,24 @@ var gt=Object.defineProperty;var Fe=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
                 
                 cart.forEach(item => {
                     message += \`\\n• \${item.product_name} (\${item.brand})\\n\`;
+                    message += \`  \${item.temperature || 'Normal'} - \${item.type || 'Unidade'}\\n\`;
                     message += \`  Qtd: \${item.quantity} x R$ \${item.unit_price.toFixed(2)} = R$ \${item.total_price.toFixed(2)}\\n\`;
                 });
                 
                 message += \`\\n*TOTAL: R$ \${total.toFixed(2)}*\\n\`;
-                message += \`*Pagamento:* \${paymentMethod === 'pix' ? 'PIX - 123.456.789' : 'À Vista'}\`;
+                message += \`*Pagamento:* \${selectedPaymentMethod === 'pix' ? \`PIX - \${paymentSettings.pix_key}\` : 'Dinheiro'}\`;
                 
-                // Enviar para WhatsApp
-                const whatsappUrl = \`https://api.whatsapp.com/send/?phone=5518996676409&text=\${encodeURIComponent(message)}\`;
-                window.open(whatsappUrl, '_blank');
+                // Enviar para WhatsApp do SISTEMA (primeiro)
+                const systemWhatsappUrl = \`https://wa.me/\${systemWhatsapp}?text=\${encodeURIComponent(message)}\`;
+                window.open(systemWhatsappUrl, '_blank');
+                
+                // Aguardar 1 segundo e enviar para WhatsApp do CLIENTE
+                setTimeout(() => {
+                    // Remover caracteres não numéricos do telefone do cliente
+                    const customerPhone = customer.phone.replace(/D/g, '');
+                    const customerWhatsappUrl = \`https://wa.me/55\${customerPhone}?text=\${encodeURIComponent(message)}\`;
+                    window.open(customerWhatsappUrl, '_blank');
+                }, 1000);
                 
                 // Limpar carrinho
                 cart = [];
@@ -1288,6 +1320,12 @@ var gt=Object.defineProperty;var Fe=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
                         <button onclick="showPaymentSettings()" class="btn-yellow w-full py-4">
                             <i class="fas fa-money-bill mr-2"></i> Formas de Pagamento
                         </button>
+                        <button onclick="showSystemConfig()" class="btn-yellow w-full py-4">
+                            <i class="fas fa-cogs mr-2"></i> Configuração do Sistema
+                        </button>
+                        <button onclick="showUsersAdmin()" class="btn-yellow w-full py-4">
+                            <i class="fas fa-user-lock mr-2"></i> Usuários
+                        </button>
                         <button onclick="showBranchesAdmin()" class="btn-yellow w-full py-4">
                             <i class="fas fa-store mr-2"></i> Gerenciar Filiais
                         </button>
@@ -1406,6 +1444,226 @@ var gt=Object.defineProperty;var Fe=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
         }
 
         // Mostrar lista de clientes no admin
+        // ============ CONFIGURAÇÃO DO SISTEMA ============
+        
+        let currentSystemConfigId = null;
+        
+        async function showSystemConfig() {
+            if (!isAdmin) {
+                showAdminLogin();
+                return;
+            }
+            
+            hideHome();
+            const content = document.getElementById('dynamic-content');
+            
+            // Carregar WhatsApp do sistema
+            const response = await axios.get('/api/settings/system-whatsapp');
+            const whatsapp = response.data.system_whatsapp;
+            
+            const html = \`
+                <div>
+                    <button onclick="showAdminPanel()" class="btn-black mb-4">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">Configuração do Sistema</h2>
+                    
+                    <div class="card">
+                        <label class="block mb-2 text-sm font-bold">Link do WhatsApp:</label>
+                        <input type="text" id="systemWhatsappInput" placeholder="Ex: 5518996936262" class="input-field" value="\${whatsapp}">
+                        
+                        <div class="grid grid-cols-2 gap-3 mt-4">
+                            <button onclick="newSystemConfig()" class="btn-yellow">
+                                <i class="fas fa-plus mr-2"></i> Novo
+                            </button>
+                            <button onclick="saveSystemConfig()" class="btn-red">
+                                <i class="fas fa-save mr-2"></i> Salvar
+                            </button>
+                        </div>
+                        
+                        <p class="text-sm text-gray-400 mt-4">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Este WhatsApp receberá uma cópia de todos os pedidos finalizados.
+                        </p>
+                    </div>
+                </div>
+            \`;
+            content.innerHTML = html;
+        }
+        
+        function newSystemConfig() {
+            document.getElementById('systemWhatsappInput').value = '';
+            currentSystemConfigId = null;
+        }
+        
+        async function saveSystemConfig() {
+            const whatsapp = document.getElementById('systemWhatsappInput').value;
+            
+            if (!whatsapp) {
+                alert('Por favor, preencha o WhatsApp do sistema');
+                return;
+            }
+            
+            try {
+                await axios.post('/api/settings/system-whatsapp', {
+                    system_whatsapp: whatsapp
+                });
+                
+                systemWhatsapp = whatsapp;
+                alert('Configuração salva com sucesso!');
+                showSystemConfig();
+            } catch (error) {
+                console.error('Erro ao salvar configuração:', error);
+                alert('Erro ao salvar configuração. Tente novamente.');
+            }
+        }
+        
+        // ============ GERENCIAR USUÁRIOS ============
+        
+        let currentUserId = null;
+        
+        async function showUsersAdmin() {
+            if (!isAdmin) {
+                showAdminLogin();
+                return;
+            }
+            
+            hideHome();
+            const content = document.getElementById('dynamic-content');
+            
+            // Recarregar lista de usuários
+            const response = await axios.get('/api/users');
+            users = response.data;
+            
+            const html = \`
+                <div>
+                    <button onclick="showAdminPanel()" class="btn-black mb-4">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">Gerenciar Usuários</h2>
+                    
+                    <div class="card mb-4">
+                        <label class="block mb-2 text-sm font-bold">Usuário:</label>
+                        <input type="text" id="userUsername" placeholder="Digite o usuário" class="input-field">
+                        
+                        <label class="block mb-2 text-sm font-bold mt-3">Senha:</label>
+                        <input type="password" id="userPassword" placeholder="Digite a senha" class="input-field">
+                        
+                        <div class="grid grid-cols-4 gap-2 mt-4">
+                            <button onclick="newUser()" class="btn-yellow">
+                                <i class="fas fa-plus mr-1"></i> Novo
+                            </button>
+                            <button onclick="saveUser()" class="btn-red">
+                                <i class="fas fa-save mr-1"></i> Salvar
+                            </button>
+                            <button onclick="saveUser()" class="btn-yellow" style="font-size: 13px;">
+                                <i class="fas fa-edit mr-1"></i> Alterar
+                            </button>
+                            <button onclick="deleteCurrentUser()" class="btn-red">
+                                <i class="fas fa-trash mr-1"></i> Excluir
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold mb-3 text-yellow-400">Usuários Cadastrados</h3>
+                    <div class="space-y-2">
+                        \${users.map(u => \`
+                            <div class="card flex justify-between items-center">
+                                <div>
+                                    <p class="font-bold">\${u.username}</p>
+                                    <p class="text-sm text-gray-400">ID: \${u.id}</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="editUser(\${u.id})" class="btn-yellow" style="padding: 8px 12px;">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="deleteUser(\${u.id})" class="btn-red" style="padding: 8px 12px;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        \`).join('')}
+                    </div>
+                </div>
+            \`;
+            content.innerHTML = html;
+        }
+        
+        function newUser() {
+            document.getElementById('userUsername').value = '';
+            document.getElementById('userPassword').value = '';
+            currentUserId = null;
+        }
+        
+        async function saveUser() {
+            const username = document.getElementById('userUsername').value;
+            const password = document.getElementById('userPassword').value;
+            
+            if (!username || !password) {
+                alert('Por favor, preencha todos os campos');
+                return;
+            }
+            
+            try {
+                if (currentUserId) {
+                    // Atualizar usuário existente
+                    await axios.put(\`/api/users/\${currentUserId}\`, {
+                        username,
+                        password
+                    });
+                    alert('Usuário atualizado com sucesso!');
+                } else {
+                    // Criar novo usuário
+                    await axios.post('/api/users', {
+                        username,
+                        password
+                    });
+                    alert('Usuário criado com sucesso!');
+                }
+                
+                showUsersAdmin();
+            } catch (error) {
+                console.error('Erro ao salvar usuário:', error);
+                alert('Erro ao salvar usuário. Tente novamente.');
+            }
+        }
+        
+        async function editUser(id) {
+            const user = users.find(u => u.id === id);
+            if (!user) return;
+            
+            currentUserId = id;
+            document.getElementById('userUsername').value = user.username;
+            document.getElementById('userPassword').value = '';
+            
+            // Scroll para o formulário
+            window.scrollTo(0, 0);
+        }
+        
+        async function deleteUser(id) {
+            if (!confirm('Deseja realmente excluir este usuário?')) return;
+            
+            try {
+                await axios.delete(\`/api/users/\${id}\`);
+                alert('Usuário excluído com sucesso!');
+                showUsersAdmin();
+            } catch (error) {
+                console.error('Erro ao excluir usuário:', error);
+                alert('Erro ao excluir usuário. Tente novamente.');
+            }
+        }
+        
+        function deleteCurrentUser() {
+            if (!currentUserId) {
+                alert('Selecione um usuário para excluir');
+                return;
+            }
+            
+            deleteUser(currentUserId);
+        }
+
+        // ============ GERENCIAR CLIENTES (ADMIN) ============
+
         async function showCustomersAdmin() {
             if (!isAdmin) {
                 showAdminLogin();
@@ -1988,4 +2246,4 @@ var gt=Object.defineProperty;var Fe=e=>{throw TypeError(e)};var bt=(e,t,o)=>t in
     <\/script>
 </body>
 </html>
-  `));const ze=new pt,Jt=Object.assign({"/src/index.tsx":y});let mt=!1;for(const[,e]of Object.entries(Jt))e&&(ze.all("*",t=>{let o;try{o=t.executionCtx}catch{}return e.fetch(t.req.raw,t.env,o)}),ze.notFound(t=>{let o;try{o=t.executionCtx}catch{}return e.fetch(t.req.raw,t.env,o)}),mt=!0);if(!mt)throw new Error("Can't import modules from ['/src/index.ts','/src/index.tsx','/app/server.ts']");export{ze as default};
+  `));const ze=new pt,Jt=Object.assign({"/src/index.tsx":b});let mt=!1;for(const[,e]of Object.entries(Jt))e&&(ze.all("*",t=>{let o;try{o=t.executionCtx}catch{}return e.fetch(t.req.raw,t.env,o)}),ze.notFound(t=>{let o;try{o=t.executionCtx}catch{}return e.fetch(t.req.raw,t.env,o)}),mt=!0);if(!mt)throw new Error("Can't import modules from ['/src/index.ts','/src/index.tsx','/app/server.ts']");export{ze as default};

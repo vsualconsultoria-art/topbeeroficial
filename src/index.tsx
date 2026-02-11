@@ -299,6 +299,88 @@ app.post('/api/upload', async (c) => {
   }
 })
 
+// ============ APIs de USUÁRIOS ============
+
+// Listar usuários
+app.get('/api/users', async (c) => {
+  const { DB } = c.env
+  const { results } = await DB.prepare("SELECT id, username, created_at FROM users ORDER BY id").all()
+  return c.json(results)
+})
+
+// Criar usuário
+app.post('/api/users', async (c) => {
+  const { DB } = c.env
+  const { username, password } = await c.req.json()
+  
+  const result = await DB.prepare(
+    "INSERT INTO users (username, password) VALUES (?, ?)"
+  ).bind(username, password).run()
+  
+  return c.json({ id: result.meta.last_row_id, success: true })
+})
+
+// Atualizar usuário
+app.put('/api/users/:id', async (c) => {
+  const { DB } = c.env
+  const id = c.req.param('id')
+  const { username, password } = await c.req.json()
+  
+  await DB.prepare(
+    "UPDATE users SET username = ?, password = ? WHERE id = ?"
+  ).bind(username, password, id).run()
+  
+  return c.json({ success: true })
+})
+
+// Deletar usuário
+app.delete('/api/users/:id', async (c) => {
+  const { DB } = c.env
+  const id = c.req.param('id')
+  
+  await DB.prepare("DELETE FROM users WHERE id = ?").bind(id).run()
+  
+  return c.json({ success: true })
+})
+
+// Login de usuário
+app.post('/api/users/login', async (c) => {
+  const { DB } = c.env
+  const { username, password } = await c.req.json()
+  
+  const { results } = await DB.prepare(
+    "SELECT id, username FROM users WHERE username = ? AND password = ?"
+  ).bind(username, password).all()
+  
+  if (results.length > 0) {
+    return c.json({ success: true, user: results[0] })
+  } else {
+    return c.json({ success: false, message: 'Usuário ou senha inválidos' }, 401)
+  }
+})
+
+// ============ APIs de CONFIGURAÇÃO DO SISTEMA ============
+
+// Obter WhatsApp do sistema
+app.get('/api/settings/system-whatsapp', async (c) => {
+  const { DB } = c.env
+  const { results } = await DB.prepare("SELECT value FROM settings WHERE key = 'system_whatsapp'").all()
+  
+  return c.json({ system_whatsapp: results[0]?.value || '5518996936262' })
+})
+
+// Salvar WhatsApp do sistema
+app.post('/api/settings/system-whatsapp', async (c) => {
+  const { DB } = c.env
+  const { system_whatsapp } = await c.req.json()
+  
+  await DB.prepare(
+    "INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES ('system_whatsapp', ?, CURRENT_TIMESTAMP)"
+  ).bind(system_whatsapp).run()
+  
+  return c.json({ success: true })
+})
+
 // ============ PÁGINA PRINCIPAL ============
 
 app.get('/', (c) => {
@@ -745,6 +827,25 @@ app.get('/', (c) => {
         </div>
     </div>
 
+    <!-- Modal: PIX Copiado -->
+    <div id="modalPixCopied" class="custom-modal">
+        <div class="modal-content-custom">
+            <div class="modal-header">
+                <i class="fas fa-check-circle" style="font-size: 40px; color: #25d366;"></i>
+                <div style="margin-top: 10px;">Sucesso!</div>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 18px; font-weight: bold; color: #25d366;">PIX Copiado</p>
+                <p style="font-size: 14px; color: #999; margin-top: 10px;">A chave PIX foi copiada para a área de transferência.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-primary" onclick="closeModal('modalPixCopied')">
+                    <i class="fas fa-check mr-2"></i>OK
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="app" class="container mx-auto px-4 py-6 max-w-md">
         <!-- TELA INICIAL -->
         <div id="home-screen">
@@ -801,6 +902,8 @@ app.get('/', (c) => {
         let currentCustomer = null;
         let logoUrl = null;
         let footerLogoUrl = null;
+        let systemWhatsapp = '5518996936262';
+        let users = [];
 
         // ============ FUNÇÕES DOS MODAIS FLUTUANTES ============
         
@@ -871,7 +974,8 @@ app.get('/', (c) => {
                 document.execCommand('copy');
                 document.body.removeChild(textarea);
                 
-                alert('Chave PIX copiada!');
+                // Mostrar modal de sucesso
+                openModal('modalPixCopied');
             } else {
                 alert('PIX não configurado');
             }
@@ -882,18 +986,22 @@ app.get('/', (c) => {
         // Carregar dados iniciais
         async function loadInitialData() {
             try {
-                const [productsRes, customersRes, logoRes, footerLogoRes, paymentRes] = await Promise.all([
+                const [productsRes, customersRes, logoRes, footerLogoRes, paymentRes, whatsappRes, usersRes] = await Promise.all([
                     axios.get('/api/products'),
                     axios.get('/api/customers'),
                     axios.get('/api/settings/logo'),
                     axios.get('/api/settings/footer-logo'),
-                    axios.get('/api/settings/payment')
+                    axios.get('/api/settings/payment'),
+                    axios.get('/api/settings/system-whatsapp'),
+                    axios.get('/api/users')
                 ]);
                 products = productsRes.data;
                 customers = customersRes.data;
                 logoUrl = logoRes.data.logo_url;
                 footerLogoUrl = footerLogoRes.data.footer_logo_url;
                 paymentSettings = paymentRes.data;
+                systemWhatsapp = whatsappRes.data.system_whatsapp;
+                users = usersRes.data;
                 
                 if (logoUrl) {
                     document.getElementById('logoImage').src = logoUrl;
@@ -986,12 +1094,12 @@ app.get('/', (c) => {
                                             </select>
                                         </div>
                                         
-                                        <!-- Seleção de Tipo -->
+                                        <!-- Tipo (somente leitura) -->
                                         <div class="mb-2">
                                             <label class="text-xs text-gray-400">Tipo:</label>
-                                            <select id="type-\${p.id}" class="input-field" style="padding: 6px; font-size: 14px;">
-                                                <option value="\${p.unit_type}">\${p.unit_type}</option>
-                                            </select>
+                                            <div style="padding: 6px; font-size: 14px; color: #fbbf24; font-weight: bold;">
+                                                \${p.unit_type}
+                                            </div>
                                         </div>
                                         
                                         <!-- Controle de Quantidade -->
@@ -1136,9 +1244,8 @@ app.get('/', (c) => {
             
             // Pegar as opções selecionadas
             const tempSelect = document.getElementById(\`temp-\${productId}\`);
-            const typeSelect = document.getElementById(\`type-\${productId}\`);
             const temperature = tempSelect ? tempSelect.value : 'Gelada';
-            const type = typeSelect ? typeSelect.value : product.unit_type;
+            const type = product.unit_type; // Usar o tipo do produto diretamente
             
             // Determinar preço baseado na temperatura
             let finalPrice = product.price;
@@ -1276,16 +1383,15 @@ app.get('/', (c) => {
                             </div>
                         </div>
                         
-                        <!-- Tarja Verde WhatsApp -->
-                        <div class="success-banner mt-4">
-                            <i class="fas fa-whatsapp mr-2"></i>Por favor, Finalizar Pedido
+                        <!-- Mensagem Finalizar Pedido -->
+                        <div class="mt-4" style="text-align: center;">
+                            <p style="color: #dc2626; font-weight: bold; font-size: 16px;">
+                                Por favor, Finalizar Pedido
+                            </p>
                         </div>
                         
-                        <div class="grid grid-cols-2 gap-4 mt-4">
-                            <button onclick="showCatalog()" class="btn-yellow py-4 text-lg">
-                                <i class="fas fa-shopping-basket mr-2"></i> Continuar Comprando
-                            </button>
-                            <button onclick="finishOrder()" class="btn-red py-4 text-lg">
+                        <div class="mt-4">
+                            <button onclick="finishOrder()" class="btn-red w-full py-4 text-lg">
                                 <i class="fas fa-check mr-2"></i> Finalizar Pedido
                             </button>
                         </div>
@@ -1350,7 +1456,6 @@ app.get('/', (c) => {
         // Finalizar pedido
         async function finishOrder() {
             const customerSelect = document.getElementById('customerSelect');
-            const paymentMethod = document.getElementById('paymentMethod').value;
             
             if (!customerSelect.value) {
                 alert('Por favor, selecione um cliente!');
@@ -1370,7 +1475,7 @@ app.get('/', (c) => {
                         unit_price: item.unit_price,
                         total_price: item.total_price
                     })),
-                    payment_method: paymentMethod === 'pix' ? 'PIX - 123.456.789' : 'À Vista',
+                    payment_method: selectedPaymentMethod === 'pix' ? \`PIX - \${paymentSettings.pix_key}\` : 'Dinheiro',
                     total_amount: total
                 };
                 
@@ -1386,15 +1491,24 @@ app.get('/', (c) => {
                 
                 cart.forEach(item => {
                     message += \`\\n• \${item.product_name} (\${item.brand})\\n\`;
+                    message += \`  \${item.temperature || 'Normal'} - \${item.type || 'Unidade'}\\n\`;
                     message += \`  Qtd: \${item.quantity} x R$ \${item.unit_price.toFixed(2)} = R$ \${item.total_price.toFixed(2)}\\n\`;
                 });
                 
                 message += \`\\n*TOTAL: R$ \${total.toFixed(2)}*\\n\`;
-                message += \`*Pagamento:* \${paymentMethod === 'pix' ? 'PIX - 123.456.789' : 'À Vista'}\`;
+                message += \`*Pagamento:* \${selectedPaymentMethod === 'pix' ? \`PIX - \${paymentSettings.pix_key}\` : 'Dinheiro'}\`;
                 
-                // Enviar para WhatsApp
-                const whatsappUrl = \`https://api.whatsapp.com/send/?phone=5518996676409&text=\${encodeURIComponent(message)}\`;
-                window.open(whatsappUrl, '_blank');
+                // Enviar para WhatsApp do SISTEMA (primeiro)
+                const systemWhatsappUrl = \`https://wa.me/\${systemWhatsapp}?text=\${encodeURIComponent(message)}\`;
+                window.open(systemWhatsappUrl, '_blank');
+                
+                // Aguardar 1 segundo e enviar para WhatsApp do CLIENTE
+                setTimeout(() => {
+                    // Remover caracteres não numéricos do telefone do cliente
+                    const customerPhone = customer.phone.replace(/\D/g, '');
+                    const customerWhatsappUrl = \`https://wa.me/55\${customerPhone}?text=\${encodeURIComponent(message)}\`;
+                    window.open(customerWhatsappUrl, '_blank');
+                }, 1000);
                 
                 // Limpar carrinho
                 cart = [];
@@ -1592,6 +1706,12 @@ app.get('/', (c) => {
                         <button onclick="showPaymentSettings()" class="btn-yellow w-full py-4">
                             <i class="fas fa-money-bill mr-2"></i> Formas de Pagamento
                         </button>
+                        <button onclick="showSystemConfig()" class="btn-yellow w-full py-4">
+                            <i class="fas fa-cogs mr-2"></i> Configuração do Sistema
+                        </button>
+                        <button onclick="showUsersAdmin()" class="btn-yellow w-full py-4">
+                            <i class="fas fa-user-lock mr-2"></i> Usuários
+                        </button>
                         <button onclick="showBranchesAdmin()" class="btn-yellow w-full py-4">
                             <i class="fas fa-store mr-2"></i> Gerenciar Filiais
                         </button>
@@ -1710,6 +1830,226 @@ app.get('/', (c) => {
         }
 
         // Mostrar lista de clientes no admin
+        // ============ CONFIGURAÇÃO DO SISTEMA ============
+        
+        let currentSystemConfigId = null;
+        
+        async function showSystemConfig() {
+            if (!isAdmin) {
+                showAdminLogin();
+                return;
+            }
+            
+            hideHome();
+            const content = document.getElementById('dynamic-content');
+            
+            // Carregar WhatsApp do sistema
+            const response = await axios.get('/api/settings/system-whatsapp');
+            const whatsapp = response.data.system_whatsapp;
+            
+            const html = \`
+                <div>
+                    <button onclick="showAdminPanel()" class="btn-black mb-4">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">Configuração do Sistema</h2>
+                    
+                    <div class="card">
+                        <label class="block mb-2 text-sm font-bold">Link do WhatsApp:</label>
+                        <input type="text" id="systemWhatsappInput" placeholder="Ex: 5518996936262" class="input-field" value="\${whatsapp}">
+                        
+                        <div class="grid grid-cols-2 gap-3 mt-4">
+                            <button onclick="newSystemConfig()" class="btn-yellow">
+                                <i class="fas fa-plus mr-2"></i> Novo
+                            </button>
+                            <button onclick="saveSystemConfig()" class="btn-red">
+                                <i class="fas fa-save mr-2"></i> Salvar
+                            </button>
+                        </div>
+                        
+                        <p class="text-sm text-gray-400 mt-4">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Este WhatsApp receberá uma cópia de todos os pedidos finalizados.
+                        </p>
+                    </div>
+                </div>
+            \`;
+            content.innerHTML = html;
+        }
+        
+        function newSystemConfig() {
+            document.getElementById('systemWhatsappInput').value = '';
+            currentSystemConfigId = null;
+        }
+        
+        async function saveSystemConfig() {
+            const whatsapp = document.getElementById('systemWhatsappInput').value;
+            
+            if (!whatsapp) {
+                alert('Por favor, preencha o WhatsApp do sistema');
+                return;
+            }
+            
+            try {
+                await axios.post('/api/settings/system-whatsapp', {
+                    system_whatsapp: whatsapp
+                });
+                
+                systemWhatsapp = whatsapp;
+                alert('Configuração salva com sucesso!');
+                showSystemConfig();
+            } catch (error) {
+                console.error('Erro ao salvar configuração:', error);
+                alert('Erro ao salvar configuração. Tente novamente.');
+            }
+        }
+        
+        // ============ GERENCIAR USUÁRIOS ============
+        
+        let currentUserId = null;
+        
+        async function showUsersAdmin() {
+            if (!isAdmin) {
+                showAdminLogin();
+                return;
+            }
+            
+            hideHome();
+            const content = document.getElementById('dynamic-content');
+            
+            // Recarregar lista de usuários
+            const response = await axios.get('/api/users');
+            users = response.data;
+            
+            const html = \`
+                <div>
+                    <button onclick="showAdminPanel()" class="btn-black mb-4">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </button>
+                    <h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">Gerenciar Usuários</h2>
+                    
+                    <div class="card mb-4">
+                        <label class="block mb-2 text-sm font-bold">Usuário:</label>
+                        <input type="text" id="userUsername" placeholder="Digite o usuário" class="input-field">
+                        
+                        <label class="block mb-2 text-sm font-bold mt-3">Senha:</label>
+                        <input type="password" id="userPassword" placeholder="Digite a senha" class="input-field">
+                        
+                        <div class="grid grid-cols-4 gap-2 mt-4">
+                            <button onclick="newUser()" class="btn-yellow">
+                                <i class="fas fa-plus mr-1"></i> Novo
+                            </button>
+                            <button onclick="saveUser()" class="btn-red">
+                                <i class="fas fa-save mr-1"></i> Salvar
+                            </button>
+                            <button onclick="saveUser()" class="btn-yellow" style="font-size: 13px;">
+                                <i class="fas fa-edit mr-1"></i> Alterar
+                            </button>
+                            <button onclick="deleteCurrentUser()" class="btn-red">
+                                <i class="fas fa-trash mr-1"></i> Excluir
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold mb-3 text-yellow-400">Usuários Cadastrados</h3>
+                    <div class="space-y-2">
+                        \${users.map(u => \`
+                            <div class="card flex justify-between items-center">
+                                <div>
+                                    <p class="font-bold">\${u.username}</p>
+                                    <p class="text-sm text-gray-400">ID: \${u.id}</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="editUser(\${u.id})" class="btn-yellow" style="padding: 8px 12px;">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="deleteUser(\${u.id})" class="btn-red" style="padding: 8px 12px;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        \`).join('')}
+                    </div>
+                </div>
+            \`;
+            content.innerHTML = html;
+        }
+        
+        function newUser() {
+            document.getElementById('userUsername').value = '';
+            document.getElementById('userPassword').value = '';
+            currentUserId = null;
+        }
+        
+        async function saveUser() {
+            const username = document.getElementById('userUsername').value;
+            const password = document.getElementById('userPassword').value;
+            
+            if (!username || !password) {
+                alert('Por favor, preencha todos os campos');
+                return;
+            }
+            
+            try {
+                if (currentUserId) {
+                    // Atualizar usuário existente
+                    await axios.put(\`/api/users/\${currentUserId}\`, {
+                        username,
+                        password
+                    });
+                    alert('Usuário atualizado com sucesso!');
+                } else {
+                    // Criar novo usuário
+                    await axios.post('/api/users', {
+                        username,
+                        password
+                    });
+                    alert('Usuário criado com sucesso!');
+                }
+                
+                showUsersAdmin();
+            } catch (error) {
+                console.error('Erro ao salvar usuário:', error);
+                alert('Erro ao salvar usuário. Tente novamente.');
+            }
+        }
+        
+        async function editUser(id) {
+            const user = users.find(u => u.id === id);
+            if (!user) return;
+            
+            currentUserId = id;
+            document.getElementById('userUsername').value = user.username;
+            document.getElementById('userPassword').value = '';
+            
+            // Scroll para o formulário
+            window.scrollTo(0, 0);
+        }
+        
+        async function deleteUser(id) {
+            if (!confirm('Deseja realmente excluir este usuário?')) return;
+            
+            try {
+                await axios.delete(\`/api/users/\${id}\`);
+                alert('Usuário excluído com sucesso!');
+                showUsersAdmin();
+            } catch (error) {
+                console.error('Erro ao excluir usuário:', error);
+                alert('Erro ao excluir usuário. Tente novamente.');
+            }
+        }
+        
+        function deleteCurrentUser() {
+            if (!currentUserId) {
+                alert('Selecione um usuário para excluir');
+                return;
+            }
+            
+            deleteUser(currentUserId);
+        }
+
+        // ============ GERENCIAR CLIENTES (ADMIN) ============
+
         async function showCustomersAdmin() {
             if (!isAdmin) {
                 showAdminLogin();
