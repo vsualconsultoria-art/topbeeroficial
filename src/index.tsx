@@ -1402,6 +1402,14 @@ app.get('/', (c) => {
             
             // Selecionar PIX por padrão
             selectPayment('pix');
+            
+            // Abrir modal PIX automaticamente se houver itens no carrinho
+            if (cart.length > 0) {
+                // Aguardar um momento para o DOM estar pronto
+                setTimeout(() => {
+                    showPixModal();
+                }, 300);
+            }
         }
 
         // Selecionar forma de pagamento
