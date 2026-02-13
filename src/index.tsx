@@ -846,6 +846,29 @@ app.get('/', (c) => {
         </div>
     </div>
 
+    <!-- Modal: Pedido Enviado com Sucesso -->
+    <div id="modalOrderSuccess" class="custom-modal">
+        <div class="modal-content-custom">
+            <div class="modal-header">
+                <i class="fas fa-check-circle" style="font-size: 50px; color: #fbbf24;"></i>
+                <div style="margin-top: 10px; font-size: 22px;">Sucesso!</div>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 20px; font-weight: bold; color: #fbbf24; margin-bottom: 15px;">
+                    Pedido enviado com sucesso!
+                </p>
+                <p style="font-size: 14px; color: #999;">
+                    Seu pedido foi enviado para o WhatsApp e em breve será processado.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-primary" onclick="closeModalAndGoHome()">
+                    <i class="fas fa-check mr-2"></i>OK
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="app" class="container mx-auto px-4 py-6 max-w-md">
         <!-- TELA INICIAL -->
         <div id="home-screen">
@@ -929,6 +952,11 @@ app.get('/', (c) => {
         function closeModalAndGoCart() {
             closeModal('modalContinueShopping');
             showCart();
+        }
+        
+        function closeModalAndGoHome() {
+            closeModal('modalOrderSuccess');
+            showHome();
         }
         
         function showQuantityZeroModal() {
@@ -1522,8 +1550,8 @@ app.get('/', (c) => {
                 cart = [];
                 updateCartBadge();
                 
-                alert('Pedido enviado com sucesso!');
-                showHome();
+                // Mostrar modal de sucesso
+                openModal('modalOrderSuccess');
             } catch (error) {
                 console.error('Erro ao finalizar pedido:', error);
                 alert('Erro ao finalizar pedido. Tente novamente.');
@@ -2371,11 +2399,11 @@ app.get('/', (c) => {
                         <label class="block mb-2 text-sm font-bold">Quantidade</label>
                         <input type="number" id="productQuantity" placeholder="Ex: 100" class="input-field">
                         
-                        <label class="block mb-2 text-sm font-bold">Gelada</label>
-                        <input type="number" id="productCold" placeholder="Quantidade gelada" class="input-field">
+                        <label class="block mb-2 text-sm font-bold">Valor Gelada</label>
+                        <input type="number" id="productCold" placeholder="Valor gelada" class="input-field">
                         
-                        <label class="block mb-2 text-sm font-bold">Quente</label>
-                        <input type="number" id="productHot" placeholder="Quantidade quente" class="input-field">
+                        <label class="block mb-2 text-sm font-bold">Valor Quente</label>
+                        <input type="number" id="productHot" placeholder="Valor quente" class="input-field">
                         
                         <label class="block mb-2 text-sm font-bold">Tipo</label>
                         <select id="productType" class="input-field">
