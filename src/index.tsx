@@ -869,6 +869,49 @@ app.get('/', (c) => {
         </div>
     </div>
 
+    <!-- Modal: Produto Atualizado com Sucesso -->
+    <div id="modalProductUpdated" class="custom-modal">
+        <div class="modal-content-custom">
+            <div class="modal-header">
+                <i class="fas fa-check-circle" style="font-size: 50px; color: #fbbf24;"></i>
+                <div style="margin-top: 10px; font-size: 22px;">Sucesso!</div>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 20px; font-weight: bold; color: #fbbf24; margin-bottom: 15px;">
+                    Produto atualizado com sucesso!
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-primary" onclick="closeModal('modalProductUpdated')">
+                    <i class="fas fa-check mr-2"></i>OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Selecione um Cliente -->
+    <div id="modalSelectCustomer" class="custom-modal">
+        <div class="modal-content-custom">
+            <div class="modal-header">
+                <i class="fas fa-exclamation-triangle" style="font-size: 50px; color: #fbbf24;"></i>
+                <div style="margin-top: 10px; font-size: 22px;">Atenção!</div>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 20px; font-weight: bold; color: #fbbf24; margin-bottom: 15px;">
+                    Por favor, selecione um cliente!
+                </p>
+                <p style="font-size: 14px; color: #999;">
+                    É necessário selecionar um cliente antes de finalizar o pedido.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-primary" onclick="closeModal('modalSelectCustomer')">
+                    <i class="fas fa-check mr-2"></i>OK
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="app" class="container mx-auto px-4 py-6 max-w-md">
         <!-- TELA INICIAL -->
         <div id="home-screen">
@@ -1494,7 +1537,7 @@ app.get('/', (c) => {
             const customerSelect = document.getElementById('customerSelect');
             
             if (!customerSelect.value) {
-                alert('Por favor, selecione um cliente!');
+                openModal('modalSelectCustomer');
                 return;
             }
             
@@ -2519,10 +2562,10 @@ app.get('/', (c) => {
                 
                 if (currentProduct) {
                     await axios.put(\`/api/products/\${currentProduct}\`, productData);
-                    alert('Produto atualizado com sucesso!');
+                    openModal('modalProductUpdated');
                 } else {
                     await axios.post('/api/products', productData);
-                    alert('Produto cadastrado com sucesso!');
+                    openModal('modalProductUpdated');
                 }
                 
                 const res = await axios.get('/api/products');
