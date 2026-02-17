@@ -1154,9 +1154,8 @@ app.get('/', (c) => {
                                 <div>
                                     <h3 class="font-bold text-lg mb-1">\${p.name}</h3>
                                     <p class="text-sm text-gray-400 mb-1">\${p.brand} \${p.category ? '• ' + p.category : ''}</p>
-                                    <p class="text-yellow-400 font-bold text-xl mb-2" id="price-\${p.id}">R$ \${parseFloat(p.price).toFixed(2)}</p>
                                         
-                                        <!-- Seleção de Temperatura -->
+                                        <!-- Seleção de Temperatura (ANTES DO PREÇO) -->
                                         <div class="mb-2">
                                             <label class="text-xs text-gray-400">Gelada ou Quente:</label>
                                             <select id="temp-\${p.id}" class="input-field" style="padding: 6px; font-size: 14px;" onchange="updatePrice(\${p.id})">
@@ -1164,6 +1163,9 @@ app.get('/', (c) => {
                                                 <option value="Quente">Quente</option>
                                             </select>
                                         </div>
+                                        
+                                        <!-- Preço dinâmico -->
+                                        <p class="text-yellow-400 font-bold text-xl mb-2" id="price-\${p.id}">R$ \${parseFloat(p.price_cold || p.price).toFixed(2)}</p>
                                         
                                         <!-- Tipo (somente leitura) -->
                                         <div class="mb-2">
@@ -1736,7 +1738,12 @@ app.get('/', (c) => {
                     <h2 class="text-2xl font-bold text-center mb-6 text-yellow-400">Acesso Administrativo</h2>
                     
                     <div class="card">
+                        <label class="block mb-2 text-sm font-bold">Usuário</label>
+                        <input type="text" id="adminUsername" placeholder="Digite o usuário" class="input-field mb-4">
+                        
+                        <label class="block mb-2 text-sm font-bold">Senha</label>
                         <input type="password" id="adminPassword" placeholder="Digite a senha" class="input-field">
+                        
                         <button onclick="verifyAdmin()" class="btn-red w-full mt-4">
                             <i class="fas fa-lock mr-2"></i> Entrar
                         </button>
@@ -1746,20 +1753,26 @@ app.get('/', (c) => {
             content.innerHTML = html;
         }
 
-        // Verificar senha admin
+        // Verificar usuário e senha admin
         async function verifyAdmin() {
+            const username = document.getElementById('adminUsername').value;
             const password = document.getElementById('adminPassword').value;
             
+            if (!username || !password) {
+                alert('Por favor, preencha usuário e senha!');
+                return;
+            }
+            
             try {
-                const res = await axios.post('/api/auth/verify', { password });
+                const res = await axios.post('/api/users/login', { username, password });
                 if (res.data.success) {
                     isAdmin = true;
                     showAdminPanel();
                 } else {
-                    alert('Senha incorreta!');
+                    alert('Usuário ou senha incorretos!');
                 }
             } catch (error) {
-                alert('Senha incorreta!');
+                alert('Usuário ou senha incorretos!');
             }
         }
 
@@ -2433,9 +2446,6 @@ app.get('/', (c) => {
                         <label class="block mb-2 text-sm font-bold">Nome do Produto</label>
                         <input type="text" id="productName" placeholder="Ex: Cerveja Heineken" class="input-field">
                         
-                        <label class="block mb-2 text-sm font-bold">Preço Unitário</label>
-                        <input type="number" step="0.01" id="productPrice" placeholder="Ex: 5.50" class="input-field">
-                        
                         <label class="block mb-2 text-sm font-bold">Marca</label>
                         <input type="text" id="productBrand" placeholder="Ex: Heineken" class="input-field">
                         
@@ -2443,10 +2453,10 @@ app.get('/', (c) => {
                         <input type="number" id="productQuantity" placeholder="Ex: 100" class="input-field">
                         
                         <label class="block mb-2 text-sm font-bold">Valor Gelada</label>
-                        <input type="number" id="productCold" placeholder="Valor gelada" class="input-field">
+                        <input type="number" step="0.01" id="productCold" placeholder="Ex: 38.50" class="input-field">
                         
                         <label class="block mb-2 text-sm font-bold">Valor Quente</label>
-                        <input type="number" id="productHot" placeholder="Valor quente" class="input-field">
+                        <input type="number" step="0.01" id="productHot" placeholder="Ex: 36.00" class="input-field">
                         
                         <label class="block mb-2 text-sm font-bold">Tipo</label>
                         <select id="productType" class="input-field">
@@ -2503,7 +2513,6 @@ app.get('/', (c) => {
         // Salvar produto
         async function saveProduct() {
             const name = document.getElementById('productName').value;
-            const price = document.getElementById('productPrice').value;
             const brand = document.getElementById('productBrand').value;
             const quantity = document.getElementById('productQuantity').value;
             const cold = document.getElementById('productCold').value;
@@ -2512,7 +2521,7 @@ app.get('/', (c) => {
             const category = document.getElementById('productCategory').value;
             const imageInput = document.getElementById('productImage');
             
-            if (!name || !price || !brand) {
+            if (!name || !brand || !cold) {
                 alert('Por favor, preencha todos os campos obrigatórios!');
                 return;
             }
