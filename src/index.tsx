@@ -39,11 +39,11 @@ app.get('/api/products/:id', async (c) => {
 // Criar novo produto
 app.post('/api/products', async (c) => {
   const { DB } = c.env
-  const { name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type, category } = await c.req.json()
+  const { name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type, category, price_cold, price_hot } = await c.req.json()
   
   const result = await DB.prepare(
-    'INSERT INTO products (name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
-  ).bind(name, price, brand, stock_quantity || 0, image_url || null, cold_quantity || 0, hot_quantity || 0, unit_type || 'Unidade', category || 'Bebidas').run()
+    'INSERT INTO products (name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type, category, price_cold, price_hot) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+  ).bind(name, price, brand, stock_quantity || 0, image_url || null, cold_quantity || 0, hot_quantity || 0, unit_type || 'Unidade', category || 'Bebidas', price_cold || 0, price_hot || 0).run()
   
   return c.json({ id: result.meta.last_row_id, success: true })
 })
@@ -52,11 +52,11 @@ app.post('/api/products', async (c) => {
 app.put('/api/products/:id', async (c) => {
   const { DB } = c.env
   const id = c.req.param('id')
-  const { name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type, category } = await c.req.json()
+  const { name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type, category, price_cold, price_hot } = await c.req.json()
   
   await DB.prepare(
-    'UPDATE products SET name = ?, price = ?, brand = ?, stock_quantity = ?, image_url = ?, cold_quantity = ?, hot_quantity = ?, unit_type = ?, category = ? WHERE id = ?'
-  ).bind(name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type, category, id).run()
+    'UPDATE products SET name = ?, price = ?, brand = ?, stock_quantity = ?, image_url = ?, cold_quantity = ?, hot_quantity = ?, unit_type = ?, category = ?, price_cold = ?, price_hot = ? WHERE id = ?'
+  ).bind(name, price, brand, stock_quantity, image_url, cold_quantity, hot_quantity, unit_type, category, price_cold, price_hot, id).run()
   
   return c.json({ success: true })
 })
@@ -2559,11 +2559,13 @@ app.get('/', (c) => {
                 
                 const productData = {
                     name,
-                    price: parseFloat(price),
+                    price: parseFloat(cold) || 0, // Usar valor gelada como preço padrão
                     brand,
                     stock_quantity: parseInt(quantity) || 0,
-                    cold_quantity: parseInt(cold) || 0,
-                    hot_quantity: parseInt(hot) || 0,
+                    cold_quantity: 0, // Não usado mais
+                    hot_quantity: 0, // Não usado mais
+                    price_cold: parseFloat(cold) || 0,
+                    price_hot: parseFloat(hot) || 0,
                     unit_type: type || 'Unidade',
                     category: category || 'Bebidas',
                     image_url
@@ -2594,11 +2596,10 @@ app.get('/', (c) => {
             
             currentProduct = id;
             document.getElementById('productName').value = product.name;
-            document.getElementById('productPrice').value = product.price;
             document.getElementById('productBrand').value = product.brand;
             document.getElementById('productQuantity').value = product.stock_quantity || 0;
-            document.getElementById('productCold').value = product.cold_quantity || 0;
-            document.getElementById('productHot').value = product.hot_quantity || 0;
+            document.getElementById('productCold').value = product.price_cold || 0;
+            document.getElementById('productHot').value = product.price_hot || 0;
             document.getElementById('productType').value = product.unit_type || 'Unidade';
             document.getElementById('productCategory').value = product.category || 'Bebidas';
             
